@@ -6,3 +6,6 @@ ChangeLog
 TAGS
 *~
 vendor/.git
+
+local/config/vufind/config.ini
+solr
