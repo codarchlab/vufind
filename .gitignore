@@ -8,4 +8,9 @@ TAGS
 vendor/.git
 
 local/config/vufind/config.ini
-solr
+local/harvest/DAI_ALL/
+solr/authority/index
+solr/biblio/index
+solr/biblio/spellShingle/
+solr/biblio/spellchecker/
+solr/biblio/tlog/
