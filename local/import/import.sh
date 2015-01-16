@@ -11,5 +11,5 @@ do
 	echo "converting ${filename}"
 	ruby $VUFIND_HOME/local/import/aleph2marc.rb ${filename}
 	echo "importing ${filename}"
-	bash $VUFIND_HOME/import-marc.rb
+	bash $VUFIND_HOME/import-marc.rb $VUFIND_HOME/local/import/mrc/$(basename "$filename" .txt).mrc
 done
