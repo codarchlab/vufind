@@ -16,7 +16,7 @@ Dir.mkdir marc_dir unless File.exists? marc_dir
 writer = MARC::Writer.new(marc_dir + name + ".mrc")
 log_dir = vufind_home + "/local/import/log/"
 Dir.mkdir log_dir unless File.exists? log_dir
-logger = Logger.new(vufind_home + log_dir + name + ".log")
+logger = Logger.new(log_dir + name + ".log")
 
 begin
 	reader.each do |r|
