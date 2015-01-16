@@ -21,8 +21,8 @@ logger = Logger.new(log_dir + name + ".log")
 begin
 	reader.each do |r|
 		begin
-			# filter out duplicate thesaurus fields
-			r.find_all { |f| f.tag =~ /^T../ }.each do |f|
+			# filter out non-numerical fields
+			r.find_all { |f| f.tag !~ /^[0-9]{3}/ }.each do |f|
 				r.fields.delete f
 			end
     		writer.write r
