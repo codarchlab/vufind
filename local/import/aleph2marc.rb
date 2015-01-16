@@ -11,10 +11,12 @@ vufind_home = ENV['VUFIND_HOME'] || '/usr/local/vufind'
 
 name = File.basename(ARGV[0], File.extname(ARGV[0]))
 reader = MARC::AlephSequential::Reader.new(ARGV[0])
-Dir.mkdir "mrc" unless File.exists? "mrc"
-writer = MARC::Writer.new("mrc/" + name + ".mrc")
-Dir.mkdir "log" unless File.exists? "log"
-logger = Logger.new("log/" + name + ".log")
+marc_dir = vufind_home + "/local/import/mrc/"
+Dir.mkdir marc_dir unless File.exists? marc_dir
+writer = MARC::Writer.new(marc_dir + name + ".mrc")
+log_dir = vufind_home + "/local/import/log/"
+Dir.mkdir log_dir unless File.exists? log_dir
+logger = Logger.new(vufind_home + log_dir + name + ".log")
 
 begin
 	reader.each do |r|
