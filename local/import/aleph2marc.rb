@@ -10,13 +10,19 @@ require 'pp'
 
 name = File.basename(ARGV[0], File.extname(ARGV[0]))
 reader = MARC::AlephSequential::Reader.new(ARGV[0])
-writer = MARC::Writer.new("xml/" + name + ".xml")
+Dir.mkdir "mrc" unless File.exists? "mrc"
+writer = MARC::Writer.new("mrc/" + name + ".mrc")
+Dir.mkdir "log" unless File.exists? "log"
 logger = Logger.new("log/" + name + ".log")
 
 begin
 	reader.each do |r|
 		begin
-    		writer.write(r)
+			# filter out duplicate thesaurus fields
+			r.find_all { |f| f.tag =~ /^T../ }.each do |f|
+				r.fields.delete f
+			end
+    		writer.write r
     	rescue => e
     		logger.error "Error while writing record #{r['001']} to MARC: #{e.message}"
     	end
