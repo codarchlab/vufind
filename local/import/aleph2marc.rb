@@ -7,6 +7,7 @@ require 'marc'
 require 'marc_alephsequential'
 require 'pp'
 
+vufind_home = ENV['VUFIND_HOME'] || '/usr/local/vufind'
 
 name = File.basename(ARGV[0], File.extname(ARGV[0]))
 reader = MARC::AlephSequential::Reader.new(ARGV[0])
