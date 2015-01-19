@@ -916,7 +916,7 @@ show_full_status = false
 [Record]
 ; Set this to true in order to enable "next" and "previous" links to navigate
 ; through the current result set from within the record view.
-next_prev_navigation = false
+next_prev_navigation = true
 
 ; You can enable this setting to show links to related MARC records using certain
 ; 7XX fields. Just enter a comma-separated list of the MARC fields that you wish
@@ -1045,7 +1045,7 @@ HMACkey = mySuperSecretValue
 ; field of the Solr index.
 driver = Default
 ; Should we display hierarchy trees? (default = false)
-;showTree = true
+showTree = true
 ; "Search within trees" can be disabled here if set to "false" (default = true)
 search = true
 ; You can limit the number of search results highlighted when searching the tree;
