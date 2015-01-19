@@ -246,7 +246,7 @@ $(document).ready(function()
     },
     "plugins" : [ "themes", "xml_data", "ui" ],
     "themes" : {
-        "url": path + '/themes/archaeostrap/js/jsTree/themes/proton/style.css'
+        "url": path + '/themes/archaeostrap/js/jsTree/themes/vufind/style.css'
     }
   }).bind("open_node.jstree close_node.jstree", function (e, data)
   {
