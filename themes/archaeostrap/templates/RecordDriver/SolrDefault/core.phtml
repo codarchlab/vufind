@@ -230,6 +230,16 @@
         </tr>
       <? endif; ?>
 
+      <? $parent = $this->driver->getParent(); ?>
+      <? if($parent): ?>
+        <tr>
+          <th><?=$this->transEsc('Included in')?></th>
+          <td>
+            <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $tagList = $this->driver->getTags(); ?>
       <tr>
         <th><?=$this->transEsc('Tags')?>: </th>

@@ -69,10 +69,35 @@ class SolrMarc extends VufindSolrMarc
 
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
-            
+
         }
 
         return $result;
+
+    }
+
+    /**
+     * Get the parent of the record
+     *
+     * @return string
+     */
+    public function getParent()
+    {
+
+    	$result = array();
+    	$fields = $this->marcRecord->getFields('995');
+
+    	foreach ($fields as $currentField) {
+    		$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
+    		if ($field[0] == 'ANA') {
+	    		return array(
+	    			'id' => $field[1],
+	    			'label' => $field[2]
+	    		);
+	    	}
+    	}
+
+        return false;
 
     }
 
