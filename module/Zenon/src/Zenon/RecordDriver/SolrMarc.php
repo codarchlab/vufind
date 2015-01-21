@@ -40,6 +40,42 @@ use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 class SolrMarc extends VufindSolrMarc
 {
 
+	/**
+     * Get the thesaurus entries of the record
+     *
+     * @return string
+     */
+    public function getThsEntries()
+    {
+
+    	$result = array();
+    	$fields = $this->marcRecord->getFields('999');
+
+    	foreach ($fields as $currentField) {
+
+    		$entry = [];
+
+            $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
+            if (count($label > 0)) $entry['label'] = $label[0];
+            else continue;
+
+            $language = $this->getSubfieldArray($currentField, ['9']);
+            if (count($language > 0)) $entry['language'] = $language[0];
+            else $entry['language'] = 'ger';
+
+            $notation = $this->getSubfieldArray($currentField, ['1']);
+            if (count($notation > 0)) $entry['notation'] = $notation[0];
+            else continue;
+
+            // TODO: multi language support, until then only show german entries
+            if ($entry['language'] == 'ger') $result[] = $entry;
+            
+        }
+
+        return $result;
+
+    }
+
 }
 
 ?>

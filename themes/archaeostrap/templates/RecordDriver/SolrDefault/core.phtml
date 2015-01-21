@@ -218,6 +218,18 @@
         </tr>
       <? endif; ?>
 
+      <? $thsEntries = $this->driver->getThsEntries(); ?>
+      <? if(!empty($thsEntries)): ?>
+        <tr>
+          <th><?=$this->transEsc('Thesaurus')?></th>
+          <td>
+            <? foreach ($thsEntries as $thsEntry): ?>
+              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?></a>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $tagList = $this->driver->getTags(); ?>
       <tr>
         <th><?=$this->transEsc('Tags')?>: </th>
