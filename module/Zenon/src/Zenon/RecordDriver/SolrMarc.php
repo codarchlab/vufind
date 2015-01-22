@@ -43,7 +43,7 @@ class SolrMarc extends VufindSolrMarc
 	/**
      * Get the thesaurus entries of the record
      *
-     * @return string
+     * @return array
      */
     public function getThsEntries()
     {
@@ -79,7 +79,7 @@ class SolrMarc extends VufindSolrMarc
     /**
      * Get the parent of the record
      *
-     * @return string
+     * @return array
      */
     public function getParent()
     {
@@ -98,6 +98,30 @@ class SolrMarc extends VufindSolrMarc
     	}
 
         return false;
+
+    }
+
+    /**
+     * Get links to iDAI.gazetteer
+     *
+     * @return array
+     */
+    public function getGazetteerLinks()
+    {
+
+    	$result = array();
+    	$thsEntries = $this->getThsEntries();
+
+    	foreach ($thsEntries as $thsEntry) {
+    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false) {
+    			$result[] = array(
+    				'label' => $thsEntry['label'],
+    				'uri' => "http://gazetteer.dainst.org/search?q=".$thsEntry['notation']
+    			);
+    		}
+    	}
+
+        return $result;
 
     }
 

@@ -172,18 +172,52 @@
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
           <? foreach ($subjects as $field): ?>
-          <div class="subjectLine" property="keywords">
+          <span class="subjectLine" property="keywords">
             <? $subject = ''; ?>
             <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
             <? $i = 0; foreach ($field as $subfield): ?>
               <?=($i++ == 0) ? '' : ' &gt; '?>
               <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a class="backlink" title="<?=$this->escapeHtml($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+              <a class="label" title="<?=$this->escapeHtml($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
             <? endforeach; ?>
-          </div>
+          </span>
           <? endforeach; ?>
         </td>
       </tr>
+      <? endif; ?>
+
+      <? $thsEntries = $this->driver->getThsEntries(); ?>
+      <? if(!empty($thsEntries)): ?>
+        <tr>
+          <th><?=$this->transEsc('Thesaurus')?></th>
+          <td>
+            <? foreach ($thsEntries as $thsEntry): ?>
+              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?></a>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $gazLinks = $this->driver->getGazetteerLinks(); ?>
+      <? if(!empty($gazLinks)): ?>
+        <tr>
+          <th><?=$this->transEsc('Gazetteer')?></th>
+          <td>
+            <? foreach ($gazLinks as $gazLink): ?>
+              <a title="<?=$this->escapeHtml($gazLink['label'])?>" href="<?=$gazLink['uri']?>" target="_blank"><i class="icon-globe"></i> <?=$this->escapeHtml($gazLink['label'])?> <small><i class="icon-external-link"></i></small></a><br />
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $parent = $this->driver->getParent(); ?>
+      <? if($parent): ?>
+        <tr>
+          <th><?=$this->transEsc('Included in')?></th>
+          <td>
+            <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
+          </td>
+        </tr>
       <? endif; ?>
 
       <?
@@ -214,28 +248,6 @@
               <?=$this->transEsc($recordLink['title'])?>: 
               <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
             <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $thsEntries = $this->driver->getThsEntries(); ?>
-      <? if(!empty($thsEntries)): ?>
-        <tr>
-          <th><?=$this->transEsc('Thesaurus')?></th>
-          <td>
-            <? foreach ($thsEntries as $thsEntry): ?>
-              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?></a>
-            <? endforeach; ?>
-          </td>
-        </tr>
-      <? endif; ?>
-
-      <? $parent = $this->driver->getParent(); ?>
-      <? if($parent): ?>
-        <tr>
-          <th><?=$this->transEsc('Included in')?></th>
-          <td>
-            <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
           </td>
         </tr>
       <? endif; ?>
