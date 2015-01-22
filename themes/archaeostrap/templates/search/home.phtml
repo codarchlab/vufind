@@ -18,6 +18,10 @@
   $this->layout()->breadcrumbs = false;
 ?>
 <div class="searchHomeContent">
+  <div class="home-image"></div>
+  <h1 style="font-size: 60px; text-shadow: 0 1px 5px #000000; color:white; margin: -200px auto 120px;" class="text-center">
+        iDAI.bilbiography / Zenon
+  </h1>
   <? if ( $this->ils()->getOfflineMode() == "ils-offline"): ?>
     <div class="alert alert-warning">
       <h2><?=$this->transEsc('ils_offline_title')?></h2>
@@ -27,50 +31,97 @@
       <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
     </div>
   <? endif; ?>
-  <div class="hero-unit text-center">
+  <div class="text-center">
     <?=$this->render("search/searchbox.phtml")?>
   </div>
 </div>
 
-<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); if (isset($facetList) && is_array($facetList)): ?>
 <div class="row-fluid">
-  <? foreach ($facetList as $field => $details): ?>
-    <? $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
-    <div class="<?=$field=='callnumber-first' ? 'span6' : 'span3' ?>">
-      <p class="lead"><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></p>
+  <hr />
+</div>
+
+<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); ?>
+
+<div class="row-fluid">
+
+  <div class="span4 well">
+    <? $libFacet = $facetList['building']; ?>
+    <? if (!empty($libFacet)): ?>
+      <? $sortedList = $this->sortFacetList($this->results, 'building', $libFacet['list'], $basicSearch); ?>
+      <h4><?=$this->transEsc($libFacet['label'])?></h4>
       <div class="row-fluid">
-        <ul class="unstyled<? if ($field == "callnumber-first"): ?> span6<?endif?>">
-        <? /* Special case: two columns for LC call numbers... */ ?>
-        <? if ($field == "callnumber-first"): ?>
-          <? $i = 0; foreach ($sortedList as $url => $value): ?>
-            <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-            <? if (++$i == 10): ?>
-              </ul><ul class="unstyled span6">
-            <? endif; ?>
-          <? endforeach; ?>
-        <? /* Special case: collections */ ?>
-        <? elseif ($field == 'hierarchy_top_title'): ?>
-          <? $i = 0; foreach ($sortedList as $url => $value): ?>
-            <? if (++$i > 10): ?>
-              <li><a href="<?=$this->url('collections-home')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
-              <? break; ?>
-            <? else: ?>
-              <li><a href="<?=$this->url('collections-bytitle')?>?title=<?=urlencode($value)?>"><?=$this->escapeHtml($value)?></a></li>
-            <? endif; ?>
-          <? endforeach; ?>
-        <? else: ?>
-          <? $i = 0; foreach ($sortedList as $url => $value): ?>
-            <? if (++$i > 10): ?>
-              <li><a href="<?=$this->url($advSearch)?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
-              <? break; ?>
-            <? else: ?>
+        <div class="span6">
+          <ul class="unstyled">
+            <? foreach (array_slice($sortedList,0, 11) as $url => $value): ?>
               <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-            <? endif; ?>
+            <? endforeach; ?>
+          </ul>
+        </div>      
+        <div class="span6">
+          <ul class="unstyled">
+            <? foreach (array_slice($sortedList,11, 11) as $url => $value): ?>
+              <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
+            <? endforeach; ?>
+          </ul>
+        </div>
+      </div>
+    <? endif; ?>
+  </div>
+  <div class="span4 well">
+    <h4>Zeitschriften</h4>
+    <ul class="unstyled">
+      <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=Note">DAI-Zeitschriften</a></li>
+      <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal%20OR%20online&amp;type=Note">e-Publikationen</a></li>
+    </ul>
+  </div>
+  <div class="span4 well">
+    <h4>Neuerwerbungen</h4>
+      <?
+        $end = new DateTime("now +1 month");
+        $start = new DateTime("now -2 year + 1 month");
+        $interval = new DateInterval('P1M');
+        $period = new DatePeriod($start, $interval, $end);
+        $months = [];
+      ?>
+      <? foreach ($period as $dt): ?>
+        <?
+          $queryMonth = $dt->format('my');
+          $queries = [];
+          foreach(['a','e','i','k','c','m','o','f','r','z'] as $char) $queries[] = $char.$queryMonth;
+          $query = join(' OR ', $queries);
+          $months[] = array("date" => $dt, "query" => $query);
+        ?>
+      <? 
+        endforeach;
+        $months = array_reverse($months)
+      ?>
+    <div class="row-fluid">
+      <div class="span6">
+        <ul class="unstyled">
+          <? foreach (array_slice($months,0,12) as $month): ?>
+            <li>
+              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=Note">
+                <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+              </a>
+            </li>
           <? endforeach; ?>
-        <? endif; ?>
+        </ul>
+      </div>      
+      <div class="span6">
+        <ul class="unstyled">
+          <? foreach (array_slice($months,12,12) as $month): ?>
+            <li>
+              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=Note">
+                <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+              </a>
+            </li>
+          <? endforeach; ?>
         </ul>
       </div>
     </div>
-  <? endforeach; ?>
+
+    <ul class="unstyled">
+    </ul>
+
+  </div>
 </div>
-<? endif; ?>

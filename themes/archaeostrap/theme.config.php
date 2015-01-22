@@ -8,7 +8,8 @@ return array(
         'font-awesome-ie7.min.css',
         'slider.css',
         'screen.css',
-        'print.css:print'
+        'print.css:print',
+        'custom.css'
     ),
     'js' => array(
         'core/jquery.min.js',
