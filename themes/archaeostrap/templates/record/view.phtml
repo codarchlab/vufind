@@ -15,21 +15,23 @@
 ?>
 
 <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
-  <ul class="pager noprint">
+  <ul class="pager">
     <? if ($this->scrollData['previousRecord']): ?>
       <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>">&laquo; <?=$this->transEsc('Prev')?></a>
+        <a style="border-radius:15px;" href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>" title="<?=$this->transEsc('Previous Search Result')?>">&laquo; <?=$this->transEsc('Prev')?></a>
       </li>
     <? else: ?>
-      <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <li class="disabled"><a style="border-radius:15px;" href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
-    #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . number_format($this->escapeHtml($this->scrollData['resultTotal'])) . ' ' . $this->transEsc('results') ?>
+    <li class="disabled">
+      <a style="border:0; background-color:transparent;"><?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . number_format($this->escapeHtml($this->scrollData['resultTotal'])) . ' ' . $this->transEsc('results') ?></a>
+    </li>
     <? if ($this->scrollData['nextRecord']): ?>
       <li>
-        <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>
+        <a style="border-radius:15px;" href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>
       </li>
     <? else: ?>
-      <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <li class="disabled"><a style="border-radius:15px;" href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
     <? endif; ?>
   </ul>
 <? endif; ?>
