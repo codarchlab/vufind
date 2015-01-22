@@ -577,3 +577,8 @@ Thesaurus:
   QueryFields:
     ths_str_mv:
       - [onephrase, ~]
+
+Note:
+  QueryFields:
+    note_str_mv:
+      - [and, ~]
