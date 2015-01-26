@@ -112,6 +112,31 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get parallel records for the record (different editions etc.)
+     *
+     * @return array
+     */
+    public function getParallelEditions()
+    {
+
+		$result = array();
+		$fields = $this->marcRecord->getFields('995');
+
+		foreach ($fields as $currentField) {
+			$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
+			if ($field[0] == 'PAR') {
+				$result[] = array(
+					'id' => $field[1],
+					'label' => $field[2]
+					);
+			}
+		}
+
+		return $result;
+
+	}
+
+    /**
      * Get links to iDAI.gazetteer
      *
      * @return array

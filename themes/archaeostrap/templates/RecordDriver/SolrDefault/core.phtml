@@ -166,7 +166,7 @@
       <? $thsEntries = $this->driver->getThsEntries(); ?>
       <? if(!empty($thsEntries)): ?>
         <tr>
-          <th><?=$this->transEsc('Thesaurus')?></th>
+          <th><?=$this->transEsc('Thesaurus')?>: </th>
           <td>
             <? foreach ($thsEntries as $thsEntry): ?>
               <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?></a>
@@ -178,10 +178,10 @@
       <? $gazLinks = $this->driver->getGazetteerLinks(); ?>
       <? if(!empty($gazLinks)): ?>
         <tr>
-          <th><?=$this->transEsc('Gazetteer')?></th>
+          <th><?=$this->transEsc('Gazetteer')?>: </th>
           <td>
             <? foreach ($gazLinks as $gazLink): ?>
-              <a title="<?=$this->escapeHtml($gazLink['label'])?>" href="<?=$gazLink['uri']?>" target="_blank"><i class="icon-globe"></i> <?=$this->escapeHtml($gazLink['label'])?> <small><i class="icon-external-link"></i></small></a><br />
+              <a title="<?=$this->escapeHtml($gazLink['label'])?>" href="<?=$gazLink['uri']?>" target="_blank"><i class=" icon-map-marker"></i> <?=$this->escapeHtml($gazLink['label'])?> <small><i class="icon-external-link"></i></small></a><br />
             <? endforeach; ?>
           </td>
         </tr>
@@ -190,7 +190,7 @@
       <? $hostItems = $this->driver->getHostItemInformation(); ?>
       <? if($hostItems): ?>
         <tr>
-          <th><?=$this->transEsc('Included in')?></th>
+          <th><?=$this->transEsc('Included in')?>: </th>
           <td>
             <? foreach ($hostItems as $hostItem): ?>
               <?=$this->escapeHtml($hostItem)?>
@@ -202,9 +202,21 @@
       <? $parent = $this->driver->getParent(); ?>
       <? if($parent): ?>
         <tr>
-          <th><?=$this->transEsc('Included in')?></th>
+          <th><?=$this->transEsc('Included in')?>: </th>
           <td>
             <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $parallelEditions = $this->driver->getParallelEditions(); ?>
+      <? if($parallelEditions): ?>
+        <tr>
+          <th><?=$this->transEsc('Other Editions')?>: </th>
+          <td>
+            <? foreach ($parallelEditions as $parallelEdition): ?>
+              <a title="<?=$this->escapeHtml($parallelEdition['label'])?>" href="<?=$this->url('record', array('id' => $parallelEdition['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?></a><br/>
+            <? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
@@ -219,7 +231,7 @@
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" target="_blank"><i class="icon-globe"></i> <?=$this->escapeHtml($current['desc'])?> <small><i class="icon-external-link"></i></small></a><br/>
           <? endforeach; ?>
           <? if ($openUrl): ?>
             <?=$this->openUrl($openUrl)?><br/>
