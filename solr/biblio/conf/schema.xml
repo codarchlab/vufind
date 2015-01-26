@@ -96,6 +96,17 @@
     <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <!-- custom field type for zenon system numbers -->
+    <fieldType name="systemNumber" class="solr.TextField" sortMissingLast="true" omitNorms="true" >
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.TrimFilterFactory"/>
+      <filter class="solr.PatternReplaceFilterFactory"
+           pattern="^0+" replacement=""  replace="all"
+      />
+    </analyzer>
+  </fieldType>
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
@@ -220,6 +231,8 @@
    <dynamicField name="*_txtP_mv" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_random" type="random" />
    <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
+   <!-- custom fields -->
+   <field name="system_no" type="systemNumber" indexed="true" stored="true" multiValued="true"/>
  </fields>
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>allfields</defaultSearchField>

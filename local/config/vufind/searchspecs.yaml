@@ -582,3 +582,8 @@ LocalNote:
   QueryFields:
     note_str_mv:
       - [and, ~]
+
+SystemNo:
+  QueryFields:
+    system_no:
+      - [onephrase, ~]
