@@ -210,6 +210,18 @@
         </tr>
       <? endif; ?>
 
+      <? $hostItems = $this->driver->getHostItemInformation(); ?>
+      <? if($hostItems): ?>
+        <tr>
+          <th><?=$this->transEsc('Included in')?></th>
+          <td>
+            <? foreach ($hostItems as $hostItem): ?>
+              <?=$this->escapeHtml($hostItem)?>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $parent = $this->driver->getParent(); ?>
       <? if($parent): ?>
         <tr>

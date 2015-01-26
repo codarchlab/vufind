@@ -77,6 +77,15 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get the host item information (MARC 21 field 773)
+     *
+     * @return array
+     */
+    public function getHostItemInformation() {
+    	return $this->getFieldArray('773');
+    }
+
+    /**
      * Get the parent of the record
      *
      * @return array
