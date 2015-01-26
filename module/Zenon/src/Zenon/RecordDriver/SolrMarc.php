@@ -72,7 +72,8 @@ class SolrMarc extends VufindSolrMarc
 
         }
 
-        return $result;
+        // only return distinct values
+        return array_map('unserialize', array_unique(array_map('serialize', $result)));
 
     }
 
