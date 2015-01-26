@@ -80,7 +80,7 @@
     <h4>Neuerwerbungen</h4>
       <?
         $end = new DateTime("now +1 month");
-        $start = new DateTime("now -2 year + 1 month");
+        $start = new DateTime("now -1 year + 1 month");
         $interval = new DateInterval('P1M');
         $period = new DatePeriod($start, $interval, $end);
         $months = [];
@@ -97,32 +97,14 @@
         endforeach;
         $months = array_reverse($months)
       ?>
-    <div class="row-fluid">
-      <div class="span6">
-        <ul class="unstyled">
-          <? foreach (array_slice($months,0,12) as $month): ?>
-            <li>
-              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
-                <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
-              </a>
-            </li>
-          <? endforeach; ?>
-        </ul>
-      </div>      
-      <div class="span6">
-        <ul class="unstyled">
-          <? foreach (array_slice($months,12,12) as $month): ?>
-            <li>
-              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
-                <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
-              </a>
-            </li>
-          <? endforeach; ?>
-        </ul>
-      </div>
-    </div>
-
     <ul class="unstyled">
+      <? foreach (array_slice($months,0,12) as $month): ?>
+        <li>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
+            <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+          </a>
+        </li>
+      <? endforeach; ?>
     </ul>
 
   </div>
