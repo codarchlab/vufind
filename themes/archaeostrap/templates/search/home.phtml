@@ -20,7 +20,7 @@
 <div class="searchHomeContent">
   <div class="home-image"></div>
   <h1 style="font-size: 60px; text-shadow: 0 1px 5px #000000; color:white; margin: -200px auto 120px;" class="text-center">
-        iDAI.bilbiography / Zenon
+        iDAI.bibliography / Zenon
   </h1>
   <? if ( $this->ils()->getOfflineMode() == "ils-offline"): ?>
     <div class="alert alert-warning">
@@ -47,36 +47,54 @@
 <div class="row-fluid">
 
   <div class="span4 well">
-    <? $libFacet = $facetList['building']; ?>
-    <? if (!empty($libFacet)): ?>
-      <? $sortedList = $this->sortFacetList($this->results, 'building', $libFacet['list'], $basicSearch); ?>
-      <h4><?=$this->transEsc($libFacet['label'])?></h4>
-      <div class="row-fluid">
-        <div class="span6">
-          <ul class="unstyled">
-            <? foreach (array_slice($sortedList,0, 11) as $url => $value): ?>
-              <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-            <? endforeach; ?>
-          </ul>
-        </div>      
-        <div class="span6">
-          <ul class="unstyled">
-            <? foreach (array_slice($sortedList,11, 11) as $url => $value): ?>
-              <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
-            <? endforeach; ?>
-          </ul>
-        </div>
-      </div>
-    <? endif; ?>
+    
   </div>
-  <div class="span4 well">
+
+  <div class="span5 well">
+    <h4>Bestand nach teilnehmenden Bibliotheken</h4>
+    <ul class="unstyled">
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
+    </ul>
+    <div class="row-fluid">
+      <div class="span6">
+        <ul class="unstyled">
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Athen&quot;&filter[]=~building:&quot;DAI&quot;">Athen</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Damascus&quot;&filter[]=~building:&quot;DAI&quot;">Damaskus</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;DEI Amman&quot;&filter[]=~building:&quot;DAI&quot;">DEI Amman</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Eurasien-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Istanbul&quot;&filter[]=~building:&quot;DAI&quot;">Istanbul</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;KAAK Bonn&quot;&filter[]=~building:&quot;DAI&quot;">KAAK Bonn</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Kairo&quot;&filter[]=~building:&quot;DAI&quot;">Kairo</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Madrid&quot;&filter[]=~building:&quot;DAI&quot;">Madrid</a></li>
+        </ul>
+      </div>
+      <div class="span6">
+        <ul class="unstyled">
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Orient-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Peking&quot;&filter[]=~building:&quot;DAI&quot;">Peking</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;RGK&quot;&filter[]=~building:&quot;DAI&quot;">RGK Frankfurt</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Rom&quot;&filter[]=~building:&quot;DAI&quot;">Rom</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Sanaa&quot;&filter[]=~building:&quot;DAI&quot;">Sanaa</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Teheran&quot;&filter[]=~building:&quot;DAI&quot;">Teheran</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Zentrale Berlin</a></li>
+        </ul>
+      </div>
+    </div>
+    <ul class="unstyled">
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;BSA&quot;">Bibliothek der British School at Athens</a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;WINCK&quot;">Bibliothek der Winckelmann-Gesellschaft, Stendal</a></li>
+    </ul>
+  </div>
+
+  <div class="span3 well">
     <h4>Zeitschriften</h4>
     <ul class="unstyled">
       <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=LocalNote">DAI-Zeitschriften</a></li>
       <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal%20OR%20online&amp;type=LocalNote">e-Publikationen</a></li>
     </ul>
   </div>
-  <div class="span4 well">
+
+  <div class="span3 well">
     <h4>Neuerwerbungen</h4>
       <?
         $end = new DateTime("now +1 month");

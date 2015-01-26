@@ -587,3 +587,8 @@ SystemNo:
   QueryFields:
     system_no:
       - [onephrase, ~]
+
+Building:
+  QueryFields:
+    building:
+      - [and, ~]
