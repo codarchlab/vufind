@@ -72,8 +72,8 @@
   <div class="span4 well">
     <h4>Zeitschriften</h4>
     <ul class="unstyled">
-      <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=Note">DAI-Zeitschriften</a></li>
-      <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal%20OR%20online&amp;type=Note">e-Publikationen</a></li>
+      <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=LocalNote">DAI-Zeitschriften</a></li>
+      <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal%20OR%20online&amp;type=LocalNote">e-Publikationen</a></li>
     </ul>
   </div>
   <div class="span4 well">
@@ -102,7 +102,7 @@
         <ul class="unstyled">
           <? foreach (array_slice($months,0,12) as $month): ?>
             <li>
-              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=Note">
+              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
                 <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
               </a>
             </li>
@@ -113,7 +113,7 @@
         <ul class="unstyled">
           <? foreach (array_slice($months,12,12) as $month): ?>
             <li>
-              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=Note">
+              <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
                 <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
               </a>
             </li>

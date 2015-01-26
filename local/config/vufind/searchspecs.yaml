@@ -578,7 +578,7 @@ Thesaurus:
     ths_str_mv:
       - [onephrase, ~]
 
-Note:
+LocalNote:
   QueryFields:
     note_str_mv:
       - [and, ~]
