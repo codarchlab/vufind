@@ -1,0 +1,19 @@
+/**
+ * Custom script for mapping localized field values to separate solr fields.
+ *
+ * @author   Sebastian Cuy <sebastian.cuy@uni-koeln.de>
+ */
+import org.marc4j.marc.*;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+public String getLocalizedFieldValue(Record record, String tag, String valSubField, String langSubField, String language) {
+
+	List<VariableField> fields = record.getVariableFields(tag);
+	for (VariableField field : fields) {
+		if ( ((DataField) field).getSubfield(langSubField.charAt(0)).getData().equals(language) ) {
+			return field.getSubfield(valSubField.charAt(0)).getData();
+		}
+	}
+
+}
