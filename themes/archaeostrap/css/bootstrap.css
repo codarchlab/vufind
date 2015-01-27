@@ -3316,10 +3316,6 @@ input[type="submit"].btn.btn-mini {
   position: relative;
   margin-bottom: 20px;
 }
-.archaeo-fixed-menu i {
-  font-size: 17px;
-  vertical-align: middle;
-}
 .archaeo-fixed-menu-header {
   height: 176px;
 }

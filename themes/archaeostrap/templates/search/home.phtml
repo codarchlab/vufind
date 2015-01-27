@@ -32,8 +32,51 @@
     </div>
   <? endif; ?>
   <div class="row-fluid">
-    <div class="text-center span8 offset2 well">
-      <?=$this->render("search/searchbox.phtml")?>
+    <div class="text-center span8 offset2 well navbar">
+
+      <?
+          // Set default value if necessary:
+          if (!isset($this->searchClassId)) {
+              $this->searchClassId = 'Solr';
+          }
+
+          // Load search actions and settings (if any):
+          $options = $this->searchOptions($this->searchClassId);
+          $handlers = $this->searchbox()->getHandlers(
+              $this->searchClassId,
+              isset($this->searchIndex) ? $this->searchIndex : null
+          );
+          $handlerCount = count($handlers);
+          $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+          $lastSort = $options->getLastSort();
+          $lastLimit = $options->getLastLimit();
+      ?>
+      
+      <form class="form-inline navbar-form block" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
+        <input class="span7 search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtml($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($this->lookfor)?>" placeholder="<?=$this->transEsc("Start a new Basic Search")?>"/>
+        <? if ($handlerCount > 1): ?>
+          <select id="searchForm_type" name="type" data-native-menu="false" class="span3">
+            <? foreach ($handlers as $handler): ?>
+              <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+            <? endforeach; ?>
+          </select>
+        <? elseif ($handlerCount == 1): ?>
+          <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
+        <? endif; ?>
+        <button type="submit" name="submit" class="span2 btn btn-primary" style="float:none; display:inline-block; margin-left:0;" value="<?=$this->transEsc("Find")?>"><i class="icon-search"></i> <?=$this->transEsc("Find")?></button>
+        
+        <?
+        /* Load hidden limit preference from Session */
+        if (!empty($lastLimit)) {
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+        }
+        if (!empty($lastSort)) {
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+        }
+        ?>
+        
+      </form>
+
     </div>
   </div>
 </div>

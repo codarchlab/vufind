@@ -89,11 +89,14 @@
                   $this->layout()->searchbox = $this->render('search/searchbox.phtml');
                 }
               ?>
-              <ul class="nav pull-left"><li><a href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a></li></ul>
               <? if ($this->layout()->searchbox !== false): ?>
                 <div class="searchbox noprint">
                   <?=$this->layout()->searchbox?>
                 </div>
+              <? else: ?>
+
+                <a class="btn btn-link" style="color: #fcfcfc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);" href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
+                
               <? endif; ?>
             </div>
           </div>

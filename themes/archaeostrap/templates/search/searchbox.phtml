@@ -27,20 +27,29 @@
   <? endforeach; ?>
   </ul>
 <? endif; ?>
+
+<? if ($this->searchType == 'advanced'): ?>
+  <ul class="nav">
+    <li>
+      <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtml($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
+    </li>
+    <li>
+      <a href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
+    </li>
+    <li>
+      <a href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+    </li>
+  </ul>
+<? endif; ?>
+
 <div class="navbar" style="margin-bottom:0">
-  <? if ($this->searchType == 'advanced'): ?>
-    <a class="btn btn-link small" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtml($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
-    <span class="help-inline">|</span>
-    <a class="btn btn-link small" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>    
-    <span class="help-inline">|</span>
-    <a class="btn btn-link small" href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
-    <div class="help-block"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</div>
-  <? else: ?>
+
+  <? if ($this->searchType != 'advanced'): ?>
 
       <form class="form-inline navbar-form block" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
-        <input class="span6 search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtml($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($this->lookfor)?>" placeholder="<?=$this->transEsc("Start a new Basic Search")?>"/>
+        <input class="input-xlarge search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtml($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($this->lookfor)?>" placeholder="<?=$this->transEsc("Start a new Basic Search")?>"/>
         <? if ($handlerCount > 1): ?>
-          <select id="searchForm_type" name="type" data-native-menu="false">
+          <select id="searchForm_type" name="type" data-native-menu="false" class="input-medium">
             <? foreach ($handlers as $handler): ?>
               <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
             <? endforeach; ?>
@@ -48,7 +57,6 @@
         <? elseif ($handlerCount == 1): ?>
           <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
         <? endif; ?>
-        <button type="submit" name="submit" class="btn btn-primary" value="<?=$this->transEsc("Find")?>"><i class="icon-search"></i> <?=$this->transEsc("Find")?></button>
         
         <?
         /* Do we have any checkbox filters? */
@@ -76,8 +84,8 @@
         <? endif; ?>
         <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
           <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-          <label class="checkbox">
-            <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
+          <label class="checkbox" style="color: #fcfcfc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);">
+            <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters" style="margin-top:5px;"/>
             <?=$this->transEsc("basic_search_keep_filters")?>
           </label>
           <div class="hidden">
@@ -112,7 +120,10 @@
           echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
         }
         ?>
+        <button type="submit" name="submit" class="btn btn-default" value="<?=$this->transEsc("Find")?>"><i class="icon-search"></i> <?=$this->transEsc("Find")?></button>
+        <a class="btn btn-link" style="color: #fcfcfc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);" href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
       </form>
+
 
     <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
   <? endif; ?>
