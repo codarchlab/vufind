@@ -50,7 +50,7 @@ class SearchController extends VuFindSearchController
     public function homeAction()
     {
         return $this->createViewModel(
-            array('results' => $this->getHomePageFacets(), 'aquisitions' => 'Test')
+            array('results' => $this->getHomePageFacets())
         );
     }
 
