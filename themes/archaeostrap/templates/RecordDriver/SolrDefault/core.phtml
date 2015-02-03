@@ -187,6 +187,30 @@
         </tr>
       <? endif; ?>
 
+      <? $locations = $this->driver->getLocation(); ?>
+      <? if($locations): ?>
+        <tr>
+          <th><?=$this->transEsc('Location')?>: </th>
+          <td>
+            <? foreach ($locations as $location): ?>
+              <?=$this->escapeHtml($location)?><br />
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $units = $this->driver->getBasicBibliographicUnit(); ?>
+      <? if($units): ?>
+        <tr>
+          <th><?=$this->transEsc('Collection')?>: </th>
+          <td>
+            <? foreach ($units as $unit): ?>
+              <?=$this->escapeHtml($unit)?><br />
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $hostItems = $this->driver->getHostItemInformation(); ?>
       <? if($hostItems): ?>
         <tr>
@@ -216,6 +240,18 @@
           <td>
             <? foreach ($parallelEditions as $parallelEdition): ?>
               <a title="<?=$this->escapeHtml($parallelEdition['label'])?>" href="<?=$this->url('record', array('id' => $parallelEdition['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?></a><br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
+      <? $seeAlsos = $this->driver->getSeeAlso(); ?>
+      <? if($seeAlsos): ?>
+        <tr>
+          <th><?=$this->transEsc('See also')?>: </th>
+          <td>
+            <? foreach ($seeAlsos as $seeAlso): ?>
+              <a title="<?=$this->escapeHtml($seeAlso['label'])?>" href="<?=$this->url('record', array('id' => $seeAlso['id']))?>"><i class="icon-book"></i> <?=$this->escapeHtml($seeAlso['label'])?></a><br/>
             <? endforeach; ?>
           </td>
         </tr>

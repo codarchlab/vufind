@@ -133,13 +133,33 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get the location (MARC 21 field 852)
+     *
+     * @return array
+     */
+    public function getLocation()
+    {
+    	return $this->getFieldArray('852', array('a','b','e','h'));
+    }
+
+    /**
+     * Get the basic bibliographic unit (MARC 21 field 866)
+     *
+     * @return array
+     */
+    public function getBasicBibliographicUnit()
+    {
+        return $this->getFieldArray('866');
+    }
+
+    /**
      * Get the host item information (MARC 21 field 773)
      *
      * @return array
      */
     public function getHostItemInformation()
     {
-    	return $this->getFieldArray('773');
+        return $this->getFieldArray('773');
     }
 
     /**
@@ -172,7 +192,7 @@ class SolrMarc extends VufindSolrMarc
      *
      * @return array
      */
-    public function getParallelEditions()
+    public function getSeeAlso()
     {
 
 		$result = array();
@@ -180,7 +200,7 @@ class SolrMarc extends VufindSolrMarc
 
 		foreach ($fields as $currentField) {
 			$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-			if ($field[0] == 'PAR') {
+			if ($field[0] == 'UP') {
 				$result[] = array(
 					'id' => $field[1],
 					'label' => $field[2]
@@ -191,6 +211,31 @@ class SolrMarc extends VufindSolrMarc
 		return $result;
 
 	}
+
+    /**
+     * Get parallel records for the record (different editions etc.)
+     *
+     * @return array
+     */
+    public function getParallelEditions()
+    {
+
+        $result = array();
+        $fields = $this->marcRecord->getFields('995');
+
+        foreach ($fields as $currentField) {
+            $field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
+            if ($field[0] == 'PAR') {
+                $result[] = array(
+                    'id' => $field[1],
+                    'label' => $field[2]
+                    );
+            }
+        }
+
+        return $result;
+
+    }
 
     /**
      * Get links to iDAI.gazetteer
