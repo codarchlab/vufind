@@ -202,7 +202,7 @@
       <? $units = $this->driver->getBasicBibliographicUnit(); ?>
       <? if($units): ?>
         <tr>
-          <th><?=$this->transEsc('Collection')?>: </th>
+          <th><?=$this->transEsc('Summary holding')?>: </th>
           <td>
             <? foreach ($units as $unit): ?>
               <?=$this->escapeHtml($unit)?><br />
