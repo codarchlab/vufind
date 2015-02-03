@@ -40,6 +40,61 @@ use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 class SolrMarc extends VufindSolrMarc
 {
 
+    /**
+     * Get the full title of the record.
+     * Overriden to remove trailing slashes.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->removeTrailingSlash(parent::getTitle());
+    }
+
+    /**
+     * Get the short (pre-subtitle) title of the record.
+     * Overriden to remove trailing slashes.
+     *
+     * @return string
+     */
+    public function getShortTitle()
+    {
+        return $this->removeTrailingSlash(parent::getShortTitle());
+    }
+
+    /**
+     * Get a highlighted title string, if available.
+     * Overriden to remove trailing slashes.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        return $this->removeTrailingSlash(parent::getHighlightedTitle());
+    }
+
+    /**
+     * Get the text of the part/section portion of the title.
+     * Overriden to remove trailing slashes.
+     *
+     * @return string
+     */
+    public function getTitleSection()
+    {
+        return $this->removeTrailingSlash(parent::getTitleSection());
+    }
+
+    /**
+     * Get the subtitle of the record.
+     * Overriden to remove trailing slashes.
+     *
+     * @return string
+     */
+    public function getSubtitle()
+    {
+        return $this->removeTrailingSlash(parent::getSubtitle());
+    }
+
 	/**
      * Get the thesaurus entries of the record
      *
@@ -82,7 +137,8 @@ class SolrMarc extends VufindSolrMarc
      *
      * @return array
      */
-    public function getHostItemInformation() {
+    public function getHostItemInformation()
+    {
     	return $this->getFieldArray('773');
     }
 
@@ -158,6 +214,15 @@ class SolrMarc extends VufindSolrMarc
 
         return $result;
 
+    }
+
+    private function removeTrailingSlash($s)
+    {
+        if (strpos($s, '/') !== false) {
+            return substr($s, 0, strrpos($s, '/'));
+        } else {
+            return $s;
+        }
     }
 
 }
