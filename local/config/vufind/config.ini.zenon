@@ -856,14 +856,14 @@ sl          = "Slovene"
 ; have a large index!
 [Browse]
 result_limit    = 100
-tag             = true      ; allow browsing of Tags
+tag             = false      ; allow browsing of Tags
 dewey           = false     ; allow browsing of Dewey Decimal call numbers
-lcc             = true      ; allow browsing of LC call numbers
+lcc             = false      ; allow browsing of LC call numbers
 author          = true      ; allow browsing of authors
-topic           = true      ; allow browsing of subject headings
-genre           = true      ; allow browsing of genre subdivisions
-region          = true      ; allow browsing of region subdivisions
-era             = true      ; allow browsing of era subdivisions
+topic           = false      ; allow browsing of subject headings
+genre           = false      ; allow browsing of genre subdivisions
+region          = false      ; allow browsing of region subdivisions
+era             = false      ; allow browsing of era subdivisions
 ; You can use this setting to change the default alphabet provided for browsing:
 ;alphabet_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 ; Uncomment to sort lists alphabetically (instead of by popularity); note that
