@@ -76,7 +76,8 @@
       </tr>
       <? endif; ?>
 
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+      <!-- commented out (with if false) since formats are not properly set in zenon data yet -->
+      <? $formats = $this->driver->getFormats(); if (false && !empty($formats)): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>
           <td><?=$this->record($this->driver)->getFormatList()?></td>
