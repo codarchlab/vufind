@@ -574,9 +574,14 @@ oclc_num:
 
 # custom Zenon searchspecs
 Thesaurus:
+  CustomMunge:
+    ths_fuzzy:
+      # Strip pre-existing trailing asterisks, then add a new one:
+      - [preg_replace, "/\*+$/", ""]
+      - [append, "*"]
   QueryFields:
     ths_str_mv:
-      - [onephrase, ~]
+      - [ths_fuzzy, ~]
 
 LocalNote:
   QueryFields:
