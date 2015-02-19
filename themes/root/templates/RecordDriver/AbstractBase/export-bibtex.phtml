@@ -40,8 +40,7 @@ if (!empty($journalTitle)) {
     if (!empty($number)) {
         echo "number = {{$number}},\n";
     }
-<<<<<<< HEAD
-=======
+
     $start = $this->driver->tryMethod('getContainerStartPage');
     $end = $this->driver->tryMethod('getContainerEndPage');
     if (!empty($start)) {
@@ -53,7 +52,6 @@ if (!empty($journalTitle)) {
             echo "pages = {{$start}},\n";
         }
     }
->>>>>>> bf4d748... BibTeX export fixes- added curly braces and a comma after the citation key.
 }
 
 $series = $this->driver->tryMethod('getSeries');
