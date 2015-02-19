@@ -20,6 +20,6 @@ then
   VUFIND_HOME="/usr/local/vufind"
 fi
 
-php $VUFIND_HOME/harvest/harvest_oai.php --from $1
+php $VUFIND_HOME/harvest/harvest_oai.php DAI_ALL --from $1
 $VUFIND_HOME/harvest/batch-import-marc.sh DAI_ALL
 $VUFIND_HOME/harvest/batch-delete.sh DAI_ALL
