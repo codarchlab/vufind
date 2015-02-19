@@ -19,7 +19,7 @@ autoConfigure = true
 ; Base URL is normally auto-detected, but this setting is used when autodetection is
 ; not possible (i.e. during sitemap generation at the command line).
 url 		= http://zenon.dainst.org
-email           = sabine.thaenert@dainst.de
+email           = zenondai@dainst.de
 title           = "Zenon"
 ; This is the default theme for non-mobile devices (or all devices if mobile_theme
 ; is disabled below). Available standard themes:
