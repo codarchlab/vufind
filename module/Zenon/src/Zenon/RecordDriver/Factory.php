@@ -62,4 +62,20 @@ class Factory
         return $driver;
     }
 
+    /**
+     * Factory for SolrAuth record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrMarc
+     */
+    public static function getSolrAuth(ServiceManager $sm)
+    {        
+        return new SolrAuth(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+        );
+    }
+
 }

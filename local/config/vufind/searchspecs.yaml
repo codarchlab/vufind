@@ -576,11 +576,17 @@ oclc_num:
 Thesaurus:
   CustomMunge:
     ths_fuzzy:
+      # Strip whitespace and quotes:
+      - [preg_replace, '/[ "]/', ""]
+      # Escape colons (unescape first to avoid double-escapes):
+      - [preg_replace, "/(\\\:)/", ':']
+      - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks, then add a new one:
       - [preg_replace, "/\*+$/", ""]
       - [append, "*"]
   QueryFields:
     ths_str_mv:
+      - [onephrase, ~]
       - [ths_fuzzy, ~]
 
 LocalNote:

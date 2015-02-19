@@ -6,3 +6,7 @@
 mark {
 	background-color: #ffffcc;
 }
+
+.thesaurus .breadcrumb li {
+	vertical-align: middle;
+}
