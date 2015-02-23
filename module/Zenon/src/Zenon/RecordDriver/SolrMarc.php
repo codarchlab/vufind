@@ -263,7 +263,7 @@ class SolrMarc extends VufindSolrMarc
 
     private function removeTrailingSlash($s)
     {
-        if (strpos($s, '/') !== false) {
+        if (strrpos($s, '/') == strlen($s)-1) {
             return substr($s, 0, strrpos($s, '/'));
         } else {
             return $s;
