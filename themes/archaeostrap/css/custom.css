@@ -1,6 +1,6 @@
 .home-image {
-	background-image: url('../images/Schlagwortkatalog.jpg');
-	height: 350px;
+	background-image: url('../images/Buchruecken.jpg');
+	height: 274px;
 }
 
 mark {
@@ -9,4 +9,10 @@ mark {
 
 .thesaurus .breadcrumb li {
 	vertical-align: middle;
+}
+
+.searchHomeContent .navbar-form input,
+.searchHomeContent .navbar-form select,
+.searchHomeContent .navbar-form button {
+	margin-top: 0;
 }

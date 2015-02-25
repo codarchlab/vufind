@@ -19,9 +19,6 @@
 ?>
 <div class="searchHomeContent">
   <div class="home-image"></div>
-  <h1 style="font-size: 60px; text-shadow: 0 1px 5px #000000; color:white; margin: -200px auto 120px;" class="text-center">
-        iDAI.bibliography / ZENON
-  </h1>
   <? if ( $this->ils()->getOfflineMode() == "ils-offline"): ?>
     <div class="alert alert-warning">
       <h2><?=$this->transEsc('ils_offline_title')?></h2>
@@ -31,8 +28,8 @@
       <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
     </div>
   <? endif; ?>
-  <div class="row-fluid">
-    <div class="text-center span8 offset2 well navbar" style="margin-bottom:0;">
+  <div class="row-fluid" style="position:relative;">
+    <div class="text-center span8 offset2 well navbar" style="margin-bottom:-40px; position:relative; top: -40px;">
 
       <?
           // Set default value if necessary:
