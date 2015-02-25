@@ -13,13 +13,14 @@ MARC::ControlField.control_tags.add("992")
 puts "using XML library: " + MARC::XMLReader.best_available!
 
 dir = ARGV[0]
-Dir.mkdir dir + 'collected' unless File.exists? dir + 'collected'
-Dir.mkdir dir + 'errors' unless File.exists? dir + 'errors'
-Dir.mkdir dir + 'log' unless File.exists? dir + 'log'
+Dir.mkdir dir + '/collected' unless File.exists? dir + 'collected'
+Dir.mkdir dir + '/errors' unless File.exists? dir + 'errors'
+Dir.mkdir dir + '/log' unless File.exists? dir + 'log'
 output_file_name = 'collect_' + Time.new.strftime("%Y-%m-%d_%H-%M-%S");
 output_file = dir + output_file_name + '.mrc'
 logger = Logger.new(dir + 'log/' + output_file_name + ".log")
 writer = MARC::Writer.new(output_file)
+writer.allow_oversized = true
 
 count = 0
 
@@ -28,12 +29,20 @@ Dir.glob(dir + '*.xml') do |xml_file|
 	begin
 		reader = MARC::XMLReader.new(xml_file)
 		reader.each do |r|
+			# fix leader if it is not exactly 24 bytes long
+			if r.leader.length != 24
+				r.leader = r.leader.ljust(24,"0")
+				r.leader = r.leader[0,24]
+				msg = "Warning: Invalid leader length in #{xml_file}, fixed on the fly"
+		    	puts msg
+		    	logger.error msg
+			end
 			writer.write r
-			FileUtils.mv(xml_file, dir + 'collected/')
+			FileUtils.mv(xml_file, dir + '/collected/')
 			count += 1
 		end
 	rescue => e
-		FileUtils.mv(xml_file, dir + 'errors/')
+		FileUtils.mv(xml_file, dir + '/errors/')
     	msg = "Error while processing #{xml_file}: #{e.message}"
     	puts msg
     	logger.error msg
