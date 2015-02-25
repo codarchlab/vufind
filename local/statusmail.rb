@@ -29,7 +29,9 @@ conf['logs'].each do |log|
 		result = "ERROR"
 	elsif File.foreach(last_log).grep(/#{log['error_pattern']}/).any?
 		body += "Error: Last logfile #{last_log} contains errors:\n\n"
-		body += File.open(last_log).read
+		File.foreach(last_log).grep(/#{log['error_pattern']}/).each do |l|
+			body += l
+		end
 		result = "ERROR"
 	else
 		body += "OK: Last logfile #{last_log} is not older than #{log['max_age']} days and contains no errors\n"
