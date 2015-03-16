@@ -41,8 +41,8 @@ class SolrAuth extends VufindSolrAuth
 {
 
     /**
-     * Get the full title of the record.
-     * Overriden to remove trailing slashes.
+     * Get all fields as JSON
+     * Skip raw marc data
      *
      * @return string
      */
