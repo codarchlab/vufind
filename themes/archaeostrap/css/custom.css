@@ -16,3 +16,7 @@ mark {
 .searchHomeContent .navbar-form button {
 	margin-top: 0;
 }
+
+.record .label-info {
+	background-color: #B9C5D3;
+}
