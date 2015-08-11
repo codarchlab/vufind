@@ -8,6 +8,7 @@ TAGS
 vendor/.git
 
 local/cache/*
+!local/cache/covers/
 local/config/vufind/config.ini
 local/harvest/DAI_ALL/
 solr/authority/index
