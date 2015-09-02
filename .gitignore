@@ -7,10 +7,18 @@ TAGS
 *~
 vendor/.git
 
+import/solrmarc.log*
 local/cache/*
+local/config/statusmail.yml
 local/config/vufind/config.ini
 local/harvest/DAI_ALL/
+local/harvest/DAI_THS/
+local/harvest/log/
+local/import/log/
+local/import/mrc/
+local/statusmail.log
 solr/authority/index
+solr/authority/tlog/
 solr/biblio/index
 solr/biblio/spellShingle/
 solr/biblio/spellchecker/
