@@ -180,7 +180,7 @@
       <? $gazLinks = $this->driver->getGazetteerLinks(); ?>
       <? if(!empty($gazLinks)): ?>
         <tr>
-          <th><?=$this->transEsc('iDAI.gazetteer')?>: </th>
+          <th><?=$this->transEsc('Gazetteer')?>: </th>
           <td>
             <? foreach ($gazLinks as $gazLink): ?>
               <a title="<?=$this->escapeHtml($gazLink['label'])?>" href="<?=$gazLink['uri']?>" target="_blank"><i class=" icon-map-marker"></i> <?=$this->escapeHtml($gazLink['label'])?> <small><i class="icon-external-link"></i></small></a><br />
