@@ -6,10 +6,11 @@ angular.module('zenonThs', [])
     $scope.active = [];
     $scope.offset = 0;
     $scope.colWidth = $element[0].offsetWidth / 4;
-    console.log($scope.colWidth);
+    $scope.loading = 1;
 
     $http.get('/Thesaurus/Children').success(function(result) {
       $scope.columns[0] = result.data;
+      $scope.loading--;
     });
 
     $scope.loadColumn = function(colNo, parentEntry) {
@@ -27,6 +28,7 @@ angular.module('zenonThs', [])
         $scope.columns[colNo] = column;
         calcOffset(colNo);
       } else {
+        $scope.loading++;
         $http.get('/Thesaurus/Children?id=' + parentEntry.id).success(function(result) {
           if (result.data.length < 1) {
             parentEntry.leaf = true;
@@ -35,6 +37,7 @@ angular.module('zenonThs', [])
             $scope.columns[colNo] = result.data;
             calcOffset(colNo);
           }
+          $scope.loading--;
         });
       }
     };

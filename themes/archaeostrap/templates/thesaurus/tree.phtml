@@ -1,7 +1,10 @@
 <div class="row-fluid thesaurus" ng-app="zenonThs">
 
 	<div ng-controller="ThsController" class="well span12" ng-hide="columns.length < 1 || columns[0].length < 1">
-		<h4><i class="icon-inbox small"></i> <?=$this->translate('Thesaurus')?></h4>
+		<h4>
+			<i class="icon-inbox small"></i> <?=$this->translate('Thesaurus')?>
+			<i ng-show="loading > 0" class="icon-spin icon-refresh" style="margin-left: 20px;"></i>
+		</h4>
 
 		<div style="overflow-x:hidden;">
 
