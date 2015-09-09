@@ -8,6 +8,11 @@
     . '<li class="active">' . $this->transEsc('Email Record') . '</li>';
 ?>
 <?=$this->flashmessages()?>
+<div class="alert alert-info">
+  <b><?=$this->transEsc('For depot orders at DAI Rome')?>:</b><br>
+  <?=$this->transEsc('Please send the email to')?> <a href="mailto:magroma@dainst.de">magroma@dainst.de</a>
+  <?=$this->transEsc('and include the call number in the message text')?>.
+</div>
 <form class="form-horizontal" action="" method="post" name="emailRecord">
   <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
