@@ -9,28 +9,35 @@
     "homepage": "http://framework.zend.com/",
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=5.3.3",
-        "zendframework/zendxml": "~1.0-dev"
+        "php": ">=5.3.23",
+        "zendframework/zendxml": "^1.0.1"
     },
     "require-dev": {
-        "doctrine/annotations": ">=1.0",
-        "ircmaxell/random-lib": "dev-master",
-        "ircmaxell/security-lib": "dev-master",
-        "ocramius/proxy-manager": "0.4.*",
-        "fabpot/php-cs-fixer": "*@dev",
-        "phpunit/PHPUnit": "3.7.*"
+        "doctrine/annotations": "~1.0",
+        "ircmaxell/random-lib": "~1.1",
+        "mikey179/vfsStream": "~1.2",
+        "fabpot/php-cs-fixer": "~1.0",
+        "phpunit/PHPUnit": "~4.6",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/phpcov": "~2.0"
     },
     "suggest": {
         "ext-intl": "ext/intl for i18n features (included in default builds of PHP)",
         "doctrine/annotations": "Doctrine Annotations >=1.0 for annotation features",
         "ircmaxell/random-lib": "Fallback random byte generator for Zend\\Math\\Rand if OpenSSL/Mcrypt extensions are unavailable",
-        "ocramius/proxy-manager": "ProxyManager to handle lazy initialization of services",
+        "ocramius/proxy-manager": "ProxyManager 0.5.* to handle lazy initialization of services",
         "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
         "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
     },
     "autoload": {
+        "psr-4": {
+            "Zend\\": "library/Zend/"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": "using PSR-0 for tests, as we have test assets with underscores",
         "psr-0": {
-            "Zend\\": "library/"
+            "ZendTest\\": "tests/"
         }
     },
     "bin": [
@@ -93,8 +100,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.2-dev",
-            "dev-develop": "2.3-dev"
+            "dev-master": "2.4-dev",
+            "dev-develop": "2.5-dev"
         }
     }
 }

@@ -109,7 +109,7 @@ class AbstractRecord extends AbstractBase
         if (!($user = $this->getUser())) {
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, array('comment' => $this->params()->fromPost('comment'))
+                null, ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -119,12 +119,7 @@ class AbstractRecord extends AbstractBase
         // Save comment:
         $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
-            // No comment?  Try to restore from session:
-            $session = $this->followup()->retrieve();
-            if (isset($session->comment)) {
-                $comment = $session->comment;
-                unset($session->comment);
-            }
+            $comment = $this->followup()->retrieveAndClear('comment');
         }
 
         // At this point, we should have a comment to save; if we do not,
@@ -136,11 +131,9 @@ class AbstractRecord extends AbstractBase
                 $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
             );
             $resource->addComment($comment, $user);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('add_comment_success');
+            $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('add_comment_fail_blank');
+            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
         }
 
         return $this->redirectToRecord('', 'UserComments');
@@ -160,11 +153,9 @@ class AbstractRecord extends AbstractBase
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('delete_comment_success');
+            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('delete_comment_failure');
+            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
@@ -190,10 +181,11 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->formWasSubmitted('submit')) {
-            $tags = $this->params()->fromPost('tag');
+        if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
+            $this->flashMessenger()
+                ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
 
@@ -201,6 +193,40 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->setTemplate('record/addtag');
         return $view;
+    }
+
+    /**
+     * Delete a tag
+     *
+     * @return mixed
+     */
+    public function deletetagAction()
+    {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
+        // Force login:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        // Obtain the current record object:
+        $driver = $this->loadRecord();
+
+        // Save tags, if any:
+        if ($tag = $this->params()->fromPost('tag')) {
+            $driver->deleteTags($user, [$tag]);
+            $this->flashMessenger()->addMessage(
+                [
+                    'msg' => 'tags_deleted',
+                    'tokens' => ['%count%' => 1]
+                ], 'success'
+            );
+        }
+
+        return $this->redirectToRecord();
     }
 
     /**
@@ -255,8 +281,7 @@ class AbstractRecord extends AbstractBase
         $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->setNamespace('info')
-            ->addMessage('bulk_save_success');
+        $this->flashMessenger()->addMessage('bulk_save_success', 'success');
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getFollowupUrl()) {
@@ -310,7 +335,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Find out if the item is already part of any lists; save list info/IDs
-        $listIds = array();
+        $listIds = [];
         $resources = $user->getSavedData(
             $driver->getUniqueId(), null, $driver->getResourceSource()
         );
@@ -319,26 +344,26 @@ class AbstractRecord extends AbstractBase
         }
 
         // Loop through all user lists and sort out containing/non-containing lists
-        $containingLists = $nonContainingLists = array();
+        $containingLists = $nonContainingLists = [];
         foreach ($user->getLists() as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = array(
+                $containingLists[] = [
                     'id' => $list->id, 'title' => $list->title
-                );
+                ];
             } else {
-                $nonContainingLists[] = array(
+                $nonContainingLists[] = [
                     'id' => $list->id, 'title' => $list->title
-                );
+                ];
             }
         }
 
         $view = $this->createViewModel(
-            array(
+            [
                 'containingLists' => $containingLists,
                 'nonContainingLists' => $nonContainingLists
-            )
+            ]
         );
         $view->setTemplate('record/save');
         return $view;
@@ -363,31 +388,28 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $view = $this->createEmailViewModel();
+        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $view = $this->createEmailViewModel(
+            null, $mailer->getDefaultRecordSubject($driver)
+        );
+        $mailer->setMaxRecipients($view->maxRecipients);
+
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
+                $mailer->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer()
+                    $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
-                        $view->from, $view->from, $view->message, $driver,
-                        $this->getViewRenderer()
-                    );
-                }
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('email_success');
+                $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -423,15 +445,13 @@ class AbstractRecord extends AbstractBase
             try {
                 $body = $this->getViewRenderer()->partial(
                     'Email/record-sms.phtml',
-                    array('driver' => $driver, 'to' => $view->to)
+                    ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('sms_success');
+                $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -467,8 +487,8 @@ class AbstractRecord extends AbstractBase
         $export = $this->getServiceLocator()->get('VuFind\Export');
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('export_invalid_format');
+                $this->flashMessenger()
+                    ->addMessage('export_invalid_format', 'error');
             }
             $view->setTemplate('record/export-menu');
             return $view;
@@ -542,7 +562,17 @@ class AbstractRecord extends AbstractBase
     {
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->url()->fromRoute($details['route'], $details['params']);
+        $target = $this->getLightboxAwareUrl($details['route'], $details['params']);
+
+        // Special case: don't use anchors in jquerymobile theme, since they
+        // mess things up!
+        if (strlen($params) && substr($params, 0, 1) == '#') {
+            $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
+            if ($themeInfo->getTheme() == 'jquerymobile') {
+                $params = '';
+            }
+        }
+
         return $this->redirect()->toUrl($target . $params);
     }
 

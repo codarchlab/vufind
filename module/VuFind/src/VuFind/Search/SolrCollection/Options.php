@@ -50,17 +50,36 @@ class Options extends \VuFind\Search\Solr\Options
         // Load sort preferences (or defaults if none in .ini file):
         $searchSettings = $configLoader->get('Collection');
         if (isset($searchSettings->Sort)) {
-            $this->sortOptions = array();
+            $this->sortOptions = [];
             foreach ($searchSettings->Sort as $key => $value) {
                 $this->sortOptions[$key] = $value;
             }
         } else {
-            $this->sortOptions = array(
+            $this->sortOptions = [
                 'title' => 'sort_title',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
                 'author' => 'sort_author'
-            );
+            ];
         }
         $this->defaultSort = key($this->sortOptions);
+    }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // Collection recommendations
+        $searchSettings = $this->configLoader->get('Collection');
+        return isset($searchSettings->Recommend)
+            ? $searchSettings->Recommend->toArray()
+            : ['side' => ['CollectionSideFacets:Facets::Collection:true']];
     }
 }

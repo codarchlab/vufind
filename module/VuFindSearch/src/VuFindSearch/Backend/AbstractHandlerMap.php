@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend;
 
 use VuFindSearch\ParamBag;
@@ -47,7 +46,6 @@ use VuFindSearch\ParamBag;
  */
 abstract class AbstractHandlerMap
 {
-
     /**
      * Prepare final set of parameters for search function.
      *

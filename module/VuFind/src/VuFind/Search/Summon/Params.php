@@ -46,14 +46,14 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $fullFacetSettings = array();
+    protected $fullFacetSettings = [];
 
     /**
      * Settings for the date facet only
      *
      * @var array
      */
-    protected $dateFacetSettings = array();
+    protected $dateFacetSettings = [];
 
     /**
      * Add a field to facet on.
@@ -154,9 +154,19 @@ class Params extends \VuFind\Search\Base\Params
 
         $options = $this->getOptions();
 
+        $sort = $this->getSort();
+        if ($sort) {
+            // If we have an empty search with relevance sort, see if there is
+            // an override configured:
+            if ($sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
+                && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
+            ) {
+                $sort = $relOv;
+            }
+        }
+
         // The "relevance" sort option is a VuFind reserved word; we need to make
         // this null in order to achieve the desired effect with Summon:
-        $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
 
@@ -190,17 +200,21 @@ class Params extends \VuFind\Search\Base\Params
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
+        $fieldSpecificLimits = isset($config->Facet_Settings->facet_limit_by_field)
+            ? $config->Facet_Settings->facet_limit_by_field : null;
 
-        $finalFacets = array();
+        $finalFacets = [];
         foreach ($this->getFullFacetSettings() as $facet) {
             // See if parameters are included as part of the facet name;
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
+            $bestDefaultFacetLimit = isset($fieldSpecificLimits->$facetName)
+                ? $fieldSpecificLimits->$facetName : $defaultFacetLimit;
             $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
             $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
             $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
+            $facetLimit = isset($parts[3]) ? $parts[3] : $bestDefaultFacetLimit;
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
             $finalFacets[] = "{$facetName},{$facetParams}";
         }
@@ -219,7 +233,7 @@ class Params extends \VuFind\Search\Base\Params
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         if (!empty($filterList)) {
-            $orFacets = array();
+            $orFacets = [];
 
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
@@ -251,7 +265,7 @@ class Params extends \VuFind\Search\Base\Params
                     } else if ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
                         $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
-                            ? $orFacets[$filt['field']] : array();
+                            ? $orFacets[$filt['field']] : [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:

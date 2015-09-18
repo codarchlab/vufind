@@ -3,12 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright  Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /**
- * EN-Revision: 04.Apr.2013
+ * EN-Revision: 16.Jul.2013
  */
 return array(
     // Zend\I18n\Validator\Alnum
@@ -21,6 +21,10 @@ return array(
     "The input contains non alphabetic characters" => "L'entrada conté caràcters no alfabètics",
     "The input is an empty string" => "L'entrada és una cadena buida",
 
+    // Zend\I18n\Validator\DateTime
+    "Invalid type given. String expected" => "Tipus no vàlid donat. S'espera una cadena de text",
+    "The input does not appear to be a valid datetime" => "L'entrada no sembla ser un datetime vàlid",
+
     // Zend\I18n\Validator\Float
     "Invalid type given. String, integer or float expected" => "Tipus no vàlid donat. S'espera una cadena de text, un enter o un nombre de precisió simple",
     "The input does not appear to be a float" => "L'entrada no sembla ser un nombre de precisió simple",
@@ -28,6 +32,11 @@ return array(
     // Zend\I18n\Validator\Int
     "Invalid type given. String or integer expected" => "Tipus no vàlid donat. S'espera una cadena de text o un enter",
     "The input does not appear to be an integer" => "L'entrada no sembla ser un nombre enter",
+
+    // Zend\I18n\Validator\PhoneNumber
+    "The input does not match a phone number format" => "L'entrada no coincideix amb un format de número de telèfon",
+    "The country provided is currently unsupported" => "El país proporcionat no està suportat",
+    "Invalid type given. String expected" => "Tipus no vàlid donat. S'espera una cadena de text",
 
     // Zend\I18n\Validator\PostCode
     "Invalid type given. String or integer expected" => "Tipus no vàlid donat. S'espera una cadena de text o un enter",
@@ -41,8 +50,13 @@ return array(
     "Invalid type given. String expected" => "Tipus no vàlid donat. S'espera una cadena de text",
 
     // Zend\Validator\Between
-    "The input is not between '%min%' and '%max%', inclusively" => "L'entrada no és entre '% min%' i '% max%', inclusivament",
-    "The input is not strictly between '%min%' and '%max%'" => "L'entrada no és estrictament entre '% min%' i '%% max'",
+    "The input is not between '%min%' and '%max%', inclusively" => "L'entrada no és entre '%min%' i '%max%', inclusivament",
+    "The input is not strictly between '%min%' and '%max%'" => "L'entrada no és estrictament entre '%min%' i '%max%'",
+
+    // Zend\Validator\Bitwise
+    "The input has no common bit set with '%control%'" => "L'entrada no té cap bit en comú amb '%control%'",
+    "The input doesn't have the same bits set as '%control%'" => "L'entrada no té els mateixos bits que '%control%'",
+    "The input has common bit set with '%control%'" => "L'entrada té bits en comú amb '%control%'",
 
     // Zend\Validator\Callback
     "The input is not valid" => "L'entrada no és vàlida",
@@ -66,6 +80,9 @@ return array(
     "The input does not fit the date format '%format%'" => "L'entrada no s'ajusta al format de la data '%format%'",
 
     // Zend\Validator\DateStep
+    "Invalid type given. String, integer, array or DateTime expected" => "Tipus no vàlid donat. S'espera una cadena de text, un enter, un array o DateTime",
+    "The input does not appear to be a valid date" => "L'entrada no sembla ser una data vàlida",
+    "The input does not fit the date format '%format%'" => "L'entrada no s'ajusta al format de data '%format%'",
     "The input is not a valid step" => "L'entrada no és un pas vàlid",
 
     // Zend\Validator\Db\AbstractDb

@@ -36,7 +36,6 @@ namespace VuFind\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class MissingrecordController extends AbstractBase
 {
     /**
@@ -46,8 +45,7 @@ class MissingrecordController extends AbstractBase
      */
     public function homeAction()
     {
-        $this->flashMessenger()->setNamespace('error')
-            ->addMessage('Cannot find record');
+        $this->flashMessenger()->addMessage('Cannot find record', 'error');
         return $this->createViewModel();
     }
 }

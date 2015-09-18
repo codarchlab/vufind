@@ -51,10 +51,10 @@ class Options extends \VuFind\Search\Solr\Options
         // It's important to remember here we are talking about on-screen
         //   sort values, not what is sent to Solr, since this screen
         //   is really using facet sorting.
-        $this->sortOptions = array(
+        $this->sortOptions = [
             'relevance' => 'sort_author_relevance',
             'author' => 'sort_author_author'
-        );
+        ];
 
         // No spell check needed in author module:
         $this->spellcheck = false;
@@ -79,5 +79,21 @@ class Options extends \VuFind\Search\Solr\Options
     {
         // Not currently supported
         return false;
+    }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // No recommendations here:
+        return [];
     }
 }

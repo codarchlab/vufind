@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools\Controller;
+use VuFind\I18n\Translator\Loader\ExtendedIni;
 use Zend\I18n\Translator\TextDomain;
 
 /**
@@ -53,10 +54,10 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         $dir = APPLICATION_PATH
             . '/themes/root/templates/HelpTranslations/' . $language;
         if (!file_exists($dir) || !is_dir($dir)) {
-            return array();
+            return [];
         }
         $handle = opendir($dir);
-        $files = array();
+        $files = [];
         while ($file = readdir($handle)) {
             if (substr($file, -6) == '.phtml') {
                 $files[] = $file;
@@ -73,7 +74,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getLanguages()
     {
-        $langs = array();
+        $langs = [];
         $dir = opendir(APPLICATION_PATH . '/languages');
         while ($file = readdir($dir)) {
             if (substr($file, -4) == '.ini') {
@@ -98,7 +99,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     protected function findMissingLanguageStrings($lang1, $lang2)
     {
         // Find strings missing from language 2:
-        return array_diff(array_keys((array)$lang1), array_keys((array)$lang2));
+        return array_values(
+            array_diff(array_keys((array)$lang1), array_keys((array)$lang2))
+        );
     }
 
     /**
@@ -111,12 +114,12 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function compareLanguages($lang1, $lang2)
     {
-        return array(
+        return [
             'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
             'notInL2' => $this->findMissingLanguageStrings($lang1, $lang2),
             'l1Percent' => number_format(count($lang1) / count($lang2) * 100, 2),
             'l2Percent' => number_format(count($lang2) / count($lang1) * 100, 2),
-        );
+        ];
     }
 
     /**
@@ -143,6 +146,56 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
+     * Get text domains for a language.
+     *
+     * @return array
+     */
+    protected function getTextDomains()
+    {
+        static $domains = false;
+        if (!$domains) {
+            $base = APPLICATION_PATH  . '/languages';
+            $dir = opendir($base);
+            $domains = [];
+            while ($current = readdir($dir)) {
+                if ($current != '.' && $current != '..'
+                    && is_dir("$base/$current")
+                ) {
+                    $domains[] = $current;
+                }
+            }
+            closedir($dir);
+        }
+        return $domains;
+    }
+
+    /**
+     * Load a language, including text domains.
+     *
+     * @param ExtendedIni $loader Language loader
+     * @param string      $lang   Language to load
+     *
+     * @return array
+     */
+    protected function loadLanguage(ExtendedIni $loader, $lang)
+    {
+        $base = $loader->load($lang, null);
+        foreach ($this->getTextDomains() as $domain) {
+            $current = $loader->load($lang, $domain);
+            foreach ($current as $k => $v) {
+                if ($k != '@parent_ini') {
+                    $base["$domain::$k"] = $v;
+                }
+            }
+        }
+        if (isset($base['@parent_ini'])) {
+            // don't count macros in comparison:
+            unset($base['@parent_ini']);
+        }
+        return $base;
+    }
+
+    /**
      * Language action
      *
      * @return array
@@ -150,32 +203,26 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function languageAction()
     {
         // Test languages with no local overrides and no fallback:
-        $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni(
-            array(APPLICATION_PATH  . '/languages')
-        );
+        $loader = new ExtendedIni([APPLICATION_PATH  . '/languages']);
         $mainLanguage = $this->params()->fromQuery('main', 'en');
-        $main = $loader->load($mainLanguage, null);
+        $main = $this->loadLanguage($loader, $mainLanguage);
 
-        $details = array();
+        $details = [];
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
-            $lang = $loader->load($langCode, null);
-            if (isset($lang['@parent_ini'])) {
-                // don't count macros in comparison:
-                unset($lang['@parent_ini']);
-            }
+            $lang = $this->loadLanguage($loader, $langCode);
             $details[$langCode] = $this->compareLanguages($main, $lang);
             $details[$langCode]['object'] = $lang;
             $details[$langCode]['name'] = $this->getLangName($langCode);
             $details[$langCode]['helpFiles'] = $this->getHelpFiles($langCode);
         }
 
-        return array(
+        return [
             'details' => $details,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
             'main' => $main,
-        );
+        ];
     }
 }

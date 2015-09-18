@@ -51,7 +51,7 @@ class Params extends \VuFind\Search\Solr\Params
         parent::initFromRequest($request);
 
         // Force custom facet settings:
-        $this->facetConfig = array();
+        $this->facetConfig = [];
         $this->addFacet('authorStr');
         $this->setFacetOffset(($this->getPage() - 1) * $this->getLimit());
         $this->setFacetLimit($this->getLimit() * 10);
@@ -83,20 +83,6 @@ class Params extends \VuFind\Search\Solr\Params
         // Set the search (handler is always Author for this module):
         $this->setBasicSearch($lookfor, 'Author');
         return true;
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // No recommendations here:
-        return array();
     }
 
     /**

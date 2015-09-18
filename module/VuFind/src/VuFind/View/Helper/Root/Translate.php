@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\I18n\Exception\RuntimeException,
-    Zend\I18n\View\Helper\AbstractTranslatorHelper;
 
 /**
  * Translate view helper
@@ -38,47 +36,23 @@ use Zend\I18n\Exception\RuntimeException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Translate extends AbstractTranslatorHelper
+class Translate extends \Zend\View\Helper\AbstractHelper
+    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Translate a string
      *
-     * @param string $str     String to translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param string|object $str     String to translate
+     * @param array         $tokens  Tokens to inject into the translated string
+     * @param string        $default Default value to use if no translation is found
+     * (null for no default).
      *
      * @return string
      */
-    public function __invoke($str, $tokens = array(), $default = null)
+    public function __invoke($str, $tokens = [], $default = null)
     {
-        try {
-            $translator = $this->getTranslator();
-            if (!is_object($translator)) {
-                throw new RuntimeException();
-            }
-            $msg = $translator->translate($str);
-        } catch (RuntimeException $e) {
-            // If we get called before the translator is set up, it will throw an
-            // exception, but we should still try to display some text!
-            $msg = $str;
-        }
-
-        // Did the translation fail to change anything?  If so, use default:
-        if (!is_null($default) && $msg == $str) {
-            $msg = $default;
-        }
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = array();
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $msg = str_replace($in, $out, $msg);
-        }
-
-        return $msg;
+        return $this->translate($str, $tokens, $default);
     }
 }

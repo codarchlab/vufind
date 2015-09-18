@@ -44,6 +44,10 @@ use VuFindSearch\Service as SearchService;
  */
 abstract class Results implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
+        setServiceLocator as setServiceLocatorThroughTrait;
+    }
+
     /**
      * Search parameters
      *
@@ -113,7 +117,7 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @var array
      */
-    protected $helpers = array();
+    protected $helpers = [];
 
     /**
      * Spelling suggestions
@@ -123,18 +127,18 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $suggestions = null;
 
     /**
+     * Recommendations
+     *
+     * @var array
+     */
+    protected $recommend = [];
+
+    /**
      * Search service.
      *
      * @var SearchService
      */
     protected $searchService;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -229,23 +233,13 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
         $this->resultTotal = 0;
-        $this->results = array();
-        $this->suggestions = array();
+        $this->results = [];
+        $this->suggestions = [];
 
         // Run the search:
         $this->startQueryTimer();
         $this->performSearch();
         $this->stopQueryTimer();
-
-        // Process recommendations:
-        $recommendations = $this->getParams()->getRecommendations(null);
-        if (is_array($recommendations)) {
-            foreach ($recommendations as $currentSet) {
-                foreach ($currentSet as $current) {
-                    $current->process($this);
-                }
-            }
-        }
     }
 
     /**
@@ -275,7 +269,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getSpellingSuggestions()
     {
         // Not supported by default:
-        return array();
+        return [];
     }
 
     /**
@@ -310,11 +304,17 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getStartRecord()
     {
-        if (!is_null($this->startRecordOverride)) {
+        if (null !== $this->startRecordOverride) {
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
-        return (($params->getPage() - 1) * $params->getLimit()) + 1;
+        $page = $params->getPage();
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
+        if ($resultLimit > -1 && $resultLimit < $page * $pageLimit) {
+            $page = ceil($resultLimit / $pageLimit);
+        }
+        return (($page - 1) * $pageLimit) + 1;
     }
 
     /**
@@ -325,16 +325,19 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getEndRecord()
     {
         $total = $this->getResultTotal();
-        $limit = $this->getParams()->getLimit();
-        $page = $this->getParams()->getPage();
-        if ($page * $limit > $total) {
-            // The end of the current page runs past the last record, use total
-            // results
-            return $total;
+        $params = $this->getParams();
+        $page = $params->getPage();
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
+
+        if ($resultLimit > -1 && $resultLimit < ($page * $pageLimit)) {
+            $record = $resultLimit;
         } else {
-            // Otherwise use the last record on this page
-            return $page * $limit;
+            $record = $page * $pageLimit;
         }
+        // If the end of the current page runs past the last record, use total
+        // results; otherwise use the last record on this page:
+        return ($record > $total) ? $total : $record;
     }
 
     /**
@@ -460,7 +463,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         }
 
         // Build the standard paginator control:
-        $nullAdapter = "Zend\Paginator\Adapter\Null";
+        $nullAdapter = "Zend\Paginator\Adapter\NullFill";
         $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
@@ -506,11 +509,22 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getRecommendations($location = 'top')
     {
-        // Proxy the params object's getRecommendations call -- we need to set up
-        // the recommendations in the params object since they need to be
-        // query-aware, but from a caller's perspective, it makes more sense to
-        // pull them from the results object.
-        return $this->getParams()->getRecommendations($location);
+        if (null === $location) {
+            return $this->recommend;
+        }
+        return isset($this->recommend[$location]) ? $this->recommend[$location] : [];
+    }
+
+    /**
+     * Set the recommendation objects (see \VuFind\Search\RecommendListener).
+     *
+     * @param array $recommend Recommendations
+     *
+     * @return void
+     */
+    public function setRecommendations($recommend)
+    {
+        $this->recommend = $recommend;
     }
 
     /**
@@ -526,8 +540,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
             $serviceLocator = $serviceLocator->getServiceLocator();
         }
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        return $this->setServiceLocatorThroughTrait($serviceLocator);
     }
 
     /**
@@ -547,6 +560,8 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Restore translator:
         $this->getOptions()
             ->setTranslator($serviceLocator->get('VuFind\Translator'));
+        $this->getOptions()
+            ->setConfigLoader($serviceLocator->get('VuFind\Config'));
         return $this;
     }
 
@@ -564,16 +579,6 @@ abstract class Results implements ServiceLocatorAwareInterface
         unset($vars['searchService']);
         $vars = array_keys($vars);
         return $vars;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
@@ -606,14 +611,14 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
+     * Translate a string if a translator is available (proxies method in Options).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate()
     {
-        return $this->getOptions()->translate($msg);
+        return call_user_func_array(
+            [$this->getOptions(), 'translate'], func_get_args()
+        );
     }
 }

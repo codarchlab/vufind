@@ -48,8 +48,8 @@ class StorageRetrievalRequests extends AbstractRequestBase
      * @param array                  $ilsDetails   Details from ILS driver's
      * getMyStorageRetrievalRequests() method
      * @param array                  $cancelStatus Cancellation settings from ILS
-     * @param array                  $patron       ILS patron
      * driver's checkFunction() method
+     * @param array                  $patron       ILS patron
      *
      * @return array $ilsDetails with cancellation info added
      */
@@ -105,7 +105,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
-            return array();
+            return [];
         }
 
         if (!empty($details)) {
@@ -119,10 +119,10 @@ class StorageRetrievalRequests extends AbstractRequestBase
                         $url,
                         $url,
                         'confirm_storage_retrieval_request_cancel_all_text',
-                        array(
+                        [
                             'cancelAll' => 1,
                             'cancelAllIDS' => $params->fromPost('cancelAllIDS')
-                        )
+                        ]
                     );
                 } else {
                     return $this->getController()->confirm(
@@ -130,11 +130,11 @@ class StorageRetrievalRequests extends AbstractRequestBase
                         $url,
                         $url,
                         'confirm_storage_retrieval_request_cancel_selected_text',
-                        array(
+                        [
                             'cancelSelected' => 1,
                             'cancelSelectedIDS' =>
                                 $params->fromPost('cancelSelectedIDS')
-                        )
+                        ]
                     );
                 }
             }
@@ -143,20 +143,18 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->setNamespace('error')
-                        ->addMessage('error_inconsistent_parameters');
-                    return array();
+                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                    return [];
                 }
             }
 
             // Add Patron Data to Submitted Data
             $cancelResults = $catalog->cancelStorageRetrievalRequests(
-                array('details' => $details, 'patron' => $patron)
+                ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->setNamespace('error')->addMessage(
-                    'storage_retrieval_request_cancel_fail'
-                );
+                $flashMsg
+                    ->addMessage('storage_retrieval_request_cancel_fail', 'error');
             } else {
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
@@ -164,17 +162,16 @@ class StorageRetrievalRequests extends AbstractRequestBase
                     $msg = $this->getController()->translate(
                         'storage_retrieval_request_cancel_success_items'
                     );
-                    $flashMsg->setNamespace('info')->addMessage(
-                        $cancelResults['count'] . ' ' . $msg
+                    $flashMsg->addMessage(
+                        $cancelResults['count'] . ' ' . $msg, 'success'
                     );
                 }
                 return $cancelResults;
             }
         } else {
-            $flashMsg->setNamespace('error')->addMessage(
-                'storage_retrieval_request_empty_selection'
-            );
+            $flashMsg
+                ->addMessage('storage_retrieval_request_empty_selection', 'error');
         }
-        return array();
+        return [];
     }
 }

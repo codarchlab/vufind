@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Primo;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -80,7 +79,6 @@ class Backend extends AbstractBackend
             $this->setRecordCollectionFactory($factory);
         }
         $this->connector    = $connector;
-        $this->identifier   = null;
     }
 
     /**
@@ -226,14 +224,21 @@ class Backend extends AbstractBackend
         $params = $params->getArrayCopy();
 
         // Convert the options:
-        $options = array();
+        $options = [];
+
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array(
+        $arraySettings = [
             'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
-        );
+        ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
+        }
+
+        // Use special facet pcAvailabilty if it has been set
+        if (isset($params['filterList']['pcAvailability'])) {
+            unset($options['filterList']['pcAvailability']);
+            $options['pcAvailability'] = true;
         }
 
         return $options;

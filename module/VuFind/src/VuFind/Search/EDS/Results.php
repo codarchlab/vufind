@@ -28,8 +28,6 @@
 namespace VuFind\Search\EDS;
 
 use EBSCO\EdsApi\SearchCriteria;
-use VuFindSearch\ParamBag;
-use Zend\Log\LoggerInterface;
 
 /**
  * EDS API Results
@@ -79,18 +77,17 @@ class Results extends \VuFind\Search\Base\Results
             $this->resultTotal = $collection->getTotal();
 
             //Add a publication date facet
-            $this->responseFacets[] = array(
+            $this->responseFacets[] = [
                         'fieldName' => 'PublicationDate',
                         'displayName' => 'PublicationDate',
                         'displayText' => 'Publication Date',
-                        'counts' => array()
-            );
+                        'counts' => []
+            ];
 
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
         }
     }
-
 
     /**
      * Returns the stored list of facets for the last search
@@ -103,11 +100,11 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // Loop through the facets returned by EDS
-        $facetResult = array();
+        $facetResult = [];
         if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
             $filterList = $this->getParams()->getFilters();
-
+            $translatedFacets = $this->getOptions()->getTranslatedFacets();
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // EBSCO's side -- we'll probably need to translate this to a
@@ -115,9 +112,10 @@ class Results extends \VuFind\Search\Base\Results
                 $field = $current['displayName'];
 
                 // Should we translate values for the current facet?
-                $translate = in_array(
-                    $field, $this->getOptions()->getTranslatedFacets()
-                );
+                if ($translate = in_array($field, $translatedFacets)) {
+                    $transTextDomain = $this->getOptions()
+                        ->getTextDomainForTranslatedFacet($field);
+                }
 
                 // Loop through all the facet values to see if any are applied.
                 foreach ($current['counts'] as $facetIndex => $facetDetails) {
@@ -127,7 +125,7 @@ class Results extends \VuFind\Search\Base\Results
                     // an active filter for the current field?
                     $orField = '~' . $field;
                     $itemsToCheck = isset($filterList[$field])
-                    ? $filterList[$field] : array();
+                        ? $filterList[$field] : [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -142,14 +140,13 @@ class Results extends \VuFind\Search\Base\Results
 
                     // Create display value:
                     $current['counts'][$facetIndex]['displayText'] = $translate
-                    ? $this->translate($facetDetails['displayText'])
-                    : $facetDetails['displayText'];
+                        ? $this->translate(
+                            "$transTextDomain::{$facetDetails['displayText']}"
+                        ) : $facetDetails['displayText'];
 
                     // Create display value:
-                    $current['counts'][$facetIndex]['value'] = $translate
-                    ? $this->translate($facetDetails['value'])
-                    : $facetDetails['value'];
-
+                    $current['counts'][$facetIndex]['value']
+                        = $facetDetails['value'];
                 }
                 // The EDS API returns facets in the order they should be displayed
                 $current['label'] = isset($filter[$field])
@@ -165,7 +162,7 @@ class Results extends \VuFind\Search\Base\Results
         ksort($facetResult);
 
         // Rewrite the sorted array with appropriate keys:
-        $finalResult = array();
+        $finalResult = [];
         foreach ($facetResult as $current) {
             $finalResult[$current['displayName']] = $current;
         }

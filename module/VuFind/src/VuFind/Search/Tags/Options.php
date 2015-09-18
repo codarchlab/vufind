@@ -46,12 +46,12 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $this->basicHandlers = array('tags' => 'Tag');
+        $this->basicHandlers = ['tags' => 'Tag'];
         $this->defaultSort = 'title';
-        $this->sortOptions = array(
+        $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
-        );
+        ];
     }
 
     /**
@@ -62,5 +62,21 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchAction()
     {
         return 'tag-home';
+    }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // No recommendation modules in tag view currently:
+        return [];
     }
 }

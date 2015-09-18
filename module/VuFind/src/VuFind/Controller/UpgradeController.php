@@ -66,14 +66,16 @@ class UpgradeController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
      */
-    public function __construct()
+    public function __construct(\VuFind\Cookie\CookieManager $cookieManager)
     {
         // We want to use cookies for tracking the state of the upgrade, since the
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
         // upgrade state in the middle of the process!
-        $this->cookie = new CookieContainer('vfup');
+        $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
         // safely use the session for storing some values.  We'll use this for the
@@ -89,7 +91,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *
@@ -117,7 +119,7 @@ class UpgradeController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
     }
 
     /**
@@ -173,20 +175,20 @@ class UpgradeController extends AbstractBase
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot determine source version.');
+            $this->flashMessenger()
+                ->addMessage('Cannot determine source version.', 'error');
             unset($this->cookie->oldVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
         if (empty($this->cookie->newVersion)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot determine destination version.');
+            $this->flashMessenger()
+                ->addMessage('Cannot determine destination version.', 'error');
             unset($this->cookie->newVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
         if ($this->cookie->newVersion == $this->cookie->oldVersion) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Cannot upgrade version to itself.');
+            $this->flashMessenger()
+                ->addMessage('Cannot upgrade version to itself.', 'error');
             unset($this->cookie->newVersion);
             return $this->forwardTo('Upgrade', 'Error');
         }
@@ -219,8 +221,9 @@ class UpgradeController extends AbstractBase
         } catch (\Exception $e) {
             $extra = is_a($e, 'VuFind\Exception\FileAccess')
                 ? '  Check file permissions.' : '';
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
+            $this->flashMessenger()->addMessage(
+                'Config upgrade failed: ' . $e->getMessage() . $extra, 'error'
+            );
             return $this->forwardTo('Upgrade', 'Error');
         }
     }
@@ -308,7 +311,7 @@ class UpgradeController extends AbstractBase
             }
 
             // Check for missing columns.
-            $mT = $this->logsql ? $missingTables : array();
+            $mT = $this->logsql ? $missingTables : [];
             $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
             if (!empty($missingCols)) {
                 // Only manipulate DB if we're not in logging mode:
@@ -327,7 +330,7 @@ class UpgradeController extends AbstractBase
             }
 
             // Check for modified columns.
-            $mC = $this->logsql ? $missingCols : array();
+            $mC = $this->logsql ? $missingCols : [];
             $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
             if (!empty($modifiedCols)) {
                 // Only manipulate DB if we're not in logging mode:
@@ -389,8 +392,9 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'FixDuplicateTags');
             }
         } catch (\Exception $e) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Database upgrade failed: ' . $e->getMessage());
+            $this->flashMessenger()->addMessage(
+                'Database upgrade failed: ' . $e->getMessage(), 'error'
+            );
             return $this->forwardTo('Upgrade', 'Error');
         }
 
@@ -415,7 +419,7 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'Home');
         }
 
-        return $this->createViewModel(array('sql' => $this->session->sql));
+        return $this->createViewModel(['sql' => $this->session->sql]);
     }
 
     /**
@@ -447,13 +451,14 @@ class UpgradeController extends AbstractBase
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage('Could not connect; please try again.');
+                    $this->flashMessenger()->addMessage(
+                        'Could not connect; please try again.', 'error'
+                    );
                 }
             }
         }
 
-        return $this->createViewModel(array('dbrootuser' => $dbrootuser));
+        return $this->createViewModel(['dbrootuser' => $dbrootuser]);
     }
 
     /**
@@ -491,14 +496,14 @@ class UpgradeController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Username must not be empty.');
+                $this->flashMessenger()
+                    ->addMessage('Username must not be empty.', 'error');
             } else {
                 $userTable = $this->getTable('User');
                 $user = $userTable->getByUsername($user, false);
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage("User {$user} not found.");
+                    $this->flashMessenger()
+                        ->addMessage("User {$user} not found.", 'error');
                 } else {
                     $table = $this->getTable('ResourceTags');
                     $table->assignAnonymousTags($user->id);
@@ -511,9 +516,9 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
-            )
+            ]
         );
     }
 
@@ -596,12 +601,13 @@ class UpgradeController extends AbstractBase
         $dir = $this->params()->fromPost('sourcedir');
         if (!empty($dir)) {
             if (!is_dir($dir)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($dir . ' does not exist.');
+                $this->flashMessenger()
+                    ->addMessage($dir . ' does not exist.', 'error');
             } else if (!file_exists($dir . '/build.xml')) {
-                $this->flashMessenger()->setNamespace('error')->addMessage(
+                $this->flashMessenger()->addMessage(
                     'Could not find build.xml in source directory;'
-                    . ' upgrade does not support VuFind versions prior to 1.1.'
+                    . ' upgrade does not support VuFind versions prior to 1.1.',
+                    'error'
                 );
             } else {
                 $this->cookie->sourceDir = rtrim($dir, '\/');
@@ -627,11 +633,12 @@ class UpgradeController extends AbstractBase
             $this->cookie->newVersion
                 = $this->getVersion(realpath(APPLICATION_PATH));
             if (floor($version) != 2) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Illegal version number.');
+                $this->flashMessenger()
+                    ->addMessage('Illegal version number.', 'error');
             } else if ($version >= $this->cookie->newVersion) {
-                $this->flashMessenger()->setNamespace('error')->addMessage(
-                    "Source version must be less than {$this->cookie->newVersion}."
+                $this->flashMessenger()->addMessage(
+                    "Source version must be less than {$this->cookie->newVersion}.",
+                    'error'
                 );
             } else {
                 $this->cookie->oldVersion = $version;
@@ -694,22 +701,21 @@ class UpgradeController extends AbstractBase
         // We're finally done -- display any warnings that we collected during
         // the process.
         $allWarnings = array_merge(
-            isset($this->cookie->warnings) ? $this->cookie->warnings : array(),
+            isset($this->cookie->warnings) ? $this->cookie->warnings : [],
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage($warning);
+            $this->flashMessenger()->addMessage($warning, 'info');
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'configDir' => dirname(
                     ConfigLocator::getLocalConfigPath('config.ini', null, true)
                 ),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion
-            )
+            ]
         );
     }
 
@@ -725,7 +731,7 @@ class UpgradeController extends AbstractBase
         }
         $storage = $this->session->getManager()->getStorage();
         $storage[$this->session->getName()]
-            = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
+            = new ArrayObject([], ArrayObject::ARRAY_AS_PROPS);
         return $this->forwardTo('Upgrade', 'Home');
     }
 }
