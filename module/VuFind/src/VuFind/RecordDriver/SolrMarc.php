@@ -1135,4 +1135,14 @@ class SolrMarc extends SolrDefault
             'record-rdf-mods.xsl', trim($this->marcRecord->toXML())
         );
     }
+
+    /**
+    * Ticket #1905
+    *
+    * Get Fields 540,546 & 561
+    */
+    public function get540()
+    {
+        return $this->getFieldArray('540');
+    }
 }
