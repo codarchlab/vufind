@@ -1,0 +1,188 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Search Home'));
+
+  // Disable top search box -- this page has a special layout.
+  $this->layout()->searchbox = false;
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+  
+  $this->layout()->breadcrumbs = false;
+?>
+<div class="searchHomeContent">
+  <div class="row">
+    <div class="home-image"></div>
+  </div>
+  <? if ( $this->ils()->getOfflineMode() == "ils-offline"): ?>
+    <div class="alert alert-warning">
+      <h2><?=$this->transEsc('ils_offline_title')?></h2>
+      <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+      <p><?=$this->transEsc('ils_offline_home_message')?></p>
+      <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+      <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+    </div>
+  <? endif; ?>
+  <div class="row" style="position:relative;">
+    <div class="text-center col-md-8 col-md-offset-2 well navbar" style="margin-bottom:-40px; position:relative; top: -40px;">
+
+      <?
+          // Set default value if necessary:
+          if (!isset($this->searchClassId)) {
+              $this->searchClassId = 'Solr';
+          }
+
+          // Load search actions and settings (if any):
+          $options = $this->searchOptions($this->searchClassId);
+          $handlers = $this->searchbox()->getHandlers(
+              $this->searchClassId,
+              isset($this->searchIndex) ? $this->searchIndex : null
+          );
+          $handlerCount = count($handlers);
+          $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+          $lastSort = $options->getLastSort();
+          $lastLimit = $options->getLastLimit();
+      ?>
+      
+      <form class="form-inline" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
+        <div class="row">
+          <div class="col-sm-7">
+            <input class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtml($this->searchClassId) ?><? endif ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($this->lookfor)?>" placeholder="<?=$this->transEsc("Start a new Basic Search")?>"/>
+          </div>
+          <? if ($handlerCount > 1): ?>
+            <div class="col-sm-3">
+              <select id="searchForm_type" name="type" data-native-menu="false" class="form-control">
+                <? foreach ($handlers as $handler): ?>
+                  <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+                <? endforeach; ?>
+              </select>
+            </div>
+          <? elseif ($handlerCount == 1): ?>
+            <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
+          <? endif; ?>
+          <div class="col-sm-2">
+            <button type="submit" name="submit" class="btn btn-primary form-control" style="float:none; display:inline-block; margin-left:0;" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
+          </div>
+        </div>
+          
+        <?
+        /* Load hidden limit preference from Session */
+        if (!empty($lastLimit)) {
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+        }
+        if (!empty($lastSort)) {
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+        }
+        ?>
+        
+      </form>
+
+    </div>
+  </div>
+
+<div class="row">
+  <hr>
+</div>
+
+<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); ?>
+
+<div class="row">
+
+  <div class="col-md-6 well">
+    <h4><i class="fa fa-home small"></i> <?=$this->translate('Participating libraries')?></h4>
+    <ul class="list-unstyled">
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
+    </ul>
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-unstyled">
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Athen&quot;&filter[]=~building:&quot;DAI&quot;">Athen</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Damascus&quot;&filter[]=~building:&quot;DAI&quot;">Damaskus</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;DEI Amman&quot;&filter[]=~building:&quot;DAI&quot;">DEI Amman</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Eurasien-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Istanbul&quot;&filter[]=~building:&quot;DAI&quot;">Istanbul</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;KAAK Bonn&quot;&filter[]=~building:&quot;DAI&quot;">KAAK Bonn</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Kairo&quot;&filter[]=~building:&quot;DAI&quot;">Kairo</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Madrid&quot;&filter[]=~building:&quot;DAI&quot;">Madrid</a></li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-unstyled">
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Orient-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Peking&quot;&filter[]=~building:&quot;DAI&quot;">Peking</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;RGK&quot;&filter[]=~building:&quot;DAI&quot;">RGK Frankfurt</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Rom&quot;&filter[]=~building:&quot;DAI&quot;">Rom</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Sanaa&quot;&filter[]=~building:&quot;DAI&quot;">Sanaa</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Teheran&quot;&filter[]=~building:&quot;DAI&quot;">Teheran</a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Zentrale Berlin</a></li>
+        </ul>
+      </div>
+    </div>
+    <ul class="list-unstyled">
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;BSA&quot;">Bibliothek der British School at Athens</a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;WINCK&quot;">Bibliothek der Winckelmann-Gesellschaft, Stendal</a></li>
+    </ul>
+  </div>
+
+  <div class="col-md-3">
+    <div class="well">
+      <h4><i class="fa fa-file small"></i> <?=$this->translate('Journals')?></h4>
+      <ul class="list-unstyled">
+        <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=LocalNote"><?=$this->translate('DAI journals')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=a*gz04 OR argz06 OR argz04xx&amp;type=JournalNote"><?=$this->translate('Zenon journal holdings')?></a></li>
+      </ul>
+    </div>
+    <div class="well">
+      <h4><i class="fa fa-globe small"></i> <?=$this->translate('e-publications')?></h4>
+      <ul class="list-unstyled">
+        <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal&amp;type=LocalNote"><?=$this->translate('e-journals')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;type=LocalNote"><?=$this->translate('Online resources')?></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-3 well">
+    <h4><i class="fa fa-calendar small"></i> <?=$this->translate('Accessions')?></h4>
+      <?
+        $end = new DateTime("now +1 month");
+        $start = new DateTime("now -1 year + 1 month");
+        $interval = new DateInterval('P1M');
+        $period = new DatePeriod($start, $interval, $end);
+        $months = [];
+      ?>
+      <? foreach ($period as $dt): ?>
+        <?
+          $queryMonth = $dt->format('my');
+          $queries = [];
+          foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
+          $query = join(' OR ', $queries);
+          $months[] = array("date" => $dt, "query" => $query);
+        ?>
+      <? 
+        endforeach;
+        $months = array_reverse($months)
+      ?>
+    <ul class="list-unstyled">
+      <? foreach (array_slice($months,0,12) as $month): ?>
+        <li>
+          <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
+            <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+          </a>
+        </li>
+      <? endforeach; ?>
+    </ul>
+
+  </div>
+
+</div>
+
+<?=$this->render('thesaurus/tree.phtml');?>
+
+</div>

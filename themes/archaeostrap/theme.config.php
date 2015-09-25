@@ -4,5 +4,6 @@ return array(
     'css' => array(
     	'bootstrap-theme.min.css',
     	'custom.css'
-    )
+    ),
+    'favicon' => 'favicon.ico'
 );

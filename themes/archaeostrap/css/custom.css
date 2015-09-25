@@ -1,3 +1,43 @@
 body {
-    margin-top: 60px;
+    margin-top: 70px;
+}
+
+.home-image {
+	background-image: url('../images/Buchruecken.jpg');
+	height: 274px;
+}
+
+mark {
+	background-color: #ffffcc;
+}
+
+.thesaurus .breadcrumb li {
+	vertical-align: middle;
+}
+
+.searchHomeContent .navbar-form input,
+.searchHomeContent .navbar-form select,
+.searchHomeContent .navbar-form button {
+	margin-top: 0;
+}
+
+.record .label-info {
+	background-color: #B9C5D3;
+}
+
+/* hacks for styling search bar on home */
+#searchForm .twitter-typeahead {
+	width: 100%;
+}
+#searchForm .row {
+	padding-left: 14px;
+	padding-right: 14px;
+}
+#searchForm .row div {
+	margin: 0;
+	padding: 0 1px;
+}
+#searchForm .row div .form-control {
+	width: 100%;
+	max-width: none;
 }
