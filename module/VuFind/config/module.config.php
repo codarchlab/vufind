@@ -433,7 +433,6 @@ $config = array(
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
-                    'access' => 'VuFind\RecordTab\Access',
                 ),
             ),
             'related' => array(
@@ -575,7 +574,6 @@ $config = array(
             'VuFind\RecordDriver\SolrDefault' => array(
                 'tabs' => array (
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'Access' => 'Access',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
@@ -586,7 +584,6 @@ $config = array(
             'VuFind\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'Access' => 'Access',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
