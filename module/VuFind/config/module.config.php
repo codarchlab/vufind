@@ -545,7 +545,6 @@ $config = array(
             'VuFind\RecordDriver\EDS' => array(
                 'tabs' => array(
                     'Description' => 'Description',
-                    'Access' => 'Access',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewArray',
@@ -561,7 +560,6 @@ $config = array(
             'VuFind\RecordDriver\Primo' => array(
                 'tabs' => array(
                     'Description' => 'Description',
-                    'Access' => 'Access',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewArray',
