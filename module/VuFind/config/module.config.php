@@ -433,6 +433,7 @@ $config = array(
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
+                    'access' => 'VuFind\RecordTab\access',
                 ),
             ),
             'related' => array(

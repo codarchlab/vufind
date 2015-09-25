@@ -1145,4 +1145,12 @@ class SolrMarc extends SolrDefault
     {
         return $this->getFieldArray('540');
     }
+    public function get546()
+    {
+        return $this->getFieldArray('546');
+    }
+    public function get561()
+    {
+        return $this->getFieldArray('561');
+    }
 }
