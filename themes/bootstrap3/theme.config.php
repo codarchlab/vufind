@@ -5,7 +5,7 @@ return array(
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
         //'bootstrap-custom.css',
-        'compiled.css',
+        //'compiled.css',
         'vendor/font-awesome.min.css',
         'vendor/bootstrap-slider.css',
         'print.css:print',

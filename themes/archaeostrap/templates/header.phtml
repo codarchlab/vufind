@@ -31,9 +31,15 @@
   <section class="visible-lg">
     <?=$this->layout()->searchbox ?>
   </section>
+<? else: ?>
+  <ul class="nav navbar-nav navbar-left">
+    <li>
+      <a href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
+    </li>
+  </ul>
 <? endif; ?>
 <? if (!isset($this->layout()->renderingError)): ?>
-  <div class="collapse navbar-collapse" id="header-collapse">
+  <div class="collapse navbar-collapse" id="header-collapse" style="padding-right: 15px;">
     <nav>
       <ul class="nav navbar-nav navbar-right flip">
         <? if ($this->feedback()->tabEnabled()): ?>

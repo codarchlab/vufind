@@ -7,8 +7,20 @@ body {
 	height: 274px;
 }
 
+.idai-footer {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 30px;
+    background-color: #e2e2e2;
+}
+
 mark {
 	background-color: #ffffcc;
+}
+
+.table {
+	table-layout: auto;
 }
 
 .thesaurus .breadcrumb li {
@@ -43,19 +55,53 @@ mark {
 	max-width: none;
 }
 
+/* hacks for styling search bar in nav */
+
+.navbar .searchForm .twitter-typeahead {
+	display: inline !important;
+}
+
+.navbar .searchForm .twitter-typeahead .tt-hint {
+	top: -6px !important;
+}
+
 /* search result view */
 
 .row.result a.title {
 	font-weight: normal;
-	font-size: 1.1em;
 }
 
 .row.result {
-	padding: 10px 4px;
+	padding: 15px 4px;
 }
 
 .row.result:nth-child(even) {
 	background-color: #f7f7f7;
+}
+
+.facet .list-group {
+	border-bottom: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.facet .panel-title {
+    font-size: 14px;
+    cursor: pointer;
+    color: #37588e;
+}
+
+.facet .list-group-item {
+	border: 0;
+	padding: 4px 8px;
+}
+
+.facet .list-group-item:hover {
+	background-color: rgba(85, 114, 161, 0.9);
+	color: white;
+}
+
+.facet .slider-container {
+	padding: 15px;
 }
 
 /* record view */

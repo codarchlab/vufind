@@ -1,0 +1,25 @@
+<div class="idai-footer row">
+  <div class="col-md-12 text-center">
+    <p>
+      <a href="http://www.dainst.de/"><img class="logoImage" src="<?=$this->imageLink('logo_dai.png') ?>"></a>
+    </p>
+    <p>
+      <a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a> |
+      <a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a> |
+      <a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a> |
+      <?
+        $queryMonth = date('my');
+        $queries = [];
+        foreach(['a','e','i','k','c','m','o','f','r','z'] as $char) $queries[] = $char.$queryMonth;
+        $query = join(' OR ', $queries);
+      ?>
+      <a href="<?=$this->url('search-results')?>?lookfor=<?=$query?>&amp;type=LocalNote"><?=$this->transEsc('Accessions')?></a> |
+      <a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a> |
+      <a href="http://www.dainst.org/forschung/infrastruktur/bibliotheken"><?=$this->transEsc('Ask a Librarian')?></a>
+    </p>
+    <p>
+      Fragen und Hinweise zum ZENON schicken Sie bitte an
+      <a href="mailto:idai.bibliography@dainst.de" class="ng-binding">idai.bibliography@dainst.de</a>
+    </p>
+  </div>
+</div>
