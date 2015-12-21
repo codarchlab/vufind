@@ -26,6 +26,7 @@ mark {
 }
 
 /* hacks for styling search bar on home */
+
 #searchForm .twitter-typeahead {
 	width: 100%;
 }
@@ -40,4 +41,32 @@ mark {
 #searchForm .row div .form-control {
 	width: 100%;
 	max-width: none;
+}
+
+/* search result view */
+
+.row.result a.title {
+	font-weight: normal;
+	font-size: 1.1em;
+}
+
+.row.result {
+	padding: 10px 4px;
+}
+
+.row.result:nth-child(even) {
+	background-color: #f7f7f7;
+}
+
+/* record view */
+
+.template-dir-record ul.toolbar {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.template-dir-record ul.toolbar > li,
+.template-dir-record ul.toolbar > li a {
+	display: inline;
+	float: none;
 }
