@@ -608,3 +608,8 @@ Building:
   QueryFields:
     building:
       - [and, ~]
+
+Fulltext:
+  QueryFields:
+    fulltext:
+      - [and, ~]
