@@ -1153,5 +1153,6 @@ class SolrMarc extends SolrDefault
             return $this->getMarcRecord();
         }
         return null;
+
     }
 }
