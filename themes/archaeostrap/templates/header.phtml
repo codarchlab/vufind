@@ -6,7 +6,7 @@
               <li class="dropdown" dropdown>
                   <a href="#" dropdown-toggle class="dropdown-toggle" data-toggle="dropdown">
                       <img src="<?=$this->imageLink('kleinergreif.png') ?>"
-                          style="height: 36px; width: 36px; margin-top: -8px; margin-bottom: -8px">
+                          style="height: 38px; margin-top: -16px; margin-bottom: -14px">
                       <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu" dropdown-menu>
@@ -31,17 +31,16 @@
   <section class="visible-lg">
     <?=$this->layout()->searchbox ?>
   </section>
-<? else: ?>
-  <ul class="nav navbar-nav navbar-left">
-    <li>
-      <a href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
-    </li>
-  </ul>
 <? endif; ?>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="collapse navbar-collapse" id="header-collapse" style="padding-right: 15px;">
     <nav>
       <ul class="nav navbar-nav navbar-right flip">
+        <? if ($this->layout()->searchbox == false): ?>
+          <li>
+            <a href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
+          </li>
+        <? endif; ?>
         <? if ($this->feedback()->tabEnabled()): ?>
           <li>
             <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
