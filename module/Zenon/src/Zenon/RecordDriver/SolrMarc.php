@@ -261,6 +261,24 @@ class SolrMarc extends VufindSolrMarc
 
     }
 
+    /**
+    * Ticket #1905
+    *
+    * Get Fields 540,546 & 561
+    */
+    public function get540()
+    {
+        return $this->getFieldArray('540');
+    }
+    public function get546()
+    {
+        return $this->getFieldArray('546');
+    }
+    public function get561()
+    {
+        return $this->getFieldArray('561');
+    }
+    
     private function removeTrailingSlash($s)
     {
         if (strrpos($s, '/') == strlen($s)-1) {
