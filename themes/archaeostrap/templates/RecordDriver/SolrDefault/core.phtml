@@ -92,6 +92,29 @@
       </tr>
       <? endif; ?>
 
+      <? $varyingTitles = $this->driver->getVaryingFormOfTitles(); $additionalTitles = $this->driver->getAdditionalTitles(); ?>
+      <? if (!empty($varyingTitles)): ?>
+      <tr>
+        <th><?=$this->transEsc('Varying Form of Title')?>: </th>
+        <td>
+          <? foreach($varyingTitles as $field): ?>
+            <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? if (!empty($additionalTitles)): ?>
+      <tr>
+        <th><?=$this->transEsc('Additional Title')?>: </th>
+        <td>
+          <? foreach($additionalTitles as $field): ?>
+            <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['main']) && !empty($authors['main'])): ?>
       <tr>

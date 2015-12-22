@@ -217,42 +217,6 @@
     </tr>
   <? endif; ?>
 
-  <? $field540 = $this->driver->get540(); if (!empty($field540)): ?>
-    <? $contentDisplayed = true; ?>
-    <tr valign="top">
-      <th>540: </th>
-      <td>
-        <? foreach ($field540 as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
-  <? endif; ?>
-
-  <? $field546 = $this->driver->get546(); if (!empty($field546)): ?>
-    <? $contentDisplayed = true; ?>
-    <tr valign="top">
-      <th>540: </th>
-      <td>
-        <? foreach ($field546 as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
-  <? endif; ?>
-
-  <? $field561 = $this->driver->get561(); if (!empty($field561)): ?>
-    <? $contentDisplayed = true; ?>
-    <tr valign="top">
-      <th>540: </th>
-      <td>
-        <? foreach ($field561 as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
-  <? endif; ?>
-
   <? if (!isset($contentDisplayed) || !$contentDisplayed): // Avoid errors if there were no rows above ?>
     <tr><td><?=$this->transEsc('no_description')?></td></tr>
   <? endif; ?>

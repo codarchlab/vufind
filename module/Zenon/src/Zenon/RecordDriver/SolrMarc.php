@@ -262,21 +262,39 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-    * Ticket #1905
-    *
-    * Get Fields 540,546 & 561
+     * Get Varying Form of Title (MARC field 246)
+     *
+     * @return array
+     */
+    public function getVaryingFormOfTitles()
+    {
+        return $this->getFieldArray('246');
+    }
+
+    /**
+     * Get additional Title (MARC field 740)
+     *
+     * @return array
+     */
+    public function getAdditionalTitles()
+    {
+        return $this->getFieldArray('740');
+    }
+
+    /**
+    * Get additional Information (MARC fields 540, 546 & 561)
+     *
+     * @return array
     */
-    public function get540()
+    public function getAdditionalInformation()
     {
-        return $this->getFieldArray('540');
-    }
-    public function get546()
-    {
-        return $this->getFieldArray('546');
-    }
-    public function get561()
-    {
-        return $this->getFieldArray('561');
+        $fields = ['540', '546', '561'];
+        $result = [];
+        foreach ($fields as $field) {
+            $value = $this->getFieldArray($field);
+            if (!empty($value)) $result[] = $value;
+        }
+        return $result;
     }
     
     private function removeTrailingSlash($s)
