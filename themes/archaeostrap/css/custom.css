@@ -65,6 +65,26 @@ mark {
 	top: -6px !important;
 }
 
+.tt-suggestions {
+	text-align: left;
+	background-color: rgba(255,255,255,0.8);
+	box-shadow: 3px 3px 5px grey;
+	border: 1px solid lightgrey;
+	border-width: 0 1px 1px 1px;
+}
+
+.tt-suggestion {
+	cursor: pointer;	
+}
+
+.tt-suggestion p {
+	padding: 0 5px;
+}
+
+.tt-suggestion:hover {
+	background-color: #B9C5D3;
+}
+
 /* search result view */
 
 .row.result a.title {
