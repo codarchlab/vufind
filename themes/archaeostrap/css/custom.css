@@ -136,3 +136,8 @@ mark {
 	display: inline;
 	float: none;
 }
+
+/* override modal padding, in order to fix strange "padding-left: 0px;" appearing in output */
+.modal-body {
+	padding: 15px !important;
+}
