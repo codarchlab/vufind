@@ -22,7 +22,12 @@ $config = [
 					'solrmarc' => 'Zenon\RecordDriver\Factory::getSolrMarc',
 					'solrauth' => 'Zenon\RecordDriver\Factory::getSolrAuth',
 				]
-			]
+			],
+            'recordtab' => [
+                'factories' => [
+                    'Access' => 'Zenon\RecordTab\Factory::getAccess',
+                ],
+            ],
 		],
 
 		// This section controls which tabs are used for which record driver classes.
@@ -41,6 +46,7 @@ $config = [
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Similar' => null,
                     'Details' => 'StaffViewMARC',
+                    'Access' => 'Access',
                 ],
                 'defaultTab' => null,
             ]

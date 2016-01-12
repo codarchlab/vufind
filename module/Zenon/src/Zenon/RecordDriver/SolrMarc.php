@@ -296,6 +296,26 @@ class SolrMarc extends VufindSolrMarc
         }
         return $result;
     }
+
+    /**
+    * Get Terms Governing Use and Reproduction Note (MARC field 540)
+     *
+     * @return array
+    */
+    public function getUsageTerms()
+    {
+        return $this->getFieldArray('540');
+    }
+
+    /**
+    * Get Copyright Status (MARC field 542)
+     *
+     * @return array
+    */
+    public function getCopyrightStatus()
+    {
+        return $this->getFieldArray('542');
+    }
     
     private function removeTrailingSlash($s)
     {
