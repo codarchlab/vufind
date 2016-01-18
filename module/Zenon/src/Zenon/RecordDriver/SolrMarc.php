@@ -314,7 +314,7 @@ class SolrMarc extends VufindSolrMarc
     */
     public function getCopyrightStatus()
     {
-        return $this->getFieldArray('542');
+        return $this->getFieldArray('542',['d']);
     }
     
     private function removeTrailingSlash($s)
