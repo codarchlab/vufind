@@ -81,6 +81,10 @@ class Feed extends AbstractRenderer
             'xmlns:opensearch',
             'http://a9.com/-/spec/opensearch/1.1/'
         );
+        $this->getRootElement()->setAttribute(
+            'xmlns:media',
+            'http://search.yahoo.com/mrss/'
+        );
     }
 
     /**

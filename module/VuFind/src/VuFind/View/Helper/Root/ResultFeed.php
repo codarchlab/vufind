@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sebastian Cuy <sebastian.cuy@dainst.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -263,6 +264,10 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             foreach ($dcDescriptions as $dcDescription) {
                 $entry->addDCDescription($dcDescription);
             }
+        }
+        $mediaThumbnail = $this->getView()->plugin('record')->getCover('medium');
+        if (!empty($mediaThumbnail)) {
+            $entry->setMediaThumbnail($mediaThumbnail);
         }
 
         $feed->addEntry($entry);

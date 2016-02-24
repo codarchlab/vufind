@@ -67,6 +67,13 @@ class Entry extends ParentEntry
     protected $dcDescriptions = [];
 
     /**
+     * Date
+     *
+     * @var string
+     */
+    protected $thumbnail = null;
+
+    /**
      * Add a Dublin Core format.
      *
      * @param string $format Format to add.
@@ -88,6 +95,18 @@ class Entry extends ParentEntry
     public function setDCDate($date)
     {
         $this->dcDate = $date;
+    }
+
+    /**
+     * Set the media thumbnail.
+     *
+     * @param string $date Date to set.
+     *
+     * @return void
+     */
+    public function setMediaThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
     }
 
     /**
@@ -130,5 +149,15 @@ class Entry extends ParentEntry
     public function getDCDescriptions()
     {
         return $this->dcDescriptions;
+    }
+
+    /**
+     * Get the media thumbnail.
+     *
+     * @return string
+     */
+    public function getMediaThumbnail()
+    {
+        return $this->thumbnail;
     }
 }
