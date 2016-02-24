@@ -60,6 +60,13 @@ class Entry extends ParentEntry
     protected $dcDate = null;
 
     /**
+     * Descriptions
+     *
+     * @var array
+     */
+    protected $dcDescriptions = [];
+
+    /**
      * Add a Dublin Core format.
      *
      * @param string $format Format to add.
@@ -84,6 +91,18 @@ class Entry extends ParentEntry
     }
 
     /**
+     * Add a Dublin Core description.
+     *
+     * @param string $description Description to add.
+     *
+     * @return void
+     */
+    public function addDCDescription($description)
+    {
+        $this->dcDescriptions[] = $description;
+    }
+
+    /**
      * Get the Dublin Core date.
      *
      * @return string
@@ -101,5 +120,15 @@ class Entry extends ParentEntry
     public function getDCFormats()
     {
         return $this->dcFormats;
+    }
+
+    /**
+     * Get the Dublin Core descriptions.
+     *
+     * @return array
+     */
+    public function getDCDescriptions()
+    {
+        return $this->dcDescriptions;
     }
 }

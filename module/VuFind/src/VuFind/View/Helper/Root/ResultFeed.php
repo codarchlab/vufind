@@ -258,6 +258,12 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if (!empty($dcDate)) {
             $entry->setDCDate($dcDate);
         }
+        $dcDescriptions = $record->tryMethod('getSummary');
+        if (!empty($dcDescriptions)) {
+            foreach ($dcDescriptions as $dcDescription) {
+                $entry->addDCDescription($dcDescription);
+            }
+        }
 
         $feed->addEntry($entry);
     }
