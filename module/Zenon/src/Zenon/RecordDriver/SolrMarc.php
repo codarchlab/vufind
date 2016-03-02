@@ -40,6 +40,8 @@ use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 class SolrMarc extends VufindSolrMarc
 {
 
+    const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
+
     /**
      * Get the full title of the record.
      * Overriden to remove trailing slashes.
@@ -130,6 +132,31 @@ class SolrMarc extends VufindSolrMarc
         // only return distinct values
         return array_map('unserialize', array_unique(array_map('serialize', $result)));
 
+    }
+
+    /**
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
+     *
+     * Overriden to be able to test if thumbs are available in cache directory.
+     *
+     * @param string $size Size of thumbnail (small, medium or large -- small is
+     * default).
+     *
+     * @return string|array|bool
+     */
+    public function getThumbnail($size = 'small')
+    {
+        $arr = parent::getThumbnail($size);
+        if (!array_key_exists('isbn', $arr)) return false;
+
+        if ( file_exists(self::COVERS_DIR . '/medium/' . $arr['isbn'] . '.jpg')
+            || file_exists(self::COVERS_DIR . '/medium/978' . $arr['isbn'] . '.jpg') )
+            return $arr;
+        else
+            return false;
     }
 
     /**
