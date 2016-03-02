@@ -315,7 +315,7 @@ class SolrMarc extends VufindSolrMarc
     */
     public function getAdditionalInformation()
     {
-        $fields = ['540', '546', '561'];
+        $fields = ['546', '561'];
         $result = [];
         foreach ($fields as $field) {
             $value = $this->getFieldArray($field);

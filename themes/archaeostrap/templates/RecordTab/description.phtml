@@ -179,18 +179,6 @@
     </tr>
   <? endif; ?>
 
-  <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
-    <? $contentDisplayed = true; ?>
-    <tr valign="top">
-      <th><?=$this->transEsc('Access')?>: </th>
-      <td>
-        <? foreach ($access as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
-  <? endif; ?>
-
   <? $findingAids = $this->driver->getFindingAids(); if (!empty($findingAids)): ?>
     <? $contentDisplayed = true; ?>
     <tr valign="top">
