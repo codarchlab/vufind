@@ -265,7 +265,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                 $entry->addDCDescription($dcDescription);
             }
         }
-        $mediaThumbnail = $this->getView()->plugin('record')->getCover('medium');
+        $thumb = $record->getThumbnail('medium');
+        $urlHelper = $this->getView()->plugin('url');
+        $mediaThumbnail = $serverUrl($urlHelper('cover-show') . '?' . http_build_query($thumb));
         if (!empty($mediaThumbnail)) {
             $entry->setMediaThumbnail($mediaThumbnail);
         }
