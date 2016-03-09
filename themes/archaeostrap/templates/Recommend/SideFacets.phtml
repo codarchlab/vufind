@@ -1,4 +1,7 @@
 <? $results = $this->recommend->getResults(); ?>
+<? if ($results->getResultTotal() > 0): ?>
+  <h4><i class="fa fa-filter small"></i> <?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
+<? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
 <?
   $html = '';
