@@ -276,7 +276,8 @@ class SolrMarc extends VufindSolrMarc
     	$thsEntries = $this->getThsEntries();
 
     	foreach ($thsEntries as $thsEntry) {
-    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false) {
+    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
+                    || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false) {
     			$result[] = array(
     				'label' => $thsEntry['label'],
     				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
