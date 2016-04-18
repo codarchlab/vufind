@@ -328,7 +328,7 @@
       <tr>
         <th><?=$this->transEsc('child_records')?>: </th>
         <td>
-          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><i class="fa fa-folder-open"></i> <?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></i></a>
         </td>
       </tr>
       <? endif; ?>
