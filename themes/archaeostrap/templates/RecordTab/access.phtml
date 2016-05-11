@@ -1,6 +1,6 @@
 <?
     // Set page title.
-    $this->headTitle($this->translate('Description') . ': ' . $this->driver->getBreadcrumb());
+    $this->headTitle('Access: ' . $this->driver->getBreadcrumb());
 
     // Grab clean ISBN for convenience:
     $isbn = $this->driver->getCleanISBN();
@@ -10,7 +10,7 @@
         $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
     }
 ?>
-<table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
+<table class="table table-striped" summary="<?=$this->transEsc('Access')?>">
   <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
     <? $contentDisplayed = true; ?>
     <tr valign="top">
@@ -232,7 +232,7 @@
   <? $field546 = $this->driver->get546(); if (!empty($field546)): ?>
     <? $contentDisplayed = true; ?>
     <tr valign="top">
-      <th>546: </th>
+      <th>540: </th>
       <td>
         <? foreach ($field546 as $field): ?>
           <?=$this->escapeHtml($field)?><br/>
@@ -244,7 +244,7 @@
   <? $field561 = $this->driver->get561(); if (!empty($field561)): ?>
     <? $contentDisplayed = true; ?>
     <tr valign="top">
-      <th>561: </th>
+      <th>540: </th>
       <td>
         <? foreach ($field561 as $field): ?>
           <?=$this->escapeHtml($field)?><br/>

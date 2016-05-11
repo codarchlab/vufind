@@ -591,12 +591,12 @@ Thesaurus:
 
 LocalNote:
   QueryFields:
-    note_str_mv:
+    note_txt_mv:
       - [and, ~]
 
 JournalNote:
   QueryFields:
-    journal_note_str_mv:
+    journal_note_txt_mv:
       - [and, ~]
 
 SystemNo:
