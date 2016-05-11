@@ -52,6 +52,8 @@ class Entry extends ParentEntry
         }
         $this->setDCFormats($this->dom, $this->base);
         $this->setDCDate($this->dom, $this->base);
+        $this->setDCDescriptions($this->dom, $this->base);
+        $this->setMediaThumbnail($this->dom, $this->base);
         parent::render();
     }
 
@@ -96,6 +98,49 @@ class Entry extends ParentEntry
         $text = $dom->createTextNode($dcDate);
         $date->appendChild($text);
         $root->appendChild($date);
+        $this->called = true;
+    }
+
+    /**
+     * Set entry description elements
+     *
+     * @param DOMDocument $dom  DOM document to update
+     * @param DOMElement  $root Root of DOM document
+     *
+     * @return void
+     */
+    protected function setDCDescriptions(DOMDocument $dom, DOMElement $root)
+    {
+        $dcDescriptions = $this->getDataContainer()->getDCDescriptions();
+        if (empty($dcDescriptions)) {
+            return;
+        }
+        foreach ($dcDescriptions as $data) {
+            $format = $this->dom->createElement('dc:description');
+            $text = $dom->createTextNode($data);
+            $format->appendChild($text);
+            $root->appendChild($format);
+        }
+        $this->called = true;
+    }
+
+    /**
+     * Set entry thumbnail element
+     *
+     * @param DOMDocument $dom  DOM document to update
+     * @param DOMElement  $root Root of DOM document
+     *
+     * @return void
+     */
+    protected function setMediaThumbnail(DOMDocument $dom, DOMElement $root)
+    {
+        $mediaThumbnail = $this->getDataContainer()->getMediaThumbnail();
+        if (empty($mediaThumbnail)) {
+            return;
+        }
+        $thumbnail = $this->dom->createElement('media:thumbnail');
+        $thumbnail->setAttribute('url', $mediaThumbnail);
+        $root->appendChild($thumbnail);
         $this->called = true;
     }
 }

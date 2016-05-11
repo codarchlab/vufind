@@ -1,40 +1,26 @@
-<? if ($mobileViewLink = $this->mobileUrl()): // display 'return to mobile' link when applicable ?>
-  <hr/>
-  <div class="mobileViewLink"><a href="<?=$this->escapeHtml($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
-<? endif; ?>
-<hr/>
-<div class="row-fluid small">
-  <div class="span3 offset2"><p><strong><?=$this->transEsc('Search Options')?></strong></p>
-    <ul>
-      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
-      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
-    </ul>
-  </div>
-  <div class="span3"><p><strong><?=$this->transEsc('Find More')?></strong></p>
-    <ul>
-      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
-      <!--<li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>-->
-      <!--<li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>-->
-      <li>
-        <?
-          $queryMonth = date('my');
-          $queries = [];
-          foreach(['a','e','i','k','c','m','o','f','r','z'] as $char) $queries[] = $char.$queryMonth;
-          $query = join(' OR ', $queries);
-        ?>
-        <a href="<?=$this->url('search-results')?>?lookfor=<?=$query?>&amp;type=LocalNote"><?=$this->transEsc('Accessions')?></a>
-      </li>
-    </ul>
-  </div>
-  <div class="span3"><p><strong><?=$this->transEsc('Need Help?')?></strong></p>
-    <ul>
-      <li><a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a></li>
-      <li><a href="http://www.dainst.org/forschung/infrastruktur/bibliotheken"><?=$this->transEsc('Ask a Librarian')?></a></li>
-    </ul>
-  </div>
-</div>
-<div class="row-fluid">
-  <div class="span6 offset3 text-center small">
-    Fragen und Hinweise zum ZENON schicken Sie bitte an <a href="mailto:idai.bibliography@dainst.de">idai.bibliography@dainst.de</a>.
+<div class="idai-footer row">
+  <div class="col-md-12 text-center">
+    <p>
+      <a href="http://www.dainst.de/"><img class="logoImage" src="<?=$this->imageLink('logo_dai.png') ?>"></a>
+    </p>
+    <p>
+      <a href="http://www.dainst.org/de/datenschutz" target="_blank"><?=$this->transEsc('Privacy')?></a> |
+      <a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a> |
+      <a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a> |
+      <a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a> |
+      <?
+        $queryMonth = date('my');
+        $queries = [];
+        foreach(['a','e','i','k','c','m','o','f','r','z'] as $char) $queries[] = $char.$queryMonth;
+        $query = join(' OR ', $queries);
+      ?>
+      <a href="<?=$this->url('search-results')?>?lookfor=<?=$query?>&amp;type=LocalNote"><?=$this->transEsc('Accessions')?></a> |
+      <a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a> |
+      <a href="http://www.dainst.org/forschung/infrastruktur/bibliotheken"><?=$this->transEsc('Ask a Librarian')?></a>
+    </p>
+    <p>
+      Fragen und Hinweise zum ZENON schicken Sie bitte an
+      <a href="mailto:idai.bibliography@dainst.de" class="ng-binding">idai.bibliography@dainst.de</a>
+    </p>
   </div>
 </div>

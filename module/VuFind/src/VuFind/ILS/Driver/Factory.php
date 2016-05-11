@@ -36,6 +36,8 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -51,6 +53,20 @@ class Factory
         return new Aleph(
             $sm->getServiceLocator()->get('VuFind\DateConverter'),
             $sm->getServiceLocator()->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
+     * Factory for DAIA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return DAIA
+     */
+    public static function getDAIA(ServiceManager $sm)
+    {
+        return new DAIA(
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
     }
 
@@ -104,7 +120,10 @@ class Factory
      */
     public static function getMultiBackend(ServiceManager $sm)
     {
-        return new MultiBackend($sm->getServiceLocator()->get('VuFind\Config'));
+        return new MultiBackend(
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
     }
 
     /**

@@ -6,13 +6,17 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Zend\\' => array($vendorDir . '/zendframework/zendframework/library'),
-    'ZendXml' => array($vendorDir . '/zendframework/zendxml/library'),
+    'ZfcRbac\\' => array($vendorDir . '/zf-commons/zfc-rbac/src'),
+    'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/library'),
     'ZendService\\Amazon\\' => array($vendorDir . '/zendframework/zendservice-amazon/library'),
-    'ZendService' => array($vendorDir . '/zendframework/zendservice-recaptcha/library'),
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
-    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'VuFindHttp\\' => array($vendorDir . '/vufind-org/vufindhttp/src'),
+    'VuFindCode\\' => array($vendorDir . '/vufind-org/vufindcode/src'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
+    'Rbac\\' => array($vendorDir . '/zfr/rbac/src'),
+    'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
+    'LosReCaptcha\\' => array($vendorDir . '/los/losrecaptcha/src'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
+    'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
 );

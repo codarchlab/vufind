@@ -5,7 +5,8 @@ angular.module('zenonThs', [])
     $scope.columns = [];
     $scope.active = [];
     $scope.offset = 0;
-    $scope.colWidth = $element[0].offsetWidth / 4;
+    $scope.colWidth = angular.element($element[0]).children()[1].offsetWidth / 4;
+    console.log($scope.colWidth);
     $scope.loading = 1;
 
     $http.get('/Thesaurus/Children').success(function(result) {

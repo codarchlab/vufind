@@ -36,7 +36,6 @@ namespace VuFindAdmin\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class MaintenanceController extends AbstractAdmin
 {
     /**
@@ -47,8 +46,29 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
+        $view->caches = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCacheList();
         $view->setTemplate('admin/maintenance/home');
         return $view;
+    }
+
+    /**
+     * Clear cache(s).
+     *
+     * @return mixed
+     */
+    public function clearcacheAction()
+    {
+        $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
+        foreach ($this->params()->fromQuery('cache', []) as $cache) {
+            $cacheManager->getCache($cache)->flush();
+        }
+        // If cache is unset, we didn't go through the loop above, so no message
+        // needs to be displayed.
+        if (isset($cache)) {
+            $this->flashMessenger()->addMessage('Cache(s) cleared.', 'success');
+        }
+        return $this->forwardTo('AdminMaintenance', 'Home');
     }
 
     /**
@@ -99,13 +119,12 @@ class MaintenanceController extends AbstractAdmin
     {
         $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage(
-                    str_replace(
-                        '%%age%%', $minAge,
-                        'Expiration age must be at least %%age%% days.'
-                    )
-                );
+            $this->flashMessenger()->addMessage(
+                str_replace(
+                    '%%age%%', $minAge,
+                    'Expiration age must be at least %%age%% days.'
+                ), 'error'
+            );
         } else {
             $search = $this->getTable($table);
             if (!method_exists($search, 'getExpiredQuery')) {
@@ -118,7 +137,7 @@ class MaintenanceController extends AbstractAdmin
                 $search->delete($query);
                 $msg = str_replace('%%count%%', $count, $successString);
             }
-            $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+            $this->flashMessenger()->addMessage($msg, 'success');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }

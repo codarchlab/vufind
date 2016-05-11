@@ -49,6 +49,27 @@ class OAI
     protected $client;
 
     /**
+     * HTTP client's timeout
+     *
+     * @var int
+     */
+    protected $timeout = 60;
+
+    /**
+     * Combine harvested records (per OAI chunk size) into one (collection) file?
+     *
+     * @var bool
+     */
+    protected $combineRecords = false;
+
+    /**
+     * The wrapping XML tag to be used if combinedRecords is set to true
+     *
+     * @var string
+     */
+    protected $combineRecordsTag = '<collection>';
+
+    /**
      * URL to harvest from
      *
      * @var string
@@ -81,14 +102,14 @@ class OAI
      *
      * @var array
      */
-    protected $idSearch = array();
+    protected $idSearch = [];
 
     /**
      * Replacements for regular expression matches
      *
      * @var array
      */
-    protected $idReplace = array();
+    protected $idReplace = [];
 
     /**
      * Directory for storing harvested files
@@ -103,6 +124,14 @@ class OAI
      * @var string
      */
     protected $lastHarvestFile;
+
+    /**
+     * File for tracking last harvest state (for continuing interrupted
+     * connection).
+     *
+     * @var string
+     */
+    protected $lastStateFile;
 
     /**
      * Harvest end date (null for no specific end)
@@ -158,14 +187,14 @@ class OAI
      *
      * @var array
      */
-    protected $injectHeaderElements = array();
+    protected $injectHeaderElements = [];
 
     /**
      * Associative array of setSpec => setName
      *
      * @var array
      */
-    protected $setNames = array();
+    protected $setNames = [];
 
     /**
      * Filename for logging harvested IDs (false for none)
@@ -235,7 +264,7 @@ class OAI
 
         // Disable SSL verification if requested:
         if (isset($settings['sslverifypeer']) && !$settings['sslverifypeer']) {
-            $this->client->setOptions(array('sslverifypeer' => false));
+            $this->client->setOptions(['sslverifypeer' => false]);
         }
 
         // Don't time out during harvest!!
@@ -246,6 +275,7 @@ class OAI
 
         // Check if there is a file containing a start date:
         $this->lastHarvestFile = $this->basePath . 'last_harvest.txt';
+        $this->lastStateFile = $this->basePath . 'last_state.txt';
 
         // Set up start/end dates:
         $this->setStartDate(empty($from) ? $this->loadLastHarvestedDate() : $from);
@@ -298,19 +328,48 @@ class OAI
         // Normalize sets setting to an array:
         $sets = (array)$this->set;
         if (empty($sets)) {
-            $sets = array(null);
+            $sets = [null];
         }
 
+        // Load last state, if applicable (used to recover from server failure).
+        if (file_exists($this->lastStateFile)) {
+            $this->write("Found {$this->lastStateFile}; attempting to resume.\n");
+            list($resumeSet, $resumeToken, $this->startDate)
+                = explode("\t", file_get_contents($this->lastStateFile));
+        }
+    
         // Loop through all of the selected sets:
         foreach ($sets as $set) {
-            // Start harvesting at the requested date:
-            $token = $this
-                ->getRecordsByDate($this->startDate, $set, $this->harvestEndDate);
+            // If we're resuming and there are multiple sets, find the right one.
+            if (isset($resumeToken) && $resumeSet != $set) {
+                continue;
+            }
+
+            // If we have a token to resume from, pick up there now...
+            if (isset($resumeToken)) {
+                $token = $resumeToken;
+                unset($resumeToken);
+            } else {
+                // ...otherwise, start harvesting at the requested date:
+                $token = $this->getRecordsByDate(
+                    $this->startDate, $set, $this->harvestEndDate
+                );
+            }
 
             // Keep harvesting as long as a resumption token is provided:
             while ($token !== false) {
+                // Save current state in case we need to resume later:
+                file_put_contents(
+                    $this->lastStateFile, "$set\t$token\t{$this->startDate}"
+                );
                 $token = $this->getRecordsByToken($token);
             }
+        }
+
+        // If we made it this far, all was successful, so we should clean up
+        // the "last state" file.
+        if (file_exists($this->lastStateFile)) {
+            unlink($this->lastStateFile);
         }
     }
 
@@ -366,7 +425,7 @@ class OAI
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        $date = str_replace(['T', 'Z'], [' ', ''], $date);
 
         // Translate to a timestamp:
         return strtotime($date);
@@ -393,7 +452,7 @@ class OAI
      *
      * @return object        SimpleXML-formatted response.
      */
-    protected function sendRequest($verb, $params = array())
+    protected function sendRequest($verb, $params = [])
     {
         // Debug:
         if ($this->verbose) {
@@ -407,8 +466,7 @@ class OAI
             // Set up the request:
             $this->client->resetParameters();
             $this->client->setUri($this->baseURL);
-            // TODO: make timeout configurable
-            $this->client->setOptions(array('timeout' => 60));
+            $this->client->setOptions(['timeout' => $this->timeout]);
 
             // Set authentication, if necessary:
             if ($this->httpUser && $this->httpPass) {
@@ -509,6 +567,17 @@ class OAI
         // Detect errors and die if one is found:
         if ($result->error) {
             $attribs = $result->error->attributes();
+
+            // If this is a bad resumption token error and we're trying to
+            // restore a prior state, we should clean up.
+            if ($attribs['code'] == 'badResumptionToken'
+                && file_exists($this->lastStateFile)
+            ) {
+                unlink($this->lastStateFile);
+                throw new \Exception(
+                    "Token expired; removing last_state.txt. Please restart harvest."
+                );
+            }
             throw new \Exception(
                 "OAI-PMH error -- code: {$attribs['code']}, " .
                 "value: {$result->error}"
@@ -536,14 +605,15 @@ class OAI
     /**
      * Create a tracking file to record the deletion of a record.
      *
-     * @param string $id ID of deleted record.
+     * @param string|array $ids ID(s) of deleted record(s).
      *
      * @return void
      */
-    protected function saveDeletedRecord($id)
+    protected function saveDeletedRecords($ids)
     {
-        $filename = $this->getFilename($id, 'delete');
-        file_put_contents($filename, $id);
+        $ids = (array)$ids; // make sure input is array format
+        $filename = $this->getFilename($ids[0], 'delete');
+        file_put_contents($filename, implode("\n", $ids));
     }
 
     /**
@@ -554,7 +624,7 @@ class OAI
      *
      * @return void
      */
-    protected function saveRecord($id, $record)
+    protected function getRecordXML($id, $record)
     {
         if (!isset($record->metadata)) {
             throw new \Exception("Unexpected missing record metadata.");
@@ -613,6 +683,19 @@ class OAI
             isset($extractedNs[1]) ? $extractedNs[1] : ''
         );
 
+        return trim($xml);
+    }
+
+    /**
+     * Save a record to disk.
+     *
+     * @param string $id  Record ID to use for filename generation.
+     * @param string $xml XML to save.
+     *
+     * @return void
+     */
+    protected function saveFile($id, $xml)
+    {
         // Save our XML:
         file_put_contents($this->getFilename($id, 'xml'), trim($xml));
     }
@@ -667,7 +750,7 @@ class OAI
 
         // On the first pass through the following loop, we want to get the
         // first page of sets without using a resumption token:
-        $params = array();
+        $params = [];
 
         // Grab set information until we have it all (at which point we will
         // break out of this otherwise-infinite loop):
@@ -736,7 +819,12 @@ class OAI
         $this->writeLine('Processing ' . count($records) . " records...");
 
         // Array for tracking successfully harvested IDs:
-        $harvestedIds = array();
+        $harvestedIds = [];
+
+        // Array for tracking deleted IDs and string for tracking inner HTML
+        // (both of these variables are used only when in 'combineRecords' mode):
+        $deletedIds = [];
+        $innerXML = '';
 
         // Loop through the records:
         foreach ($records as $record) {
@@ -751,9 +839,17 @@ class OAI
             // Save the current record, either as a deleted or as a regular file:
             $attribs = $record->header->attributes();
             if (strtolower($attribs['status']) == 'deleted') {
-                $this->saveDeletedRecord($id);
+                if ($this->combineRecords) {
+                    $deletedIds[] = $id;
+                } else {
+                    $this->saveDeletedRecords($id);
+                }
             } else {
-                $this->saveRecord($id, $record);
+                if ($this->combineRecords) {
+                    $innerXML .= $this->getRecordXML($id, $record);
+                } else {
+                    $this->saveFile($id, $this->getRecordXML($id, $record));
+                }
                 $harvestedIds[] = $id;
             }
 
@@ -762,6 +858,16 @@ class OAI
             $date = $this->normalizeDate($record->header->datestamp);
             if ($date && $date > $this->endDate) {
                 $this->endDate = $date;
+            }
+        }
+
+        if ($this->combineRecords) {
+            if (!empty($harvestedIds)) {
+                $this->saveFile($harvestedIds[0], $this->getCombinedXML($innerXML));
+            }
+
+            if (!empty($deletedIds)) {
+                $this->saveDeletedRecords($deletedIds);
             }
         }
 
@@ -774,6 +880,24 @@ class OAI
             fputs($file, implode(PHP_EOL, $harvestedIds));
             fclose($file);
         }
+    }
+
+    /**
+     * Support method for building combined XML document.
+     *
+     * @param string $innerXML XML for inside of document.
+     *
+     * @return string
+     */
+    protected function getCombinedXML($innerXML)
+    {
+        // Determine start and end tags from configuration:
+        $start = $this->combineRecordsTag;
+        $tmp = explode(' ', $start);
+        $end = '</' . str_replace(['<', '>'], '', $tmp[0]) . '>';
+
+        // Assemble the document:
+        return $start . $innerXML . $end;
     }
 
     /**
@@ -818,7 +942,7 @@ class OAI
      */
     protected function getRecordsByDate($from = null, $set = null, $until = null)
     {
-        $params = array('metadataPrefix' => $this->metadataPrefix);
+        $params = ['metadataPrefix' => $this->metadataPrefix];
         if (!empty($from)) {
             $params['from'] = $from;
         }
@@ -840,7 +964,7 @@ class OAI
      */
     protected function getRecordsByToken($token)
     {
-        return $this->getRecords(array('resumptionToken' => (string)$token));
+        return $this->getRecords(['resumptionToken' => (string)$token]);
     }
 
     /**
@@ -860,12 +984,12 @@ class OAI
         $this->baseURL = $settings['url'];
 
         // Settings that may be mapped directly from $settings to class properties:
-        $mappableSettings = array(
+        $mappableSettings = [
             'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
             'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
             'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
-            'httpUser', 'httpPass',
-        );
+            'httpUser', 'httpPass', 'timeout', 'combineRecords', 'combineRecordsTag',
+        ];
         foreach ($mappableSettings as $current) {
             if (isset($settings[$current])) {
                 $this->$current = $settings[$current];
@@ -880,7 +1004,7 @@ class OAI
 
         // Normalize injectHeaderElements to an array:
         if (!is_array($this->injectHeaderElements)) {
-            $this->injectHeaderElements = array($this->injectHeaderElements);
+            $this->injectHeaderElements = [$this->injectHeaderElements];
         }
     }
 

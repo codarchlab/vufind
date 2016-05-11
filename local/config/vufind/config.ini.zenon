@@ -1054,7 +1054,12 @@ search = true
 ; a limit is recommended if you have large trees, as otherwise large numbers of
 ; results can cause performance problems.  If treeSearchLimit is -1 or not set,
 ; results will be unlimited.
-treeSearchLimit = 100
+treeSearchLimit = 1000
+; Whether hierarchy fields are used for linking between container records and their
+; children (default = false). This is an alternative to the full collections support
+; (see the [Collections] section), so only one of them should be enabled
+; at a time e.g. unless custom record drivers are used.
+simpleContainerLinks = true
 
 ; This section will be used to configure the feedback module.
 ; Set "tab_enabled" to true in order to enable the feedback module.
@@ -1074,6 +1079,18 @@ treeSearchLimit = 100
 ;[GoogleAnalytics]
 ;apiKey = "mykey"
 ;universal = false
+
+; Uncomment this section and provide your Piwik server address and site id to
+; enable Piwik analytics. Note: VuFind's Piwik integration uses several custom
+; variables; to take advantage of them, you must reconfigure Piwik by switching
+; to its root directory and running this command to raise a default limit:
+; ./console customvariables:set-max-custom-variables 10
+[Piwik]
+url = "https://piwik.dainst.org/"
+site_id = 2
+; Uncomment the following setting to track additional information about searches
+; and displayed records with Piwik's custom variables
+custom_variables = true
 
 ; Uncomment portions of this section to activate tabs in the search box for switching
 ; between search modules. Keys are search backend names, values are labels for use in

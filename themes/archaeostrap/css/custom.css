@@ -1,10 +1,26 @@
+body {
+    margin-top: 70px;
+}
+
 .home-image {
 	background-image: url('../images/Buchruecken.jpg');
 	height: 274px;
 }
 
+.idai-footer {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 30px;
+    background-color: #e2e2e2;
+}
+
 mark {
 	background-color: #ffffcc;
+}
+
+.table {
+	table-layout: auto;
 }
 
 .thesaurus .breadcrumb li {
@@ -21,43 +37,114 @@ mark {
 	background-color: #B9C5D3;
 }
 
-.gly-spin {
-  -webkit-animation: spin 1s infinite linear;
-  -moz-animation: spin 1s infinite linear;
-  -o-animation: spin 1s infinite linear;
-  animation: spin 1s infinite linear;
+/* hacks for styling search bar on home */
+
+#searchForm .twitter-typeahead {
+	width: 100%;
 }
-@-moz-keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-  }
+#searchForm .row {
+	padding-left: 14px;
+	padding-right: 14px;
 }
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-  }
+#searchForm .row div {
+	margin: 0;
+	padding: 0 1px;
 }
-@-o-keyframes spin {
-  0% {
-    -o-transform: rotate(0deg);
-  }
-  100% {
-    -o-transform: rotate(359deg);
-  }
+#searchForm .row div .form-control {
+	width: 100%;
+	max-width: none;
 }
-@keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
+
+/* hacks for styling search bar in nav */
+
+.navbar .searchForm .twitter-typeahead {
+	display: inline !important;
+}
+
+.navbar .searchForm .twitter-typeahead .tt-hint {
+	top: -6px !important;
+}
+
+.tt-suggestions {
+	text-align: left;
+	background-color: rgba(255,255,255,0.8);
+	box-shadow: 3px 3px 5px grey;
+	border: 1px solid lightgrey;
+	border-width: 0 1px 1px 1px;
+}
+
+.tt-suggestion {
+	cursor: pointer;	
+}
+
+.tt-suggestion p {
+	padding: 0 5px;
+}
+
+.tt-suggestion:hover {
+	background-color: #B9C5D3;
+}
+
+/* search result view */
+
+.row.result a.title {
+	font-weight: normal;
+}
+
+.row.result {
+	padding: 15px 4px;
+}
+
+.row.result:nth-child(even) {
+	background-color: #f7f7f7;
+}
+
+.facet .list-group {
+	border-bottom: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.facet .panel-title {
+    font-size: 14px;
+    cursor: pointer;
+    color: #37588e;
+}
+
+.facet .list-group-item {
+	border: 0;
+	padding: 4px 8px;
+}
+
+.facet .list-group-item:hover {
+	background-color: rgba(85, 114, 161, 0.9);
+	color: white;
+}
+
+.facet .slider-container {
+	padding: 15px;
+}
+
+/* record view */
+
+.template-dir-record ul.toolbar {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.template-dir-record ul.toolbar > li,
+.template-dir-record ul.toolbar > li a {
+	display: inline;
+	float: none;
+}
+
+/* override modal padding, in order to fix strange "padding-left: 0px;" appearing in output */
+.modal-body {
+	padding: 15px !important;
+}
+
+#holdings-tab h3 {
+	text-transform: uppercase;
+	color: #777777;
+	font-size: 16px;
+	font-weight: bold;
 }

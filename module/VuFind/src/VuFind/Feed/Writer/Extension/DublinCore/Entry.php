@@ -50,7 +50,7 @@ class Entry extends ParentEntry
      *
      * @var array
      */
-    protected $dcFormats = array();
+    protected $dcFormats = [];
 
     /**
      * Date
@@ -58,6 +58,20 @@ class Entry extends ParentEntry
      * @var string
      */
     protected $dcDate = null;
+
+    /**
+     * Descriptions
+     *
+     * @var array
+     */
+    protected $dcDescriptions = [];
+
+    /**
+     * Date
+     *
+     * @var string
+     */
+    protected $thumbnail = null;
 
     /**
      * Add a Dublin Core format.
@@ -84,6 +98,30 @@ class Entry extends ParentEntry
     }
 
     /**
+     * Set the media thumbnail.
+     *
+     * @param string $date Date to set.
+     *
+     * @return void
+     */
+    public function setMediaThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+    }
+
+    /**
+     * Add a Dublin Core description.
+     *
+     * @param string $description Description to add.
+     *
+     * @return void
+     */
+    public function addDCDescription($description)
+    {
+        $this->dcDescriptions[] = $description;
+    }
+
+    /**
      * Get the Dublin Core date.
      *
      * @return string
@@ -101,5 +139,25 @@ class Entry extends ParentEntry
     public function getDCFormats()
     {
         return $this->dcFormats;
+    }
+
+    /**
+     * Get the Dublin Core descriptions.
+     *
+     * @return array
+     */
+    public function getDCDescriptions()
+    {
+        return $this->dcDescriptions;
+    }
+
+    /**
+     * Get the media thumbnail.
+     *
+     * @return string
+     */
+    public function getMediaThumbnail()
+    {
+        return $this->thumbnail;
     }
 }

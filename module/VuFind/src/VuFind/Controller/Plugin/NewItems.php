@@ -77,16 +77,18 @@ class NewItems extends AbstractPlugin
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
         // Build a list of unique IDs
-        $bibIDs = array();
-        for ($i=0; $i<count($newItems['results']); $i++) {
-            $bibIDs[] = $newItems['results'][$i]['id'];
+        $bibIDs = [];
+        if (isset($newItems['results'])) {
+            for ($i = 0; $i < count($newItems['results']); $i++) {
+                $bibIDs[] = $newItems['results'][$i]['id'];
+            }
         }
 
         // Truncate the list if it is too long:
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $flash->setNamespace('info')->addMessage('too_many_new_items');
+            $flash->addMessage('too_many_new_items', 'info');
         }
 
         return $bibIDs;
@@ -102,9 +104,9 @@ class NewItems extends AbstractPlugin
         if ($this->getMethod() == 'ils') {
             $catalog = $this->getController()->getILS();
             return $catalog->checkCapability('getFunds')
-                ? $catalog->getFunds() : array();
+                ? $catalog->getFunds() : [];
         }
-        return array();
+        return [];
     }
 
     /**
@@ -115,12 +117,12 @@ class NewItems extends AbstractPlugin
     public function getHiddenFilters()
     {
         if (!isset($this->config->filter)) {
-            return array();
+            return [];
         }
         if (is_string($this->config->filter)) {
-            return array($this->config->filter);
+            return [$this->config->filter];
         }
-        $hiddenFilters = array();
+        $hiddenFilters = [];
         foreach ($this->config->filter as $current) {
             $hiddenFilters[] = $current;
         }
@@ -156,7 +158,7 @@ class NewItems extends AbstractPlugin
     {
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
-        $ranges = array();
+        $ranges = [];
         if (isset($this->config->ranges)) {
             $tmp = explode(',', $this->config->ranges);
             foreach ($tmp as $range) {
@@ -167,7 +169,7 @@ class NewItems extends AbstractPlugin
             }
         }
         if (empty($ranges)) {
-            $ranges = array(1, 5, 30);
+            $ranges = [1, 5, 30];
         }
         return $ranges;
     }
@@ -199,6 +201,6 @@ class NewItems extends AbstractPlugin
      */
     public function getSolrFilter($range)
     {
-        return 'first_indexed:[NOW-' . $range .'DAY TO NOW]';
+        return 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
     }
 }

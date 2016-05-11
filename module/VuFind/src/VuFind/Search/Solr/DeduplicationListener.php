@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -78,24 +77,34 @@ class DeduplicationListener
     protected $dataSourceConfig;
 
     /**
+     * Whether deduplication is enabled.
+     *
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
      * Constructor.
      *
      * @param BackendInterface        $backend          Search backend
      * @param ServiceLocatorInterface $serviceLocator   Service locator
      * @param string                  $searchConfig     Search config file id
      * @param string                  $dataSourceConfig Data source file id
+     * @param bool                    $enabled          Whether deduplication is
+     * enabled
      *
      * @return void
      */
     public function __construct(
         BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources'
+        $searchConfig, $dataSourceConfig = 'datasources', $enabled = true
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
         $this->searchConfig = $searchConfig;
         $this->dataSourceConfig = $dataSourceConfig;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -108,8 +117,8 @@ class DeduplicationListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
-        $manager->attach('VuFind\Search', 'post', array($this, 'onSearchPost'));
+        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
     /**
@@ -126,7 +135,18 @@ class DeduplicationListener
             $params = $event->getParam('params');
             $context = $event->getParam('context');
             if (($context == 'search' || $context == 'similar') && $params) {
-                $params->add('fq', '-merged_child_boolean:TRUE');
+                // If deduplication is enabled, filter out merged child records,
+                // otherwise filter out dedup records.
+                if ($this->enabled) {
+                    $fq = '-merged_child_boolean:true';
+                    if ($context == 'similar' && $id = $event->getParam('id')) {
+                        $fq .= ' AND -local_ids_str_mv:"'
+                            . addcslashes($id, '"') . '"';
+                    }
+                } else {
+                    $fq = '-merged_boolean:true';
+                }
+                $params->add('fq', $fq);
             }
         }
         return $event;
@@ -148,7 +168,7 @@ class DeduplicationListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($context == 'search') {
+        if ($this->enabled && ($context == 'search' || $context == 'similar')) {
             $this->fetchLocalRecords($event);
         }
         return $event;
@@ -173,7 +193,7 @@ class DeduplicationListener
         $params = $event->getParam('params');
         $buildingPriority = $this->determineBuildingPriority($params);
 
-        $idList = array();
+        $idList = [];
         // Find out the best records and list their IDs:
         $result = $event->getTarget();
         foreach ($result->getRecords() as $record) {
@@ -187,7 +207,7 @@ class DeduplicationListener
             $priority = 99999;
             $undefPriority = 99999;
             // Find the document that matches the source priority best:
-            $dedupData = array();
+            $dedupData = [];
             foreach ($localIds as $localId) {
                 $localPriority = null;
                 list($source) = explode('.', $localId, 2);
@@ -212,10 +232,10 @@ class DeduplicationListener
                     $dedupId = $localId;
                     $priority = $localPriority;
                 }
-                $dedupData[$source] = array(
+                $dedupData[$source] = [
                     'id' => $localId,
                     'priority' => isset($localPriority) ? $localPriority : 99999
-                );
+                ];
             }
             $fields['dedup_id'] = $dedupId;
             $idList[] = $dedupId;
@@ -270,6 +290,7 @@ class DeduplicationListener
                 $sourcePriority
             );
             $foundLocalRecord->setRawData($localRecordData);
+            $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
             $result->replace($record, $foundLocalRecord);
         }
     }
@@ -285,6 +306,7 @@ class DeduplicationListener
      * @param array  $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function appendDedupRecordFields($localRecordData, $dedupRecordData,
@@ -315,18 +337,21 @@ class DeduplicationListener
      */
     protected function determineBuildingPriority($params)
     {
-        $result = array();
+        $result = [];
         foreach ($params->get('fq') as $fq) {
-            if (strncmp($fq, 'building:', 9) == 0) {
-                if (preg_match(
-                    '/^building:"?\d+\/([^\/]+?)\//',
-                    $fq,
-                    $matches
-                )) {
-                    // Hierarchical facets; take only first level:
-                    $result[] = $matches[1];
-                } else {
-                    $result[] = substr($fq, 12);
+            if (preg_match_all(
+                '/\bbuilding:"([^"]+)"/',
+                $fq,
+                $matches
+            )) {
+                $values = $matches[1];
+                foreach ($values as $value) {
+                    if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
+                        // Hierarchical facets; take only first level:
+                        $result[] = $matches[1];
+                    } else {
+                        $result[] = $value;
+                    }
                 }
             }
         }

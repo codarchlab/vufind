@@ -88,7 +88,7 @@ class Renewals extends AbstractPlugin
         } else if (!empty($selected)) {
             $ids = $request->get('renewSelectedIDS');
         } else {
-            $ids = array();
+            $ids = [];
         }
 
         // Retrieve the flashMessenger helper:
@@ -97,7 +97,7 @@ class Renewals extends AbstractPlugin
         // If there is actually something to renew, attempt the renewal action:
         if (is_array($ids) && !empty($ids)) {
             $renewResult = $catalog->renewMyItems(
-                array('details' => $ids, 'patron' => $patron)
+                ['details' => $ids, 'patron' => $patron]
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
@@ -105,7 +105,7 @@ class Renewals extends AbstractPlugin
                     && is_array($renewResult['blocks'])
                 ) {
                     foreach ($renewResult['blocks'] as $block) {
-                        $flashMsg->setNamespace('info')->addMessage($block);
+                        $flashMsg->addMessage($block, 'info');
                     }
                 }
 
@@ -113,13 +113,13 @@ class Renewals extends AbstractPlugin
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMsg->setNamespace('error')->addMessage('renew_error');
+                $flashMsg->addMessage('renew_error', 'error');
             }
         } else if (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
-            $flashMsg->setNamespace('error')->addMessage('renew_empty_selection');
+            $flashMsg->addMessage('renew_empty_selection', 'error');
         }
 
-        return array();
+        return [];
     }
 }

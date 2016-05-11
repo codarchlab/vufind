@@ -40,6 +40,8 @@ use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 class SolrMarc extends VufindSolrMarc
 {
 
+    const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
+
     /**
      * Get the full title of the record.
      * Overriden to remove trailing slashes.
@@ -130,6 +132,31 @@ class SolrMarc extends VufindSolrMarc
         // only return distinct values
         return array_map('unserialize', array_unique(array_map('serialize', $result)));
 
+    }
+
+    /**
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
+     *
+     * Overriden to be able to test if thumbs are available in cache directory.
+     *
+     * @param string $size Size of thumbnail (small, medium or large -- small is
+     * default).
+     *
+     * @return string|array|bool
+     */
+    public function getThumbnail($size = 'small')
+    {
+        $arr = parent::getThumbnail($size);
+        if (!array_key_exists('isbn', $arr)) return false;
+
+        if ( file_exists(self::COVERS_DIR . '/medium/' . $arr['isbn'] . '.jpg')
+            || file_exists(self::COVERS_DIR . '/medium/978' . $arr['isbn'] . '.jpg') )
+            return $arr;
+        else
+            return false;
     }
 
     /**
@@ -249,7 +276,8 @@ class SolrMarc extends VufindSolrMarc
     	$thsEntries = $this->getThsEntries();
 
     	foreach ($thsEntries as $thsEntry) {
-    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false) {
+    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
+                    || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false) {
     			$result[] = array(
     				'label' => $thsEntry['label'],
     				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
@@ -261,6 +289,62 @@ class SolrMarc extends VufindSolrMarc
 
     }
 
+    /**
+     * Get Varying Form of Title (MARC field 246)
+     *
+     * @return array
+     */
+    public function getVaryingFormOfTitles()
+    {
+        return $this->getFieldArray('246');
+    }
+
+    /**
+     * Get additional Title (MARC field 740)
+     *
+     * @return array
+     */
+    public function getAdditionalTitles()
+    {
+        return $this->getFieldArray('740');
+    }
+
+    /**
+    * Get additional Information (MARC fields 540, 546 & 561)
+     *
+     * @return array
+    */
+    public function getAdditionalInformation()
+    {
+        $fields = ['546', '561'];
+        $result = [];
+        foreach ($fields as $field) {
+            $value = $this->getFieldArray($field);
+            if (!empty($value)) $result[] = $value;
+        }
+        return $result;
+    }
+
+    /**
+    * Get Terms Governing Use and Reproduction Note (MARC field 540)
+     *
+     * @return array
+    */
+    public function getUsageTerms()
+    {
+        return $this->getFieldArray('540');
+    }
+
+    /**
+    * Get Copyright Status (MARC field 542)
+     *
+     * @return array
+    */
+    public function getCopyrightStatus()
+    {
+        return $this->getFieldArray('542',['d']);
+    }
+    
     private function removeTrailingSlash($s)
     {
         if (strrpos($s, '/') == strlen($s)-1) {

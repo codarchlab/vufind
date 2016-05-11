@@ -55,12 +55,14 @@ class CoverController extends AbstractBase
     {
         // Construct object for loading cover images if it does not already exist:
         if (!$this->loader) {
+            $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
+                ->getCache('cover')->getOptions()->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
                 $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
                 $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
                 $this->getServiceLocator()->get('VuFind\Http')->createClient(),
-                $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()
+                $cacheDir
             );
             \VuFind\ServiceManager\Initializer::initInstance(
                 $this->loader, $this->getServiceLocator()
@@ -77,6 +79,14 @@ class CoverController extends AbstractBase
     public function showAction()
     {
         $this->writeSession();  // avoid session write timing bug
+
+        // Special case: proxy a full URL:
+        $proxy = $this->params()->fromQuery('proxy');
+        if (!empty($proxy)) {
+            return $this->proxyUrl($proxy);
+        }
+
+        // Default case -- use image loader:
         $this->getLoader()->loadImage(
             // Legacy support for "isn" param which has been superseded by isbn:
             $this->params()->fromQuery('isbn', $this->params()->fromQuery('isn')),
@@ -122,19 +132,32 @@ class CoverController extends AbstractBase
         // is able to cache the cover images and not have to re-request
         // then on each page load. Default TTL set at 14 days
 
-        $coverImageTtl = (60*60*24*14); // 14 days
+        $coverImageTtl = (60 * 60 * 24 * 14); // 14 days
         $headers->addHeaderLine(
-            'Cache-Control', "maxage=".$coverImageTtl
+            'Cache-Control', "maxage=" . $coverImageTtl
         );
         $headers->addHeaderLine(
             'Pragma', 'public'
         );
         $headers->addHeaderLine(
-            'Expires', gmdate('D, d M Y H:i:s', time()+$coverImageTtl) . ' GMT'
+            'Expires', gmdate('D, d M Y H:i:s', time() + $coverImageTtl) . ' GMT'
         );
 
         $response->setContent($this->getLoader()->getImage());
         return $response;
+    }
+
+    /**
+     * Proxy a URL.
+     *
+     * @param string $url URL to proxy
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function proxyUrl($url)
+    {
+        $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
+        return $client->setUri($url)->send();
     }
 }
 

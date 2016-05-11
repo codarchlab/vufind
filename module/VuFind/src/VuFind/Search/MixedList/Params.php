@@ -55,7 +55,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initSearch($request)
     {
-        $this->recordsToRequest = $request->get('id', array());
+        $this->recordsToRequest = $request->get('id', []);
 
         // We always want to display the entire list as one page:
         $this->setLimit(count($this->recordsToRequest));
@@ -69,19 +69,5 @@ class Params extends \VuFind\Search\Base\Params
     public function getRecordsToRequest()
     {
         return $this->recordsToRequest;
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // No recommendation modules in mixed list view currently:
-        return array();
     }
 }

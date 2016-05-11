@@ -38,6 +38,8 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -56,10 +58,13 @@ class Factory
             ->get('HierarchyDefault');
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : array();
+          : [];
+        $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr')->getConnector();
+        $formatterManager = $sm->getServiceLocator()
+            ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
         return new Solr(
-            $sm->getServiceLocator()->get('VuFind\Search'),
-            rtrim($cacheDir, '/') . '/hierarchy',
+            $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
             $filters
         );
     }

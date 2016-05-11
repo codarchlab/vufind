@@ -63,8 +63,8 @@ call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-a 1
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbibleech=StoredFieldLeech -Dsortfield=dewey-sort-browse -Dvaluefield=dewey-raw"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer"
 goto end
 
 rem Function to process a single browse index:
@@ -91,7 +91,7 @@ rem Extract lines from Solr
 java %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
 
 rem Sort lines
-sort %browse%.tmp /o sorted-%browse%.tmp
+sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
 
 rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 namespace VuFindTest\Config\Reader;
 
 use VuFind\Config\Reader\CacheDecorator;
@@ -42,7 +41,6 @@ use VuFind\Config\Reader\CacheDecorator;
  */
 class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Read config from while, new file.
      *
@@ -50,19 +48,19 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testFromFileAndString()
     {
-        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', array('setItem', 'hasItem'));
+        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', ['setItem', 'hasItem']);
         $cache->expects($this->exactly(2))
-              ->method('setItem');
+            ->method('setItem');
         $cache->expects($this->exactly(2))
-              ->method('hasItem')
-              ->will($this->returnValue(false));
-        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface', array('fromFile', 'fromString'));
+            ->method('hasItem')
+            ->will($this->returnValue(false));
+        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface', ['fromFile', 'fromString']);
         $reader->expects($this->once())
-               ->method('fromFile')
-               ->will($this->returnValue(array()));
+            ->method('fromFile')
+            ->will($this->returnValue([]));
         $reader->expects($this->once())
-               ->method('fromString')
-               ->will($this->returnValue(array()));
+            ->method('fromString')
+            ->will($this->returnValue([]));
         $deco = new CacheDecorator($reader, $cache);
         $deco->fromFile('ignore');
         $deco->fromString('ignore');
@@ -75,7 +73,7 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testFromFileAndStringCached()
     {
-        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', array('setItem', 'hasItem', 'getItem'));
+        $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', ['setItem', 'hasItem', 'getItem']);
         $cache->expects($this->never())
             ->method('setItem');
         $cache->expects($this->exactly(2))
@@ -83,8 +81,8 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $cache->expects($this->exactly(2))
             ->method('getItem')
-            ->will($this->returnValue(array()));
-        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface', array('fromFile', 'fromString'));
+            ->will($this->returnValue([]));
+        $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface', ['fromFile', 'fromString']);
         $deco = new CacheDecorator($reader, $cache);
         $deco->fromFile('ignore');
         $deco->fromString('ignore');
