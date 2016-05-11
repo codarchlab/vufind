@@ -26,6 +26,7 @@
 #
 # JAVA_OPTIONS
 #   Extra options to pass to the JVM
+JAVA_OPTIONS="-server -d64 -Xms4096m -Xmx4096m -XX:+UseParallelGC -XX:NewRatio=5"
 #
 # JETTY_HOME
 #   Where Jetty is installed. If not set, the script will try go
@@ -44,6 +45,8 @@
 #      /dev/console
 #      /dev/tty
 #
+JETTY_CONSOLE="/var/log/jetty.log"
+
 # JETTY_PORT
 #   Override the default port for Jetty servers. If not set then the
 #   default value in the xml configuration file will be used. The java
@@ -138,7 +141,7 @@ findDirectory()
 # JAVA_OPTIONS="-server -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
 if [ -z "$JAVA_OPTIONS" ]
 then
-  JAVA_OPTIONS="-server -Xms4096m -Xmx6144m -XX:+UseParallelGC -XX:NewRatio=5"
+  JAVA_OPTIONS="-server -d64 -Xms6114m -Xmx6114m -XX:+UseParallelGC -XX:NewRatio=5"
 fi
 
 ##################################################
