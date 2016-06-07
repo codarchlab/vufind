@@ -61,6 +61,8 @@
 <? /* neue Bestandsanzeige: Tabelle, die Zeile für Zeile die Daten aus MARC 993 anzeigt */ ?>
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
     <tr><th><?=$this->transEsc("Call Number")?>:</th><th><?=$this->transEsc("holdings::Description")?>:</th><th><?=$this->transEsc("holdings::Item Status")?>:</th><th><?=$this->transEsc("holdings::Notes")?>:</th></tr>
+
+<? usort($holding['items'], function($a, $b) {return $b['summary'] - $a['summary'];} ); ?>
 <? foreach ($holding['items'] as $item): ?>
   <? if (!(empty($item['callnumber']) && empty($item['summary']) && empty($item['status']) && empty($item['summary']))): ?>
     <tr vocab="http://schema.org/" typeof="Offer"><link property="availability" href="http://schema.org/InStoreOnly" />
