@@ -105,7 +105,7 @@ if (empty($page)) {
     if (is_array($physical)) {
         foreach ($physical as $current) {
             if (preg_match('/([0-9]+(-[0-9]+)?)\s*/', $current, $matches)) {
-                echo "%P = $matches[1]\n";
+                echo "%P $matches[1]\n";
                 break;
             }
         }
