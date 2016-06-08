@@ -57,7 +57,7 @@ if (!empty($journalTitle)) {
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        echo "series = {" . (is_array($current) ? $current['name'] : $current) . "},\n";
+        echo "series = {" . (is_array($current) ? $current['name'] . " " . $current['number'] : $current) . "},\n";
     }
 }
 
