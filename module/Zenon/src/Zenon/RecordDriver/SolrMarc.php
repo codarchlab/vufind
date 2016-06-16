@@ -124,6 +124,14 @@ class SolrMarc extends VufindSolrMarc
             if (count($notation > 0)) $entry['notation'] = $notation[0];
             else continue;
 
+            // return $m as additional search term for Gazetteer
+            $searchterm = $this->getSubfieldArray($currentField, ['m']);
+            if (count($searchterm > 0)) $entry['searchterm'] = $searchterm[0];
+
+            // return $r as additional search term for Gazetteer
+            $searchterm2 = $this->getSubfieldArray($currentField, ['r']);
+            if (count($searchterm2 > 0)) $entry['searchterm2'] = $searchterm2[0];
+
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
 
@@ -277,12 +285,32 @@ class SolrMarc extends VufindSolrMarc
 
     	foreach ($thsEntries as $thsEntry) {
     		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
-                    || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false) {
+                    || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false
+                    || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false) {
     			$result[] = array(
     				'label' => $thsEntry['label'],
     				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
     			);
-    		}
+                 }
+                 // use 999 $m (= $thsEntry['searchterm'] as additional
+                 // parameter in Gazetteer link, if 999 $1 == 3.00.01.01.*
+                 // or 999 $1 == 3.00.01.02.* (in $thsEntry['notation'])
+                 if (strrpos($thsEntry['notation'], '3.00.01.01', -strlen($thsEntry['notation'])) !== false
+                    || strrpos($thsEntry['notation'], '3.00.01.02', -strlen($thsEntry['notation'])) !== false) {
+                      $result[] = array(
+                                'label' => $thsEntry['label'],
+                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['searchterm'] . ";" .$thsEntry['notation']
+                        );
+                 }
+                 // use 999 $r (= $thsEntry['searchterm2'] as additional
+                 // parameter in Gazetteer link, if 999 $1 == xtop* ($thsEntry['notation'])
+                 if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false ) {
+                      $result[] = array(
+                                'label' => $thsEntry['label'],
+                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['searchterm2'] . ";" .$thsEntry['notation']
+                        );
+                  }
+
     	}
 
         return $result;
