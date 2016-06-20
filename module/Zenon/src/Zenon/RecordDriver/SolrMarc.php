@@ -299,7 +299,7 @@ class SolrMarc extends VufindSolrMarc
                     || strrpos($thsEntry['notation'], '3.00.01.02', -strlen($thsEntry['notation'])) !== false) {
                       $result[] = array(
                                 'label' => $thsEntry['label'],
-                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['searchterm'] . ";" .$thsEntry['notation']
+                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
                         );
                  }
                  // use 999 $r (= $thsEntry['searchterm2'] as additional
@@ -307,7 +307,7 @@ class SolrMarc extends VufindSolrMarc
                  if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false ) {
                       $result[] = array(
                                 'label' => $thsEntry['label'],
-                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['searchterm2'] . ";" .$thsEntry['notation']
+                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
                         );
                   }
 
