@@ -27,6 +27,7 @@
  */
 namespace Zenon\RecordDriver;
 use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
+use VuFindCode\ISBN;
 
 /**
  * Custom record handling for Zenon MARC records.
@@ -159,9 +160,12 @@ class SolrMarc extends VufindSolrMarc
     {
         $arr = parent::getThumbnail($size);
         if (!array_key_exists('isbn', $arr)) return false;
+        $isbnObj = new ISBN($arr['isbn']);
+        $isbn10 = $isbnObj->get10();
+        $isbn13 = $isbnObj->get13();
 
-        if ( file_exists(self::COVERS_DIR . '/medium/' . $arr['isbn'] . '.jpg')
-            || file_exists(self::COVERS_DIR . '/medium/978' . $arr['isbn'] . '.jpg') )
+        if ( file_exists(self::COVERS_DIR . '/medium/' . $isbn10 . '.jpg')
+            || file_exists(self::COVERS_DIR . '/medium/' . $isbn13 . '.jpg') )
             return $arr;
         else
             return false;
