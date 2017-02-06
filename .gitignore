@@ -23,3 +23,7 @@ solr/biblio/index
 solr/biblio/spellShingle/
 solr/biblio/spellchecker/
 solr/biblio/tlog/
+
+# IntelliJ IDEA 
+.idea/
+vufind.iml
