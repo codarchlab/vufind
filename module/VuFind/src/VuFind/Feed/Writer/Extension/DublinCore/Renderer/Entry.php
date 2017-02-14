@@ -54,6 +54,7 @@ class Entry extends ParentEntry
         $this->setDCDate($this->dom, $this->base);
         $this->setDCDescriptions($this->dom, $this->base);
         $this->setMediaThumbnail($this->dom, $this->base);
+        $this->setContainerReference($this->dom, $this->base);
         parent::render();
     }
 
@@ -121,6 +122,21 @@ class Entry extends ParentEntry
             $format->appendChild($text);
             $root->appendChild($format);
         }
+        $this->called = true;
+    }
+
+    protected function setContainerReference(DOMDocument $dom, DOMElement $root)
+    {
+        $reference = $this->getDataContainer()->getContainerReference();
+        if(empty($reference)){
+            return;
+        }
+
+        $format = $this->dom->createElement('containerReference');
+        $text = $dom->createTextNode($reference);
+        $format->appendChild($text);
+        $root->appendChild($format);
+
         $this->called = true;
     }
 
