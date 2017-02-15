@@ -132,7 +132,7 @@ class Entry extends ParentEntry
             return;
         }
 
-        $format = $this->dom->createElement('containerReference');
+        $format = $this->dom->createElement('dc:relation');
         $text = $dom->createTextNode($reference);
         $format->appendChild($text);
         $root->appendChild($format);
