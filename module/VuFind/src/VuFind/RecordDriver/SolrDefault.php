@@ -607,6 +607,16 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get an array of all the container references associated with the record.
+     * @return array
+     */
+
+    public function getContainerReferences(){
+        return isset($this->fields['container_reference']) ?
+            $this->fields['container_reference'] : false;
+    }
+
+    /**
      * Get a LCCN, normalised according to info:lccn
      *
      * @return string

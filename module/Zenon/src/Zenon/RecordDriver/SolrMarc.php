@@ -358,6 +358,28 @@ class SolrMarc extends VufindSolrMarc
         return $result;
     }
 
+     /**
+     * Get Additional Physical Form available Note (MARC field 530)
+      *
+      * @return array
+     */
+    public function getAdditionalPhysicalFormAvailableNote()
+    {
+        $result = array();
+        $fields = $this->marcRecord->getFields('530');
+
+        foreach ($fields as $currentField) {
+            $field = $this->getSubfieldArray($currentField, ['a','u'], false);
+            $result[] = array(
+              'label' => $field[0],
+              'uri' => $field[1]
+            );
+            
+        }
+
+        return $result;
+    }
+
     /**
     * Get Terms Governing Use and Reproduction Note (MARC field 540)
      *

@@ -66,6 +66,14 @@ class Entry extends ParentEntry
      */
     protected $dcDescriptions = [];
 
+
+    /**
+     * References
+     * @var array
+     */
+    protected $containerReference = null;
+
+
     /**
      * Date
      *
@@ -122,6 +130,18 @@ class Entry extends ParentEntry
     }
 
     /**
+     * Add container references.
+     *
+     * @param string $references References to add.
+     *
+     * @return void
+     */
+    public function setContainerReference($containerReference)
+    {
+        $this->containerReference = $containerReference;
+    }
+
+    /**
      * Get the Dublin Core date.
      *
      * @return string
@@ -149,6 +169,16 @@ class Entry extends ParentEntry
     public function getDCDescriptions()
     {
         return $this->dcDescriptions;
+    }
+
+    /**
+     * Get the container references.
+     *
+     * @return array
+     */
+    public function getContainerReference()
+    {
+        return $this->containerReference;
     }
 
     /**

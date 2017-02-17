@@ -265,6 +265,12 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                 $entry->addDCDescription($dcDescription);
             }
         }
+
+        $containerReference = $record->tryMethod('getContainerReferences');
+        if(!empty($containerReference)) {
+            $entry->setContainerReference($containerReference);
+        }
+
         $thumb = $record->getThumbnail('medium');
         $urlHelper = $this->getView()->plugin('url');
         if (!empty($thumb)) {
