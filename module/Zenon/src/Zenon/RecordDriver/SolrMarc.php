@@ -114,6 +114,9 @@ class SolrMarc extends VufindSolrMarc
     		$entry = [];
 
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
+	    $ignore = $this->getSubfieldArray($currentField, ['g'], false);
+            if ($ignore[0] == 'ND') continue;
+
             if (count($label > 0)) $entry['label'] = $label[0];
             else continue;
 
