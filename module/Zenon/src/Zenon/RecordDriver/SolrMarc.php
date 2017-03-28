@@ -275,14 +275,19 @@ class SolrMarc extends VufindSolrMarc
 
     }
 
+    /**
+     * Extracts the gazetteer Id from a given authority data item.
+     *
+     * @param $searchResult a single authority data search result as JSON
+     * @return null| string
+     *
+     */
+    private function extractGazetteerIdFromAuthority($searchResult) {
 
-    private function extractGazetteerId($searchResults) {
-
-        if(count($searchResults) != 1) return null;
-        if(!array_key_exists('other_standard_identifier', $searchResults[0]->getJSON())) return null;
+        if(!array_key_exists('other_standard_identifier', $searchResult)) return null;
 
         $gazId = "";
-        foreach($searchResults[0]->getJSON()['other_standard_identifier'] as $identifier) {
+        foreach($searchResult['other_standard_identifier'] as $identifier) {
             $split = explode(";", $identifier);
             if($split[1] == 'iDAI.gazetteer'){
                 $gazId = $split[0];
@@ -307,12 +312,14 @@ class SolrMarc extends VufindSolrMarc
 
             if($subfields[1]) {
                 $params = $this->authoritySearch->getParams();
-                $params->setOverrideQuery("id:$subfields[0]"); // id = Koha's internal authority data Id
+                $params->setOverrideQuery("id:$subfields[0]"); // 'id' in subfield 9 is Koha's internal authority ID
 
-                $gazId = $this->extractGazetteerId($this->authoritySearch->getResults());
+                $authoritySearchResults = $this->authoritySearch->getResults();
+                if(count($authoritySearchResults) != 1) continue;
+
+                $gazId = $this->extractGazetteerIdFromAuthority($authoritySearchResults[0]->getJSON());
 
                 if($gazId == null) continue;
-                $uri = 'https://www.gazetteer.dainst.org/app/#!/show/' + $gazId;
 
                 $result[] = array(
                     'label' => $subfields[1],
