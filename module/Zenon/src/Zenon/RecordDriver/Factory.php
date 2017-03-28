@@ -60,6 +60,7 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
         );
         $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        $driver->authoritySearch = $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrAuth');
         return $driver;
     }
 
