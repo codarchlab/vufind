@@ -41,6 +41,9 @@
     <field name="see_also" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="scope_note" type="string" indexed="false" stored="true" multiValued="true"/>
 
+    <!-- Additional, Zenon specific -->
+    <field name="other_standard_identifier" type="string" indexed="true" stored="true" multiValued="true"/>
+
     <!-- Keyword Fields for Searching -->
     <field name="heading_keywords" type="text" indexed="true" stored="false"/>
     <field name="use_for_keywords" type="text" indexed="true" stored="false" multiValued="true"/>
@@ -49,6 +52,7 @@
     <!-- Tracking fields to keep track of oldest and most recent index times -->
     <field name="first_indexed" type="date" indexed="true" stored="true"/>
     <field name="last_indexed" type="date" indexed="true" stored="true"/>
+
 
     <!-- Dynamic fields for customization without schema modification -->
     <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
