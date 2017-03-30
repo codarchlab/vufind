@@ -1,0 +1,25 @@
+/**
+ * Custom script for mapping localized field values to separate solr fields.
+ *
+ * @author Simon Hohl <simon.hohl@dainst.org>
+ */
+
+import org.marc4j.marc.*;
+import java.util.List;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+public String getGazetteerId(Record record, String tag, String valSubField, String langSubField) {
+
+	List fields = record.getVariableFields(tag);
+	for (VariableField field : fields) {
+	    Subfield resourceIdSubfield = ((DataField) field).getSubfield(langSubField.charAt(0));
+
+		if (resourceIdSubfield != null && resourceIdSubfield.getData().equals("iDAI.gazetteer")) {
+            return field.getSubfield(valSubField.charAt(0)).getData();
+        }
+	}
+
+	return "";
+
+}

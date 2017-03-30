@@ -276,28 +276,6 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Extracts the gazetteer Id from a given authority data item.
-     *
-     * @param $searchResult a single authority data search result as JSON
-     * @return null| string
-     *
-     */
-    private function extractGazetteerIdFromAuthority($searchResult) {
-
-        if(!array_key_exists('other_standard_identifier', $searchResult)) return null;
-
-        $gazId = "";
-        foreach($searchResult['other_standard_identifier'] as $identifier) {
-            $split = explode(";", $identifier);
-            if($split[1] == 'iDAI.gazetteer'){
-                $gazId = $split[0];
-            }
-        }
-        if($gazId == "") return null;
-        else return $gazId;
-
-    }
-    /**
      * Get links to iDAI.gazetteer
      *
      * @return array
@@ -316,8 +294,9 @@ class SolrMarc extends VufindSolrMarc
 
                 $authoritySearchResults = $this->authoritySearch->getResults();
                 if(count($authoritySearchResults) != 1) continue;
+                if(!array_key_exists('iDAI_gazetteer_id', $authoritySearchResults[0]->getJSON())) continue;
 
-                $gazId = $this->extractGazetteerIdFromAuthority($authoritySearchResults[0]->getJSON());
+                $gazId = $authoritySearchResults[0]->getJSON()['iDAI_gazetteer_id'];
 
                 if($gazId == null) continue;
 
