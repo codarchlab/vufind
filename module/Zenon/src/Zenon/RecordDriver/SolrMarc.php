@@ -113,9 +113,11 @@ class SolrMarc extends VufindSolrMarc
 
     		$entry = [];
 
+    		// ND201132015 = Non-descriptor flag
+            $ignore = $this->getSubfieldArray($currentField, ['g'], false);
+            if ($ignore[0] == 'ND201132015') continue;
+
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
-	    $ignore = $this->getSubfieldArray($currentField, ['g'], false);
-            if ($ignore[0] == 'ND') continue;
 
             if (count($label > 0)) $entry['label'] = $label[0];
             else continue;
