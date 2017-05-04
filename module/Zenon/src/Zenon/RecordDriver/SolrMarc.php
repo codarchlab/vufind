@@ -138,6 +138,11 @@ class SolrMarc extends VufindSolrMarc
             $searchterm2 = $this->getSubfieldArray($currentField, ['r']);
             if (count($searchterm2 > 0)) $entry['searchterm2'] = $searchterm2[0];
 
+            // yes, ugly.
+            $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
+            if(count($belgianLocationLabel > 0))
+                $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
+
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
 
@@ -281,6 +286,18 @@ class SolrMarc extends VufindSolrMarc
 
     }
 
+
+    private function createGazetteerQueryString($thsEntry){
+        $query = $thsEntry['notation'];
+        if($thsEntry['searchterm']) {
+            $query = $query . ";" . $thsEntry['searchterm'];
+        }
+        if($thsEntry['searchterm2']) {
+            $query = $query  . ";" . $thsEntry['searchterm2'];
+        }
+        return $query;
+    }
+
     /**
      * Get links to iDAI.gazetteer
      *
@@ -293,15 +310,22 @@ class SolrMarc extends VufindSolrMarc
     	$thsEntries = $this->getThsEntries();
 
     	foreach ($thsEntries as $thsEntry) {
-    		if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
-                    || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false
-                    || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false
-                    || strrpos($thsEntry['notation'], 'xTopLandBelgOrt', -strlen($thsEntry['notation'])) !== false) {
+
+            $query = $this->createGazetteerQueryString($thsEntry);
+            if(strrpos($thsEntry['notation'], 'xTopLandBelgOrt', -strlen($thsEntry['notation'])) !== false) {
+                $result[] = array(
+                    'label' => $thsEntry['belgianLocationLabel'],
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
+                );
+            }
+            if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
+                || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false
+                || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false) {
     			$result[] = array(
     				'label' => $thsEntry['label'],
     				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
-    			);
-                 }
+                );
+    		}
                  // use 999 $m (= $thsEntry['searchterm'] as additional
                  // parameter in Gazetteer link, if 999 $1 == 3.00.01.01.*
                  // or 999 $1 == 3.00.01.02.* (in $thsEntry['notation'])
@@ -315,12 +339,16 @@ class SolrMarc extends VufindSolrMarc
                  } */
                  // use 999 $r (= $thsEntry['searchterm2'] as additional
                  // parameter in Gazetteer link, if 999 $1 == xtop* ($thsEntry['notation'])
-                 if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false ) {
-                      $result[] = array(
-                                'label' => $thsEntry['label'],
-                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
-                        );
-                  }
+
+
+            if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false) {
+                echo "xtop";
+                $result[] = array(
+                    'label' => $thsEntry['label'],
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
+                );
+            }
+
 
     	}
 
