@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav navbar-right flip">
         <? if ($this->layout()->searchbox == false): ?>
           <li>
-            <a href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
+              <a class="navbar-brand" href="<?=$this->url("search-advanced")?>"><?=$this->transEsc("Advanced Search")?></a>
           </li>
         <? endif; ?>
         <? if ($this->feedback()->tabEnabled()): ?>
