@@ -28,6 +28,7 @@
 namespace Zenon\RecordDriver;
 use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
+use Zend\Config\Reader\Json as configJson;
 
 /**
  * Custom record handling for Zenon MARC records.
@@ -342,7 +343,6 @@ class SolrMarc extends VufindSolrMarc
 
 
             if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false) {
-                echo "xtop";
                 $result[] = array(
                     'label' => $thsEntry['label'],
                     'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
@@ -354,6 +354,20 @@ class SolrMarc extends VufindSolrMarc
 
         return $result;
 
+    }
+
+    /**
+     *
+     */
+
+    public function getPublicationsLink(){
+        $zenonId = trim($this->marcRecord->getField('001')->toRaw(), "\x00..\x1F");
+        $reader = new configJson();
+        $data   = $reader->fromFile('./local/iDAI.publications/mapping.json');
+
+        if($data[$zenonId]){
+            return $data[$zenonId];
+        }
     }
 
     /**

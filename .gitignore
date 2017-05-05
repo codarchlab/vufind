@@ -24,6 +24,8 @@ solr/biblio/spellShingle/
 solr/biblio/spellchecker/
 solr/biblio/tlog/
 
+local/iDAI.publications/mapping.json
+
 .idea
 .DS_Store
 
