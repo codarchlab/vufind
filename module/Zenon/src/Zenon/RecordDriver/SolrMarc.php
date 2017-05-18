@@ -52,7 +52,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getTitle()
     {
-        return $this->removeTrailingSlash(parent::getTitle());
+        return $this->removeTrailingSlash(parent::getTitle()[0]);
     }
 
     /**
@@ -63,7 +63,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getShortTitle()
     {
-        return $this->removeTrailingSlash(parent::getShortTitle());
+        return $this->removeTrailingSlash(parent::getShortTitle()[0]);
     }
 
     /**
@@ -74,7 +74,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getHighlightedTitle()
     {
-        return $this->removeTrailingSlash(parent::getHighlightedTitle());
+        return $this->removeTrailingSlash(parent::getHighlightedTitle()[0]);
     }
 
     /**
@@ -108,7 +108,7 @@ class SolrMarc extends VufindSolrMarc
     {
 
     	$result = array();
-    	$fields = $this->marcRecord->getFields('999');
+    	$fields = $this->getMarcRecord()->getFields('999');
 
     	foreach ($fields as $currentField) {
 
@@ -221,7 +221,7 @@ class SolrMarc extends VufindSolrMarc
     {
 
     	$result = array();
-    	$fields = $this->marcRecord->getFields('995');
+    	$fields = $this->getMarcRecord()->getFields('995');
 
     	foreach ($fields as $currentField) {
     		$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
@@ -246,7 +246,7 @@ class SolrMarc extends VufindSolrMarc
     {
 
 		$result = array();
-		$fields = $this->marcRecord->getFields('995');
+		$fields = $this->getMarcRecord()->getFields('995');
 
 		foreach ($fields as $currentField) {
 			$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
@@ -271,7 +271,7 @@ class SolrMarc extends VufindSolrMarc
     {
 
         $result = array();
-        $fields = $this->marcRecord->getFields('995');
+        $fields = $this->getMarcRecord()->getFields('995');
 
         foreach ($fields as $currentField) {
             $field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
@@ -357,17 +357,21 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     *
+     * Get Link (if exists) to iDAI.publications.
      */
 
-    public function getPublicationsLink(){
-        $zenonId = trim($this->marcRecord->getField('001')->toRaw(), "\x00..\x1F");
+    public function getPublicationsLink() {
+        if(!$this->getMarcRecord()->getField('001')->toRaw())
+            return null;
+
+        $zenonId = trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
         $reader = new configJson();
         $data   = $reader->fromFile('./local/iDAI.publications/mapping.json');
 
-        if($data[$zenonId]){
+        if(array_key_exists($zenonId, $data))
             return $data[$zenonId];
-        }
+
+        return False;
     }
 
     /**
@@ -414,7 +418,7 @@ class SolrMarc extends VufindSolrMarc
     public function getAdditionalPhysicalFormAvailableNote()
     {
         $result = array();
-        $fields = $this->marcRecord->getFields('530');
+        $fields = $this->getMarcRecord()->getFields('530');
 
         foreach ($fields as $currentField) {
             $field = $this->getSubfieldArray($currentField, ['a','u'], false);
