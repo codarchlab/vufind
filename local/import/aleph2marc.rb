@@ -24,9 +24,12 @@ begin
 			# filter out non-numerical fields
 			r.find_all { |f| f.tag !~ /^[0-9]{3}/ }.each do |f|
 				r.fields.delete f
-			end
-    		writer.write r
-    	rescue => e
+      end
+
+      r['001'].value = 'DAI-' + r['001'].value
+      writer.write r
+
+    rescue => e
     		logger.error "Error while writing record #{r['001']} to MARC: #{e.message}"
     	end
 	end  
