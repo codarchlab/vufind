@@ -41,7 +41,6 @@ use Zend\Config\Reader\Json as configJson;
  */
 class SolrMarc extends VufindSolrMarc
 {
-
     const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
 
     /**
@@ -366,7 +365,7 @@ class SolrMarc extends VufindSolrMarc
 
         $zenonId = trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
         $reader = new configJson();
-        $data   = $reader->fromFile('./local/iDAI.publications/mapping.json');
+        $data   = $reader->fromFile('./local/iDAI.world/publications_mapping.json');
 
         if(array_key_exists($zenonId, $data))
             return $data[$zenonId];
