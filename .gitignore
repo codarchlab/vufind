@@ -13,16 +13,23 @@ local/config/statusmail.yml
 local/config/vufind/config.ini
 local/harvest/DAI_ALL/
 local/harvest/DAI_THS/
+local/harvest/dai-katalog/
 local/harvest/log/
 local/import/log/
 local/import/mrc/
 local/statusmail.log
+
 solr/authority/index
 solr/authority/tlog/
+solr/authority/conf/_rest_managed.json
+
 solr/biblio/index
 solr/biblio/spellShingle/
 solr/biblio/spellchecker/
 solr/biblio/tlog/
+solr/biblio/conf/_rest_managed.json
+
+solr/logs
 
 local/iDAI.world/publications_mapping.json
 
