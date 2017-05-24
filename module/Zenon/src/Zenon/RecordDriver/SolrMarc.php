@@ -218,18 +218,19 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getParent()
     {
-
-    	$result = array();
     	$fields = $this->getMarcRecord()->getFields('995');
 
     	foreach ($fields as $currentField) {
-    		$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-    		if ($field[0] == 'ANA') {
-	    		return array(
-	    			'id' => $field[1],
-	    			'label' => $field[2]
-	    		);
-	    	}
+    	    $linkType = $currentField->getSubfield('a')->getData();
+    	    $zenonId = $currentField->getSubfield('b')->getData();
+    	    $label = $currentField->getSubfield('n')->getData();
+
+    		if($linkType == 'ANA') {
+    		    return array(
+    		        'id' => $zenonId,
+                    'label' => $label
+                );
+            }
     	}
 
         return false;
