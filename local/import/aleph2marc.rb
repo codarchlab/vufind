@@ -26,8 +26,7 @@ begin
 				r.fields.delete f
       end
 
-      r['001'].value = 'DAI-' + r['001'].value
-      writer.write r
+			writer.write r
 
     rescue => e
     		logger.error "Error while writing record #{r['001']} to MARC: #{e.message}"
