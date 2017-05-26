@@ -235,6 +235,7 @@
    <!-- custom fields -->
    <field name="system_no" type="systemNumber" indexed="true" stored="true" multiValued="true"/>
 
+   <field name="collection_details" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="hierarchytype" type="string" indexed="true" stored="true" multiValued="false"/>
    <field name="hierarchy_top_id" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="hierarchy_top_title" type="string" indexed="true" stored="true" multiValued="true"/>
