@@ -1,5 +1,8 @@
-require 'marc'
+#!/usr/bin/env ruby
 
+require 'marc'
+require 'pp'
+require 'logger'
 
 name = File.basename(ARGV[0], File.extname(ARGV[0]))
 
@@ -32,3 +35,5 @@ end
 
 error_writer.close()
 writer.close()
+
+puts "finished"

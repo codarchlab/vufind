@@ -16,9 +16,9 @@ fi
 
 for filename in $1* #.gz
 do 
-	# echo "converting ${filename}"
+	echo "preprocessing ${filename}"
 	# ruby $VUFIND_HOME/local/import/aleph2marc.rb ${filename}
 	ruby $VUFIND_HOME/local/import/preprocess-marc.rb ${filename}
-	echo "importing $filename}"
-	bash $VUFIND_HOME/import-marc.sh $VUFIND_HOME/local/import/mrc/$filename
+	echo "importing ${filename}"
+	bash $VUFIND_HOME/import-marc.sh $VUFIND_HOME/local/import/mrc/$(basename $filename)
 done
