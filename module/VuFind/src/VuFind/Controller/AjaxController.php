@@ -17,25 +17,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * This controller handles global AJAX functionality
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AjaxController extends AbstractBase
 {
@@ -60,11 +61,14 @@ class AjaxController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $sm)
     {
         // Add notices to a key in the output
         set_error_handler(['VuFind\Controller\AjaxController', "storeError"]);
+        parent::__construct($sm);
     }
 
     /**
@@ -88,12 +92,13 @@ class AjaxController extends AbstractBase
                     ? ': ' . $e->getMessage() : '';
                 return $this->output(
                     $this->translate('An error has occurred') . $debugMsg,
-                    self::STATUS_ERROR
+                    self::STATUS_ERROR,
+                    500
                 );
             }
         } else {
             return $this->output(
-                $this->translate('Invalid Method'), self::STATUS_ERROR
+                $this->translate('Invalid Method'), self::STATUS_ERROR, 400
             );
         }
     }
@@ -105,11 +110,11 @@ class AjaxController extends AbstractBase
      */
     public function recommendAction()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $rm = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+        $rm = $this->serviceLocator->get('VuFind\RecommendPluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $results = $this->getResultsManager()->get('Solr');
@@ -131,25 +136,6 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Get the contents of a lightbox; note that unlike most methods, this
-     * one actually returns HTML rather than JSON.
-     *
-     * @return mixed
-     */
-    protected function getLightboxAjax()
-    {
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        // Call the requested action:
-        return $this->forwardTo(
-            $this->params()->fromQuery('submodule'),
-            $this->params()->fromQuery('subaction')
-        );
-    }
-
-    /**
      * Support method for getItemStatuses() -- filter suppressed locations from the
      * array of item information for a particular bib record.
      *
@@ -161,7 +147,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = $this->getServiceLocator()->get('VuFind\ILSHoldLogic');
+            $logic = $this->serviceLocator->get('VuFind\ILSHoldLogic');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -186,9 +172,9 @@ class AjaxController extends AbstractBase
      */
     protected function getItemStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $catalog = $this->getILS();
-        $ids = $this->params()->fromQuery('id');
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
         $results = $catalog->getStatuses($ids);
 
         if (!is_array($results)) {
@@ -242,7 +228,10 @@ class AjaxController extends AbstractBase
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
                     $current['full_status'] = $renderer->render(
-                        'ajax/status-full.phtml', ['statusItems' => $record]
+                        'ajax/status-full.phtml', [
+                            'statusItems' => $record,
+                            'callnumberHandler' => $this->getCallnumberHandler()
+                         ]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
@@ -313,12 +302,62 @@ class AjaxController extends AbstractBase
                 $list = $transList;
             }
             // All values mode?  Return comma-separated values:
-            return implode(', ', $list);
+            return implode(",\t", $list);
         } else {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
             return $this->translate($msg);
         }
+    }
+
+    /**
+     * Based on settings and the number of callnumbers, return callnumber handler
+     * Use callnumbers before pickValue is run.
+     *
+     * @param array  $list           Array of callnumbers.
+     * @param string $displaySetting config.ini setting -- first, all or msg
+     *
+     * @return string
+     */
+    protected function getCallnumberHandler($list = null, $displaySetting = null)
+    {
+        if ($displaySetting == 'msg' && count($list) > 1) {
+            return false;
+        }
+        $config = $this->getConfig();
+        return isset($config->Item_Status->callnumber_handler)
+            ? $config->Item_Status->callnumber_handler
+            : false;
+    }
+
+    /**
+     * Reduce an array of service names to a human-readable string.
+     *
+     * @param array $services Names of available services.
+     *
+     * @return string
+     */
+    protected function reduceServices(array $services)
+    {
+        // Normalize, dedup and sort available services
+        $normalize = function ($in) {
+            return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
+        };
+        $services = array_map($normalize, array_unique($services));
+        sort($services);
+
+        // Do we need to deal with a preferred service?
+        $config = $this->getConfig();
+        $preferred = isset($config->Item_Status->preferred_service)
+            ? $normalize($config->Item_Status->preferred_service) : false;
+        if (false !== $preferred && in_array($preferred, $services)) {
+            $services = [$preferred];
+        }
+
+        return $this->getViewRenderer()->render(
+            'ajax/status-available-services.phtml',
+            ['services' => $services]
+        );
     }
 
     /**
@@ -342,6 +381,8 @@ class AjaxController extends AbstractBase
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $use_unknown_status = $available = false;
+        $services = [];
+
         foreach ($record as $info) {
             // Find an available copy
             if ($info['availability']) {
@@ -356,7 +397,15 @@ class AjaxController extends AbstractBase
             // Store call number/location info:
             $callNumbers[] = $info['callnumber'];
             $locations[] = $info['location'];
+            // Store all available services
+            if (isset($info['services'])) {
+                $services = array_merge($services, $info['services']);
+            }
         }
+
+        $callnumberHandler = $this->getCallnumberHandler(
+            $callNumbers, $callnumberSetting
+        );
 
         // Determine call number string based on findings:
         $callNumber = $this->pickValue(
@@ -368,9 +417,13 @@ class AjaxController extends AbstractBase
             $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
-        $availability_message = $use_unknown_status
-            ? $messages['unknown']
-            : $messages[$available ? 'available' : 'unavailable'];
+        if (!empty($services)) {
+            $availability_message = $this->reduceServices($services);
+        } else {
+            $availability_message = $use_unknown_status
+                ? $messages['unknown']
+                : $messages[$available ? 'available' : 'unavailable'];
+        }
 
         // Send back the collected details:
         return [
@@ -384,7 +437,8 @@ class AjaxController extends AbstractBase
             'reserve_message' => $record[0]['reserve'] == 'Y'
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
-            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
+            'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
+            'callnumber_handler' => $callnumberHandler
         ];
     }
 
@@ -416,6 +470,7 @@ class AjaxController extends AbstractBase
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;
+                $locations[$info['location']]['status_unknown'] = true;
             }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $info['callnumber'];
@@ -426,6 +481,9 @@ class AjaxController extends AbstractBase
         foreach ($locations as $location => $details) {
             $locationCallnumbers = array_unique($details['callnumbers']);
             // Determine call number string based on findings:
+            $callnumberHandler = $this->getCallnumberHandler(
+                $locationCallnumbers, $callnumberSetting
+            );
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
@@ -437,7 +495,10 @@ class AjaxController extends AbstractBase
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
-                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
+                    htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
+                'status_unknown' => isset($details['status_unknown'])
+                    ? $details['status_unknown'] : false,
+                'callnumber_handler' => $callnumberHandler
             ];
             $locationList[] = $locationInfo;
         }
@@ -469,39 +530,52 @@ class AjaxController extends AbstractBase
      */
     protected function getSaveStatusesAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $result = [];
-        $ids = $this->params()->fromQuery('id', []);
-        $sources = $this->params()->fromQuery('source', []);
+        $ids = $this->params()->fromPost('id', $this->params()->fromQuery('id', []));
+        $sources = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', [])
+        );
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
                 $this->translate('Argument must be array.'),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                400
             );
         }
+        $result = $checked = [];
         foreach ($ids as $i => $id) {
-            $source = isset($sources[$i]) ? $sources[$i] : 'VuFind';
+            $source = isset($sources[$i]) ? $sources[$i] : DEFAULT_SEARCH_BACKEND;
+            $selector = $source . '|' . $id;
+
+            // We don't want to bother checking the same ID more than once, so
+            // use the $checked flag array to avoid duplicates:
+            if (isset($checked[$selector])) {
+                continue;
+            }
+            $checked[$selector] = true;
+
             $data = $user->getSavedData($id, null, $source);
-            if ($data) {
+            if ($data && count($data) > 0) {
+                $result[$selector] = [];
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
-                    $result[] = [
-                        'record_id' => $id,
-                        'record_source' => $source,
-                        'resource_id' => $list->id,
-                        'list_id' => $list->list_id,
-                        'list_title' => $list->list_title,
-                        'record_number' => $i
+                    $result[$selector][] = [
+                        'list_url' => $this->url()->fromRoute(
+                            'userList',
+                            ['id' => $list->list_id]
+                        ),
+                        'list_title' => $list->list_title
                     ];
                 }
             }
@@ -609,7 +683,8 @@ class AjaxController extends AbstractBase
         } catch (AuthException $e) {
             return $this->output(
                 $this->translate($e->getMessage()),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                401
             );
         }
 
@@ -627,17 +702,18 @@ class AjaxController extends AbstractBase
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
         // empty tag
         try {
             $driver = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
-                $this->params()->fromPost('source', 'VuFind')
+                $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
             );
             $tag = $this->params()->fromPost('tag', '');
-            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $tagParser = $this->serviceLocator->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {
                     $driver->addTags($user, $tagParser->parse($tag));
@@ -648,7 +724,8 @@ class AjaxController extends AbstractBase
         } catch (\Exception $e) {
             return $this->output(
                 ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
 
@@ -668,7 +745,7 @@ class AjaxController extends AbstractBase
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind'),
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0, null, null, 'count', $is_me_id
         );
 
@@ -678,11 +755,11 @@ class AjaxController extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => $tag->is_me == 1 ? true : false
+                'is_me' => !empty($tag->is_me)
             ];
         }
 
-        // Set layout to render the page inside a lightbox:
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
         $view = $this->createViewModel(
             [
@@ -692,6 +769,50 @@ class AjaxController extends AbstractBase
         );
         $view->setTemplate('record/taglist');
         return $view;
+    }
+
+    /**
+     * Get record for integrated list view.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRecordDetailsAjax()
+    {
+        $driver = $this->getRecordLoader()->load(
+            $this->params()->fromQuery('id'),
+            $this->params()->fromQuery('source')
+        );
+        $viewtype = preg_replace(
+            '/\W/', '',
+            trim(strtolower($this->params()->fromQuery('type')))
+        );
+        $request = $this->getRequest();
+        $config = $this->serviceLocator->get('Config');
+
+        $recordTabPlugin = $this->serviceLocator
+            ->get('VuFind\RecordTabPluginManager');
+        $details = $recordTabPlugin
+            ->getTabDetailsForRecord(
+                $driver,
+                $config['vufind']['recorddriver_tabs'],
+                $request,
+                'Information'
+            );
+
+        $rtpm = $this->serviceLocator->get('VuFind\RecordTabPluginManager');
+        $html = $this->getViewRenderer()
+            ->render(
+                "record/ajaxview-" . $viewtype . ".phtml",
+                [
+                    'defaultTab' => $details['default'],
+                    'driver' => $driver,
+                    'tabs' => $details['tabs'],
+                    'backgroundTabs' => $rtpm->getBackgroundTabNames(
+                        $driver, $this->getRecordTabConfig()
+                    )
+                ]
+            );
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**
@@ -706,7 +827,7 @@ class AjaxController extends AbstractBase
      */
     protected function getMapDataAjax($fields = ['long_lat'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -741,8 +862,8 @@ class AjaxController extends AbstractBase
      */
     public function resultgooglemapinfoAction()
     {
-        $this->writeSession();  // avoid session write timing bug
-        // Set layout to render the page inside a lightbox:
+        $this->disableSessionWrites();  // avoid session write timing bug
+        // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
 
         $results = $this->getResultsManager()->get('Solr');
@@ -771,12 +892,12 @@ class AjaxController extends AbstractBase
      */
     protected function getVisDataAjax($fields = ['publishDate'])
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
         foreach ($this->params()->fromQuery('hf', []) as $hf) {
-            $params->getOptions()->addHiddenFilter($hf);
+            $params->addHiddenFilter($hf);
         }
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
@@ -791,9 +912,8 @@ class AjaxController extends AbstractBase
             $facets[$field]['removalURL']
                 = $results->getUrlQuery()->removeFacet(
                     $field,
-                    isset($filters[$field][0]) ? $filters[$field][0] : null,
-                    false
-                );
+                    isset($filters[$field][0]) ? $filters[$field][0] : null
+                )->getParams(false);
         }
         return $this->output($facets, self::STATUS_OK);
     }
@@ -864,9 +984,9 @@ class AjaxController extends AbstractBase
      */
     protected function getACSuggestionsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
-        $autocompleteManager = $this->getServiceLocator()
+        $autocompleteManager = $this->serviceLocator
             ->get('VuFind\AutocompletePluginManager');
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
@@ -880,75 +1000,60 @@ class AjaxController extends AbstractBase
      */
     protected function checkRequestIsValidAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
         $requestType = $this->params()->fromQuery('requestType');
-        if (!empty($id) && !empty($data)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
+        if (empty($id) || empty($data)) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
+
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                switch ($requestType) {
+                case 'ILLRequest':
+                    $results = $catalog->checkILLRequestIsValid($id, $data, $patron);
+                    $msg = $results
+                        ? 'ill_request_place_text' : 'ill_request_error_blocked';
+                    break;
+                case 'StorageRetrievalRequest':
+                    $results = $catalog->checkStorageRetrievalRequestIsValid(
+                        $id, $data, $patron
+                    );
+                    $msg = $results ? 'storage_retrieval_request_place_text'
+                        : 'storage_retrieval_request_error_blocked';
+                    break;
+                default:
+                    $results = $catalog->checkRequestIsValid($id, $data, $patron);
+                    $msg = $results ? 'request_place_text' : 'hold_error_blocked';
+                    break;
+                }
                 return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
+                    ['status' => $results, 'msg' => $this->translate($msg)],
+                    self::STATUS_OK
                 );
             }
-
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    switch ($requestType) {
-                    case 'ILLRequest':
-                        $results = $catalog->checkILLRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate(
-                                'ill_request_place_text'
-                            )
-                            : $this->translate(
-                                'ill_request_error_blocked'
-                            );
-                        break;
-                    case 'StorageRetrievalRequest':
-                        $results = $catalog->checkStorageRetrievalRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate(
-                                'storage_retrieval_request_place_text'
-                            )
-                            : $this->translate(
-                                'storage_retrieval_request_error_blocked'
-                            );
-                        break;
-                    default:
-                        $results = $catalog->checkRequestIsValid(
-                            $id, $data, $patron
-                        );
-
-                        $msg = $results
-                            ? $this->translate('request_place_text')
-                            : $this->translate('hold_error_blocked');
-                        break;
-                    }
-                    return $this->output(
-                        ['status' => $results, 'msg' => $msg], self::STATUS_OK
-                    );
-                }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
-            }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -959,11 +1064,21 @@ class AjaxController extends AbstractBase
      */
     protected function commentRecordAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
@@ -971,13 +1086,25 @@ class AjaxController extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($id) || empty($comment)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+
+        $useCaptcha = $this->recaptcha()->active('userComments');
+        $this->recaptcha()->setErrorMode('none');
+        if (!$this->formWasSubmitted('comment', $useCaptcha)) {
+            return $this->output(
+                $this->translate('recaptcha_not_passed'),
+                self::STATUS_ERROR,
+                403
             );
         }
 
         $table = $this->getTable('Resource');
         $resource = $table->findResource(
-            $id, $this->params()->fromPost('source', 'VuFind')
+            $id, $this->params()->fromPost('source', DEFAULT_SEARCH_BACKEND)
         );
         $id = $resource->addComment($comment, $user);
 
@@ -991,19 +1118,38 @@ class AjaxController extends AbstractBase
      */
     protected function deleteRecordCommentAjax()
     {
+        // Make sure comments are enabled:
+        if (!$this->commentsEnabled()) {
+            return $this->output(
+                $this->translate('Comments disabled'),
+                self::STATUS_ERROR,
+                403
+            );
+        }
+
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
                 $this->translate('You must be logged in first'),
-                self::STATUS_NEED_AUTH
+                self::STATUS_NEED_AUTH,
+                401
             );
         }
 
         $id = $this->params()->fromQuery('id');
-        $table = $this->getTable('Comments');
-        if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
+        if (empty($id)) {
             return $this->output(
-                $this->translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        $table = $this->getTable('Comments');
+        if (!$table->deleteIfOwnedByUser($id, $user)) {
+            return $this->output(
+                $this->translate('edit_list_fail'),
+                self::STATUS_ERROR,
+                403
             );
         }
 
@@ -1019,7 +1165,7 @@ class AjaxController extends AbstractBase
     {
         $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $html = $this->getViewRenderer()
             ->render('record/comments-list.phtml', ['driver' => $driver]);
@@ -1034,7 +1180,7 @@ class AjaxController extends AbstractBase
     protected function exportFavoritesAjax()
     {
         $format = $this->params()->fromPost('format');
-        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $export = $this->serviceLocator->get('VuFind\Export');
         $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
             $this->params()->fromPost('ids', [])
@@ -1063,18 +1209,20 @@ class AjaxController extends AbstractBase
      */
     protected function getResolverLinksAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
+        $searchClassId = $this->params()->fromQuery('searchClassId', '');
 
         $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
-        $pluginManager = $this->getServiceLocator()
+        $pluginManager = $this->serviceLocator
             ->get('VuFind\ResolverDriverPluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),
-                self::STATUS_ERROR
+                self::STATUS_ERROR,
+                500
             );
         }
         $resolver = new \VuFind\Resolver\Connection(
@@ -1115,10 +1263,15 @@ class AjaxController extends AbstractBase
             $base = false;
         }
 
+        $moreOptionsLink = $resolver->supportsMoreOptionsLink()
+            ? $resolver->getResolverUrl($openUrl) : '';
+
         // Render the links using the view:
         $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
-            'electronic' => $electronic, 'services' => $services
+            'electronic' => $electronic, 'services' => $services,
+            'searchClassId' => $searchClassId,
+            'moreOptionsLink' => $moreOptionsLink
         ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
@@ -1136,6 +1289,8 @@ class AjaxController extends AbstractBase
      */
     protected function keepAliveAjax()
     {
+        // Request ID from session to mark it active
+        $this->serviceLocator->get('VuFind\SessionManager')->getId();
         return $this->output(true, self::STATUS_OK);
     }
 
@@ -1146,49 +1301,48 @@ class AjaxController extends AbstractBase
      */
     protected function getLibraryPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $pickupLib = $this->params()->fromQuery('pickupLib');
-        if (!empty($id) && !empty($pickupLib)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
-                return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
-                );
-            }
+        if (null === $id || null === $pickupLib) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
 
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    $results = $catalog->getILLPickupLocations(
-                        $id, $pickupLib, $patron
-                    );
-                    foreach ($results as &$result) {
-                        if (isset($result['name'])) {
-                            $result['name'] = $this->translate(
-                                'location_' . $result['name'],
-                                [],
-                                $result['name']
-                            );
-                        }
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                $results = $catalog->getILLPickupLocations($id, $pickupLib, $patron);
+                foreach ($results as &$result) {
+                    if (isset($result['name'])) {
+                        $result['name'] = $this->translate(
+                            'location_' . $result['name'],
+                            [],
+                            $result['name']
+                        );
                     }
-                    return $this->output(
-                        ['locations' => $results], self::STATUS_OK
-                    );
                 }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -1199,53 +1353,52 @@ class AjaxController extends AbstractBase
      */
     protected function getRequestGroupPickupLocationsAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $requestGroupId = $this->params()->fromQuery('requestGroupId');
-        if (!empty($id) && !empty($requestGroupId)) {
-            // check if user is logged in
-            $user = $this->getUser();
-            if (!$user) {
-                return $this->output(
-                    [
-                        'status' => false,
-                        'msg' => $this->translate('You must be logged in first')
-                    ],
-                    self::STATUS_NEED_AUTH
-                );
-            }
+        if (null === $id || null === $requestGroupId) {
+            return $this->output(
+                $this->translate('bulk_error_missing'),
+                self::STATUS_ERROR,
+                400
+            );
+        }
+        // check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH,
+                401
+            );
+        }
 
-            try {
-                $catalog = $this->getILS();
-                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
-                if ($patron) {
-                    $details = [
-                        'id' => $id,
-                        'requestGroupId' => $requestGroupId
-                    ];
-                    $results = $catalog->getPickupLocations(
-                        $patron, $details
-                    );
-                    foreach ($results as &$result) {
-                        if (isset($result['locationDisplay'])) {
-                            $result['locationDisplay'] = $this->translate(
-                                'location_' . $result['locationDisplay'],
-                                [],
-                                $result['locationDisplay']
-                            );
-                        }
+        try {
+            $catalog = $this->getILS();
+            $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+            if ($patron) {
+                $details = [
+                    'id' => $id,
+                    'requestGroupId' => $requestGroupId
+                ];
+                $results = $catalog->getPickupLocations($patron, $details);
+                foreach ($results as &$result) {
+                    if (isset($result['locationDisplay'])) {
+                        $result['locationDisplay'] = $this->translate(
+                            'location_' . $result['locationDisplay'],
+                            [],
+                            $result['locationDisplay']
+                        );
                     }
-                    return $this->output(
-                        ['locations' => $results], self::STATUS_OK
-                    );
                 }
-            } catch (\Exception $e) {
-                // Do nothing -- just fail through to the error message below.
+                return $this->output(['locations' => $results], self::STATUS_OK);
             }
+        } catch (\Exception $e) {
+            // Do nothing -- just fail through to the error message below.
         }
 
         return $this->output(
-            $this->translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR, 500
         );
     }
 
@@ -1263,7 +1416,7 @@ class AjaxController extends AbstractBase
      */
     protected function getFacetDataAjax()
     {
-        $this->writeSession();  // avoid session write timing bug
+        $this->disableSessionWrites();  // avoid session write timing bug
 
         $facet = $this->params()->fromQuery('facetName');
         $sort = $this->params()->fromQuery('facetSort');
@@ -1281,7 +1434,7 @@ class AjaxController extends AbstractBase
 
         $facetList = $facets[$facet]['data']['list'];
 
-        $facetHelper = $this->getServiceLocator()
+        $facetHelper = $this->serviceLocator
             ->get('VuFind\HierarchicalFacetHelper');
         if (!empty($sort)) {
             $facetHelper->sortFacetList($facetList, $sort == 'top');
@@ -1339,7 +1492,7 @@ class AjaxController extends AbstractBase
         }
 
         // This may be called frequently, don't leave sessions dangling
-        $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+        $this->serviceLocator->get('VuFind\SessionManager')->destroy();
 
         return $this->output('', self::STATUS_OK);
     }
@@ -1351,6 +1504,34 @@ class AjaxController extends AbstractBase
      */
     protected function getResultsManager()
     {
-        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+        return $this->serviceLocator->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get Ils Status
+     *
+     * This will check the ILS for being online and will return the ils-offline
+     * template upon failure.
+     *
+     * @return \Zend\Http\Response
+     * @author André Lahmann <lahmann@ub.uni-leipzig.de>
+     */
+    protected function getIlsStatusAjax()
+    {
+        $this->disableSessionWrites();  // avoid session write timing bug
+        if ($this->getILS()->getOfflineMode(true) == 'ils-offline') {
+            $offlineModeMsg = $this->params()->fromPost(
+                'offlineModeMsg',
+                $this->params()->fromQuery('offlineModeMsg')
+            );
+            return $this->output(
+                $this->getViewRenderer()->render(
+                    'Helpers/ils-offline.phtml',
+                    compact('offlineModeMsg')
+                ),
+                self::STATUS_OK
+            );
+        }
+        return $this->output('', self::STATUS_OK);
     }
 }

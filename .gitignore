@@ -5,6 +5,7 @@ ChangeLog
 .\#*
 TAGS
 *~
+
 vendor/.git
 
 import/solrmarc.log*
@@ -36,3 +37,10 @@ local/iDAI.world/publications_mapping.json
 .idea
 .DS_Store
 
+/downloads
+/solr/vendor
+/vendor
+composer.phar
+import/solrmarc.log
+node_modules
+public/swagger-ui
