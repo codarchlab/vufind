@@ -21,7 +21,7 @@
           <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
           <?=$this->transEsc('by')?>
           <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-            $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+            $summHighlightedAuthor = $this->driver->getRawAuthorHighlights();
             echo !empty($summHighlightedAuthor)
                 ? $this->highlight($summHighlightedAuthor)
                 : $this->escapeHtml($summAuthor);
