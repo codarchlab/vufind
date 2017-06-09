@@ -1,0 +1,9 @@
+<? if (count($searchTabs) > 0): ?>
+  <ul class="nav nav-tabs search-tabs">
+    <? foreach ($searchTabs as $tab): ?>
+      <li<?=$tab['selected'] ? ' class="active"' : ' class="inactive"'?>>
+        <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
