@@ -5,18 +5,9 @@ use DateTime;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use Zend\Feed\Writer\Writer as FeedWriter;
 use Zend\Feed\Writer\Feed;
-use VuFind\View\Helper\Root\ResultFeed as VuFindResultFeed;
+use VuFind\View\Helper\Root\ResultFeed as ParentResultFeed;
 
-/**
- * "Results as feed" view helper
- *
- * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- */
-class ResultFeed extends VuFindResultFeed
+class ResultFeed extends ParentResultFeed
 {
     protected function registerExtensions()
     {
@@ -38,14 +29,7 @@ class ResultFeed extends VuFindResultFeed
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
     }
-    /**
-     * Support method to turn a record driver object into an RSS entry.
-     *
-     * @param Feed                              $feed   Feed to update
-     * @param \VuFind\RecordDriver\AbstractBase $record Record to add to feed
-     *
-     * @return void
-     */
+
     protected function addEntry($feed, $record)
     {
         $entry = $feed->createEntry();
