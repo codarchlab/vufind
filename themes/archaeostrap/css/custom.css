@@ -33,9 +33,6 @@ mark {
 	margin-top: 0;
 }
 
-.search-tabs .inactive a {
-	background-color: #E1E1E1;
-}
 
 .record .label-info {
 	background-color: #B9C5D3;
@@ -78,7 +75,7 @@ mark {
 }
 
 .tt-suggestion {
-	cursor: pointer;	
+	cursor: pointer;
 }
 
 .tt-suggestion p {

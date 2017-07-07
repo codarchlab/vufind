@@ -1,9 +1,14 @@
 <? if (count($searchTabs) > 0): ?>
-  <ul class="nav nav-tabs search-tabs">
-    <? foreach ($searchTabs as $tab): ?>
-      <li<?=$tab['selected'] ? ' class="active"' : ' class="inactive"'?>>
-        <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
-      </li>
-    <? endforeach; ?>
-  </ul>
+  <? foreach ($searchTabs as $tab): ?>
+    <? if($tab['selected']): ?>
+      <a class="btn btn-primary active">
+          <?= $this->transEsc($tab['label']); ?>
+          <i class="fa fa-eye" aria-hidden="true"></i>
+      </a>
+    <? else: ?>
+      <a class="btn btn-default inactive" href="<?= $this->escapeHtmlAttr($tab['url']);?>">
+        <?= $this->transEsc($tab['label']); ?>
+      </a>
+    <? endif ?>
+  <? endforeach; ?>
 <? endif; ?>
