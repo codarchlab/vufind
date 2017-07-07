@@ -7,7 +7,7 @@
   }
 ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <? $QRCode = $this->record($this->driver)->getQRCode("core"); 
+  <? $QRCode = $this->record($this->driver)->getQRCode("core");
      $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('medium'));
      $preview = $this->record($this->driver)->getPreviews(); ?>
   <? if ($QRCode || $cover || $preview): ?>
@@ -123,7 +123,14 @@
       <tr>
         <th><?=$this->transEsc('Other Authors')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
+          <? $i = 0; foreach ($authors['secondary'] as $field): ?>
+            <?=($i++ == 0)?'':', '?>
+            <span property="contributor">
+              <a href="<?=$this->record($this->driver)->getLink('author', $field)?>">            
+                  <?/*  <?=$this->escapeHtml($field)?>  */?>
+              </a>
+            </span>
+          <? endforeach; ?>
         </td>
       </tr>
       <? endif; ?>
@@ -238,7 +245,9 @@
           <th><?=$this->transEsc('Thesaurus')?>: </th>
           <td>
             <? foreach ($thsEntries as $thsEntry): ?>
-              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small></a>
+              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
+                <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
+              </a>
             <? endforeach; ?>
           </td>
         </tr>
@@ -267,6 +276,8 @@
           </tr>
 
       <? endif; ?>
+
+      <tr id="arachne-data" zenon-id="<?= $this->driver->getControlNumber(); ?>"></tr>
 
       <? $locations = $this->driver->getLocation(); ?>
       <? if($locations): ?>
@@ -366,7 +377,7 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $additionalPhysicalFormNotes = $this->driver->getAdditionalPhysicalFormAvailableNote(); ?>
       <? if(!empty($additionalPhysicalFormNotes)): ?>
         <tr>
@@ -415,4 +426,6 @@
     </table>
     <?/* End Main Details */?>
   </div>
+
+  <script src="/themes/archaeostrap/js/arachne-data.js"></script>
 </div>
