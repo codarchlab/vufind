@@ -361,10 +361,8 @@ class SolrMarc extends VufindSolrMarc
      */
 
     public function getPublicationsLink() {
-        if(!$this->getMarcRecord()->getField('001')->toRaw())
-            return null;
 
-        $zenonId = trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
+        $zenonId = $this->getControlNumber();
         $reader = new configJson();
         $data   = $reader->fromFile('./local/iDAI.world/publications_mapping.json');
 
@@ -372,6 +370,13 @@ class SolrMarc extends VufindSolrMarc
             return $data[$zenonId];
 
         return False;
+    }
+
+    public function getControlNumber() {
+      if(!$this->getMarcRecord()->getField('001')->toRaw())
+          return null;
+
+      return trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
     }
 
     /**
@@ -426,7 +431,7 @@ class SolrMarc extends VufindSolrMarc
               'label' => $field[0],
               'uri' => $field[1]
             );
-            
+
         }
 
         return $result;
@@ -451,7 +456,7 @@ class SolrMarc extends VufindSolrMarc
     {
         return $this->getFieldArray('542',['d']);
     }
-    
+
     private function removeTrailingSlash($s)
     {
         if (strrpos($s, '/') == strlen($s)-1) {
