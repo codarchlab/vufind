@@ -2,9 +2,18 @@
 
 var xmlhttp = new XMLHttpRequest();
 var arachneQueryUrl = 'https://arachne.dainst.org/data/search?q=references.zenonId:';
+var zenonId = null;
 
 var container = null;
 var heading = 'iDAI.objects/Arachne';
+
+var resultBuckets = [];
+var resultBucketSize = 5;
+var resultBucketIndex = 0;
+
+var entityCount = 0;
+
+document.onload = startQuery();
 
 function trimZenonId(zenonId){
   return zenonId.replace("DAI-", "");
@@ -12,7 +21,7 @@ function trimZenonId(zenonId){
 
 function startQuery() {
   container = document.getElementById('arachne-data');
-  var zenonId = trimZenonId(container.getAttribute('zenon-id'));
+  zenonId = trimZenonId(container.getAttribute('zenon-id'));
 
   xmlhttp.open("GET", arachneQueryUrl + zenonId, true);
   xmlhttp.send();
@@ -22,15 +31,37 @@ xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
       var response = JSON.parse(xmlhttp.responseText);
       if (xmlhttp.status == 200 && response['size'] > 0) {
-        generateArachneLinks(response['entities']);
+        entityCount = response['size'];
+        createBuckets(response['entities']);
+        showCurrentBucket();
       }
       else {
         container.style.visibility = 'hidden';
       }
     }
-};
+}
 
-function generateArachneLinks(result) {
+function createBuckets(entities) {
+  var bucketCounter = 0;
+  var bucket = [];
+  for(var index in entities) {
+    if(index != 0 && index % resultBucketSize == 0) {
+      resultBuckets.push(bucket);
+      bucket = [];
+    }
+    bucket.push(entities[index]);
+  }
+
+  if(bucket.length != 0){
+    resultBuckets.push(bucket);
+  }
+}
+
+function showCurrentBucket() {
+  while (container.firstChild) {
+      container.removeChild(container.firstChild);
+  }
+
   var th = document.createElement('th');
   var thText = document.createTextNode(heading);
 
@@ -38,34 +69,111 @@ function generateArachneLinks(result) {
   container.appendChild(th);
 
   var td = document.createElement('td');
-  for(var index in result){
-    var entity = result[index];
-    var div = document.createElement('div');
-    var a = document.createElement('a');
-    a.href = entity['@id'];
-    a.target='_blank';
 
-    var icon = document.createElement('i');
-    var textElement = document.createTextNode(entity['title']);
-    var subtitleElement = null;
-    if(entity['subtitle']) {
-      var subtitleText = document.createTextNode(" | " + entity['subtitle']);
-      var subtitleElement = document.createElement('small');
-      subtitleElement.appendChild(subtitleText);
-    }
-
-    icon.className += 'fa fa-university';
-    icon.setAttribute('area-hidden', true);
-
-    a.appendChild(icon);
-    a.appendChild(textElement);
-    div.appendChild(a);
-    if(subtitleElement != null){
-      div.appendChild(subtitleElement);
-    }
-    td.appendChild(div);
+  if(resultBuckets.length > 1) {
+    td.appendChild(addPaginationButtons());
   }
+
+  for(var index in resultBuckets[resultBucketIndex]){
+    td.appendChild(addArachneEntityLink(resultBuckets[resultBucketIndex][index]));
+  }
+
   container.appendChild(td);
 }
 
-document.onload = startQuery();
+function selectBucket(newIndex) {
+
+  if(newIndex < 0) return;
+  if(newIndex > resultBuckets.length - 1) return;
+
+  resultBucketIndex = newIndex;
+  showCurrentBucket()
+}
+
+function addPaginationButtons() {
+  var nav = document.createElement('nav');
+  var ul = document.createElement('ul');
+  ul.className += 'pager';
+
+  // Add arrow left
+  var previous = document.createElement('li');
+  var previousLink = document.createElement('a');
+  var previousIcon = document.createElement('i');
+  previousIcon.className += "fa fa-arrow-left";
+  previousIcon.setAttribute('area-hidden', true);
+  previousLink.onclick = function() {
+    selectBucket(resultBucketIndex - 1);
+  }
+  previousLink.appendChild(previousIcon);
+  previous.appendChild(previousLink)
+  if(resultBucketIndex == 0){
+    previous.className += 'disabled'
+  }
+
+  ul.appendChild(previous);
+
+  // Add position counter
+  var counterSpan = document.createElement('span');
+  var lowerLimit = (resultBucketIndex * resultBucketSize) + 1;
+  var upperLimit = lowerLimit + resultBuckets[resultBucketIndex].length - 1;
+  var counterText = ' ' + lowerLimit + ' - ' + upperLimit + ' / ' + entityCount + ' ';
+  var counterLink = document.createElement('a');
+  var counterIcon = document.createElement('i');
+  counterSpan.appendChild(document.createTextNode(counterText));
+  counterIcon.className += "fa fa-th";
+  counterIcon.setAttribute('area-hidden', true);
+  counterLink.href = arachneQueryUrl.replace('data', '') + zenonId;
+  counterLink.target = '_blank';
+  counterLink.appendChild(counterIcon);
+  counterSpan.appendChild(counterLink);
+  counterSpan.appendChild(document.createTextNode(' '));
+
+  ul.append(counterSpan)
+
+  // Add arrow right
+  var next = document.createElement('li');
+  var nextLink = document.createElement('a');
+  var nextIcon = document.createElement('i');
+  nextIcon.className += "fa fa-arrow-right";
+  nextIcon.setAttribute('area-hidden', true);
+  nextLink.onclick = function() {
+    selectBucket(resultBucketIndex + 1);
+  }
+  nextLink.appendChild(nextIcon);
+  next.appendChild(nextLink)
+  if(resultBucketIndex == resultBuckets.length - 1){
+    next.className += 'disabled'
+  }
+  ul.appendChild(next);
+
+  nav.appendChild(ul);
+  return nav;
+}
+
+function addArachneEntityLink(entity) {
+  var div = document.createElement('div');
+  var a = document.createElement('a');
+  a.href = entity['@id'];
+  a.target='_blank';
+
+  var icon = document.createElement('i');
+  var textElement = document.createTextNode(entity['title']);
+  var subtitleElement = null;
+  if(entity['subtitle']) {
+    var subtitleText = document.createTextNode(" | " + entity['subtitle']);
+    var subtitleElement = document.createElement('small');
+    subtitleElement.appendChild(subtitleText);
+  }
+
+  icon.className += 'fa fa-university';
+  icon.setAttribute('area-hidden', true);
+
+  a.appendChild(icon);
+  a.appendChild(textElement);
+  div.appendChild(a);
+  if(subtitleElement != null){
+    div.appendChild(subtitleElement);
+  }
+
+  return div;
+}
