@@ -47,11 +47,11 @@ function generateArachneLinks(result) {
 
     var icon = document.createElement('i');
     var textElement = document.createTextNode(entity['title']);
-    var small = null;
+    var subtitleElement = null;
     if(entity['subtitle']) {
-      var subTextElement = document.createTextNode(" | " + entity['subtitle']);
-      var small = document.createElement('small');
-      small.appendChild(subTextElement);
+      var subtitleText = document.createTextNode(" | " + entity['subtitle']);
+      var subtitleElement = document.createElement('small');
+      subtitleElement.appendChild(subtitleText);
     }
 
     icon.className += 'fa fa-university';
@@ -60,8 +60,8 @@ function generateArachneLinks(result) {
     a.appendChild(icon);
     a.appendChild(textElement);
     div.appendChild(a);
-    if(small != null){
-      div.append(small);
+    if(subtitleElement != null){
+      div.appendChild(subtitleElement);
     }
     td.appendChild(div);
   }
