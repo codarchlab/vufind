@@ -39,6 +39,18 @@ namespace VuFind\Controller;
 trait StorageRetrievalRequestsTrait
 {
     /**
+     * Action for dealing with blocked storage retrieval requests.
+     *
+     * @return mixed
+     */
+    public function blockedStorageRetrievalRequestAction()
+    {
+        $this->flashMessenger()
+            ->addMessage('storage_retrieval_request_error_blocked', 'error');
+        return $this->redirectToRecord('#top');
+    }
+
+    /**
      * Action for dealing with storage retrieval requests.
      *
      * @return mixed
@@ -78,13 +90,8 @@ trait StorageRetrievalRequestsTrait
         $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         );
-        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
-            $this->flashMessenger()->addErrorMessage(
-                is_array($validRequest)
-                    ? $validRequest['status']
-                    : 'storage_retrieval_request_error_blocked'
-            );
-            return $this->redirectToRecord('#top');
+        if (!$validRequest) {
+            return $this->blockedStorageRetrievalRequestAction();
         }
 
         // Send various values to the view so we can build the form:

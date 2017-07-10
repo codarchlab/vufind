@@ -125,8 +125,6 @@ class CoverController extends AbstractBase
             'issn' => $params()->fromQuery('issn'),
             'oclc' => $params()->fromQuery('oclc'),
             'upc' => $params()->fromQuery('upc'),
-            'recordid' => $params()->fromQuery('recordid'),
-            'source' => $params()->fromQuery('source'),
         ];
     }
 

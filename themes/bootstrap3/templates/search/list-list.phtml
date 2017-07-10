@@ -3,11 +3,15 @@
 <? foreach ($this->results->getResults() as $current): ?>
   <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
-    <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-      <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
-    <? endif; ?>
-    <div class="record-number">
-      <?=$recordNumber ?>
+    <div class="checkbox hidden-print">
+      <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
+        <label>
+          <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
+          <?=$recordNumber ?>
+        </label>
+      <? else: ?>
+        <?=$recordNumber ?>
+      <? endif; ?>
     </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>

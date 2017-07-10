@@ -584,9 +584,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return mixed An array of data on the request including
-     * whether or not it is valid and a status message. Alternatively a boolean
-     * true if request is valid, false if not.
+     * @return bool True if request is valid, false if not
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -617,9 +615,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return mixed An array of data on the request including
-     * whether or not it is valid and a status message. Alternatively a boolean
-     * true if request is valid, false if not.
+     * @return bool True if request is valid, false if not
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -964,9 +960,7 @@ class MultiBackend extends AbstractBase implements \Zend\Log\LoggerAwareInterfac
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return mixed An array of data on the request including
-     * whether or not it is valid and a status message. Alternatively a boolean
-     * true if request is valid, false if not.
+     * @return bool True if request is valid, false if not
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {

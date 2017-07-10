@@ -49,7 +49,7 @@ function checkSaveStatuses(_container) {
               + htmlEncode(response.data[sel][i].list_title) + '</a></li>';
           }
           html += '</ul>';
-          list.html(html).addClass('loaded');
+          list.html(html).removeClass('hidden');
         }
       }
     });

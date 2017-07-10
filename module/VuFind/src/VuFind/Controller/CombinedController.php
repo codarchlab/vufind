@@ -118,10 +118,7 @@ class CombinedController extends AbstractSearch
                     && isset($general->Site->showBulkOptions)
                     && $general->Site->showBulkOptions
             ];
-            // Load custom CSS, if necessary:
-            $html = $this->getViewRenderer()->plugin('headLink')->__invoke();
-            // Render content:
-            $html .= $this->getViewRenderer()->render(
+            $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
             );

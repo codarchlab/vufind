@@ -30,7 +30,8 @@
 
 <? if (isset($visualFacetSet)): ?>
   <script type="text/javascript">
-  var pivotdata = <?=json_encode($visualFacetSet);?>;
+  <? $pivotdata = json_encode($visualFacetSet);
+  echo "var pivotdata = " . $pivotdata . ";"; ?>
   jQuery(document).ready(function(data) {
   if (!d3.select("#visualResults").empty()) {
     $('.limitSelect').css('display', 'none');

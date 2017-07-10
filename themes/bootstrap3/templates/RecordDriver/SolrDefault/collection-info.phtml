@@ -1,13 +1,11 @@
 <? $this->headScript()->appendFile('collection_record.js'); ?>
-<div class="media">
-  <?
-    $QRCode = $this->record($this->driver)->getQRCode("core");
-    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
-    $cover = $coverDetails['html'];
-    $preview = $this->record($this->driver)->getPreviews();
-  ?>
+<div class="row">
+  <? $QRCode = $this->record($this->driver)->getQRCode("core");
+     $cover = $this->record($this->driver)->getCover('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+     $preview = $this->record($this->driver)->getPreviews(); ?>
   <? if ($QRCode || $cover || $preview): ?>
-    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+  <div class="col-sm-3">
+    <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
       <? if($cover): ?>
         <?=$cover?>
@@ -19,11 +17,15 @@
           <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
       <? endif; ?>
-
-      <? if ($preview): ?><?=$preview?><? endif; ?>
     </div>
+
+    <? if ($preview): ?><?=$preview?><? endif; ?>
+  </div>
+
+  <div class="col-sm-6">
+  <? else: ?>
+  <div class="col-sm-9">
   <? endif; ?>
-  <div class="media-body">
 
     <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 
@@ -33,7 +35,7 @@
     <? endif; ?>
 
     <? /* Display the lists that this record is saved to */ ?>
-    <div class="savedLists" id="savedLists">
+    <div class="savedLists hidden alert alert-info" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 

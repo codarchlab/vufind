@@ -113,6 +113,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesNewAccount()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoRecord();
 
         $this->findCss($page, '.save-record')->click();
@@ -165,6 +170,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesLogin()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoRecord();
 
         $this->findCss($page, '.save-record')->click();
@@ -212,6 +222,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddRecordToFavoritesLoggedIn()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoRecord();
         // Login
         $this->findCss($page, '#loginOptions a')->click();
@@ -236,6 +251,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesNewAccount()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
@@ -299,6 +319,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesLogin()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoSearch();
 
         $this->findCss($page, '.save-record')->click();
@@ -347,6 +372,11 @@ class FavoritesTest extends \VuFindTest\Unit\MinkTestCase
      */
     public function testAddSearchItemToFavoritesLoggedIn()
     {
+        // Change the theme:
+        $this->changeConfigs(
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
+        );
+
         $page = $this->gotoSearch();
         // Login
         $this->findCss($page, '#loginOptions a')->click();

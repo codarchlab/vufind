@@ -245,17 +245,13 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
-        $options = [
-            'siteId' => isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1,
-            'searchPrefix' => isset($config->Piwik->searchPrefix)
-                ? $config->Piwik->searchPrefix : null
-        ];
+        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
         $customVars = isset($config->Piwik->custom_variables)
             ? $config->Piwik->custom_variables
             : false;
         $request = $sm->getServiceLocator()->get('Request');
         $router = $sm->getServiceLocator()->get('Router');
-        return new Piwik($url, $options, $customVars, $router, $request);
+        return new Piwik($url, $siteId, $customVars, $router, $request);
     }
 
     /**

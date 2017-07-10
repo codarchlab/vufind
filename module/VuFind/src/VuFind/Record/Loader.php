@@ -43,10 +43,8 @@ use VuFind\Exception\RecordMissing as RecordMissingException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Loader implements \Zend\Log\LoggerAwareInterface
+class Loader
 {
-    use \VuFind\Log\LoggerAwareTrait;
-
     /**
      * Record factory
      *
@@ -133,18 +131,14 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Given an array of IDs and a record source, load a batch of records for
      * that source.
      *
-     * @param array  $ids                       Record IDs
-     * @param string $source                    Record source
-     * @param bool   $tolerateBackendExceptions Whether to tolerate backend
-     * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
+     * @param array  $ids    Record IDs
+     * @param string $source Record source
      *
      * @throws \Exception
      * @return array
      */
-    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND,
-        $tolerateBackendExceptions = false
-    ) {
+    public function loadBatchForSource($ids, $source = DEFAULT_SEARCH_BACKEND)
+    {
         $cachedRecords = [];
         if (null !== $this->recordCache && $this->recordCache->isPrimary($source)) {
             // Try to load records from cache if source is cachable
@@ -161,18 +155,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // Try to load the uncached records from the original $source
         $genuineRecords = [];
         if (!empty($ids)) {
-            try {
-                $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
-                    ->getRecords();
-            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-                if (!$tolerateBackendExceptions) {
-                    throw $e;
-                }
-                $this->logWarning(
-                    "Exception when trying to retrieve records from $source: "
-                    . $e->getMessage()
-                );
-            }
+            $genuineRecords = $this->searchService->retrieveBatch($source, $ids)
+                ->getRecords();
 
             foreach ($genuineRecords as $genuineRecord) {
                 $key = array_search($genuineRecord->getUniqueId(), $ids);
@@ -203,19 +187,16 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * separated source|id strings), load all of the requested records in the
      * requested order.
      *
-     * @param array $ids                       Array of associative arrays with
-     * id/source keys or strings in source|id format.  In associative array formats,
-     * there is also an optional "extra_fields" key which can be used to pass in data
+     * @param array $ids Array of associative arrays with id/source keys or
+     * strings in source|id format.  In associative array formats, there is
+     * also an optional "extra_fields" key which can be used to pass in data
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
-     * @param bool  $tolerateBackendExceptions Whether to tolerate backend
-     * exceptions that may be caused by e.g. connection issues or changes in
-     * subcscriptions
      *
      * @throws \Exception
      * @return array     Array of record drivers
      */
-    public function loadBatch($ids, $tolerateBackendExceptions = false)
+    public function loadBatch($ids)
     {
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
@@ -235,9 +216,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // Retrieve the records and put them back in order:
         $retVal = [];
         foreach ($idBySource as $source => $details) {
-            $records = $this->loadBatchForSource(
-                array_keys($details), $source, $tolerateBackendExceptions
-            );
+            $records = $this->loadBatchForSource(array_keys($details), $source);
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
                 // In theory, we should be able to assume that $details[$id] is

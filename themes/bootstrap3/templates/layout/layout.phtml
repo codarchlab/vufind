@@ -138,9 +138,7 @@ JS;
       <? endif; ?>
       <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
-    </header>
-    <nav class="breadcrumbs">
-      <div class="container">
+      <div class="breadcrumbs container">
         <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
@@ -165,13 +163,18 @@ JS;
           </ul>
         <? endif; ?>
       </div>
-    </nav>
+    </header>
     <div role="main" class="main">
       <div id="content" class="container">
         <?=$this->layout()->content ?>
       </div>
     </div>
-    <?=$this->render('footer.phtml')?>
+    <footer class="hidden-print">
+      <div class="container">
+        <?=$this->render('footer.phtml')?>
+        <?=$this->layout()->poweredBy ?>
+      </div>
+    </footer>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">
