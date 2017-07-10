@@ -1,14 +1,29 @@
 <? if (count($searchTabs) > 0): ?>
-  <? foreach ($searchTabs as $tab): ?>
-    <? if($tab['selected']): ?>
-      <a class="btn btn-primary active">
-          <?= $this->transEsc($tab['label']); ?>
-          <i class="fa fa-eye" aria-hidden="true"></i>
-      </a>
-    <? else: ?>
-      <a class="btn btn-default inactive" href="<?= $this->escapeHtmlAttr($tab['url']);?>">
-        <?= $this->transEsc($tab['label']); ?>
-      </a>
-    <? endif ?>
-  <? endforeach; ?>
+
+<div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span> 
+    <? foreach ($searchTabs as $tab): ?>
+      <? if($tab['selected']): ?>
+            <?= $this->transEsc($tab['label']); ?>
+      <? endif ?>
+    <? endforeach; ?> <i class="fa fa-eye" aria-hidden="true"></i>
+  </button>
+  <ul class="dropdown-menu">
+    <? foreach ($searchTabs as $tab): ?>
+      <? if($tab['selected']): ?>
+        <li>
+          <a> <?= $this->transEsc($tab['label']); ?> <i class="fa fa-eye" aria-hidden="true"></i></a>
+        </li>
+      <? else: ?>
+        <li>
+          <a href="<?= $this->escapeHtmlAttr($tab['url']);?>">
+            <?= $this->transEsc($tab['label']); ?>
+          </a>
+        </li>
+      <? endif ?>
+    <? endforeach; ?>
+  </ul>
+</div>
 <? endif; ?>
