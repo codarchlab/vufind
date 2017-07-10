@@ -10,6 +10,7 @@ return array(
         'vendor/font-awesome.min.css',
         'vendor/bootstrap-slider.css',
         'print.css:print',
+        'flex-fallback.css:lt IE 10', // flex polyfill
     ),
     'js' => array(
         'vendor/base64.js:lt IE 10', // btoa polyfill
