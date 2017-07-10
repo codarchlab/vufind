@@ -33,6 +33,14 @@ mark {
 	margin-top: 0;
 }
 
+.arachne-nav {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.arachne-nav li {
+  font-size:  xx-small;
+}
 
 .record .label-info {
 	background-color: #B9C5D3;

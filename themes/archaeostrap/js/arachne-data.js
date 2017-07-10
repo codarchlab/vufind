@@ -92,8 +92,9 @@ function selectBucket(newIndex) {
 
 function addPaginationButtons() {
   var nav = document.createElement('nav');
+  nav.className += 'navbar-right';
   var ul = document.createElement('ul');
-  ul.className += 'pager';
+  ul.className += 'pager arachne-nav';
 
   // Add arrow left
   var previous = document.createElement('li');
@@ -120,7 +121,7 @@ function addPaginationButtons() {
   var counterLink = document.createElement('a');
   var counterIcon = document.createElement('i');
   counterSpan.appendChild(document.createTextNode(counterText));
-  counterIcon.className += "fa fa-th";
+  counterIcon.className += "fa fa-search";
   counterIcon.setAttribute('area-hidden', true);
   counterLink.href = arachneQueryUrl.replace('data', '') + zenonId;
   counterLink.target = '_blank';
