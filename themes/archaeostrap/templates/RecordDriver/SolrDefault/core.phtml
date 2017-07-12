@@ -10,12 +10,13 @@
   <? $QRCode = $this->record($this->driver)->getQRCode("core");
      $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('medium'));
      $preview = $this->record($this->driver)->getPreviews(); ?>
-  <? if ($QRCode || $cover || $preview): ?>
+    
+  <? if ($QRCode || $cover['cover'] || strlen($preview) > 0): ?>
   <div class="col-sm-3">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
-      <? if($cover): ?>
-        <?=$cover?>
+      <? if($cover['cover']): ?>
+        <?=$cover['cover']?>
       <? endif; ?>
 
       <? /* Display qrcode if appropriate: */ ?>
