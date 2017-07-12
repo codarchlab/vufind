@@ -6,10 +6,10 @@ return array(
         //'vendor/bootstrap-accessibility.css',
         //'vendor/font-awesome.min.css',
         //'bootstrap-custom.css',
-        //'compiled.css',
-        'vendor/font-awesome.min.css',
-        'vendor/bootstrap-slider.css',
-        'print.css:print',
+        'compiled.css',
+        //'vendor/font-awesome.min.css',
+        //'vendor/bootstrap-slider.css',
+        //'print.css:print',
     ),
     'js' => array(
         'vendor/base64.js:lt IE 10', // btoa polyfill
