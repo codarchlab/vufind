@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<schema name="VuFind Bibliographic Index" version="1.2">
+<schema name="Zenon Bibliographic Index" version="1.2">
   <types>
     <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
@@ -133,11 +133,11 @@
    <field name="spellingShingle" type="textSpellShingle" indexed="true" stored="true" multiValued="true"/>
    <!-- Institutional Fields -->
    <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="building" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="collection" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="building" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <!-- Generic Fields -->
-   <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="format" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
