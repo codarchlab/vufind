@@ -28,6 +28,7 @@
 namespace Zenon\Controller;
 
 use VuFind\Controller\AjaxController as AjaxController;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Return thesaurus entries from the index
@@ -52,9 +53,7 @@ class ThesaurusController extends AjaxController
         $this->outputMode = 'json';
 
         $id = $this->params()->fromQuery('id');
-
-        $search = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager')->get('SolrAuth');
+        $search = $this->serviceLocator->get('VuFind\SearchResultsPluginManager')->get('SolrAuth');
 
         $params = $search->getParams();
         if ($id) {

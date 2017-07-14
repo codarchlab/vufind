@@ -4,9 +4,9 @@ namespace Zenon\Module\Config;
 $config = [
 
 	'controllers' => [
-        'invokables' => [
-            'thesaurus' => 'Zenon\Controller\ThesaurusController',
-        ],
+        'factories' => [
+            'thesaurus' => 'Zenon\Controller\Factory::getThesaurusController',
+        ]
     ],
 
     'service_manager' => [
