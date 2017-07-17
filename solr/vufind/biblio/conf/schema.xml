@@ -141,7 +141,7 @@
    <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
    <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="author_facet" type="textFacet" indexed="true" stored="false" multiValued="true"/>
    <field name="author_sort" type="string" indexed="true" stored="true"/>
    <field name="author-letter" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="authorStr" type="textFacet" indexed="true" stored="false"/>
@@ -268,9 +268,6 @@
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
- <copyField source="author" dest="author_facet"/>
- <copyField source="author2" dest="author_facet"/>
- <copyField source="author_corporate" dest="author_facet"/>
  <copyField source="publisher" dest="publisherStr"/>
  <copyField source="topic" dest="topic_unstemmed"/>
  <copyField source="allfields" dest="allfields_unstemmed"/>
@@ -280,6 +277,7 @@
  <copyField source="author" dest="author_browse"/>
  <copyField source="author2" dest="author_browse"/>
  <copyField source="author_corporate" dest="author_browse"/>
+ <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
  <copyField source="format"    dest="allfields_unstemmed"/>
