@@ -307,7 +307,7 @@
       <? endif; ?>
 
       <? $hostItems = $this->driver->getHostItemInformation(); ?>
-      <? if($hostItems): ?>
+      <? if(!empty($hostItems)): ?>
         <tr>
           <th><?=$this->transEsc('Included in')?>: </th>
           <td>

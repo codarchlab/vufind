@@ -202,7 +202,8 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the host item information (MARC 21 field 773)
+     * Get the host item information (MARC 21 field 773), also retrieves custom, and deprecated HostItemInformation
+     * in field 995 (Zenon data).
      *
      * @return array
      */
@@ -210,60 +211,64 @@ class SolrMarc extends VufindSolrMarc
     {
         $results = [];
 
-        $customFieldData = $this->getCustomFieldHostItemData();
+        $customFieldData = $this->getCustomFieldHostItemLinkData();
         if($customFieldData) array_push($results, $customFieldData);
 
         $fields =  $this->getMarcRecord()->getFields('773');
         foreach($fields as $currentField) {
-            $linkEntry = $currentField->getSubfield('i');
-            if($linkEntry) {
-                $ctrlNumber = false;
-                $text = "";
-
-                $title = $currentField->getSubfield('t');
-                $placePublisherAndDate = $currentField->getSubfield('d');
-                $relatedParts = $currentField->getSubfield('g');
-                //$enumerationAndFirstPage = $currentField->getSubfield('q');
-                $recordControlNumber = $currentField->getSubfield('w');
-                //$internationalStandardSerialNumber = $currentField->getSubfield('x');
-
-                if($title){
-                    $text = $text . " " . $title->getData();
-                }
-                if($relatedParts){
-                    $text = $text . ", " . $relatedParts->getData();
-                }
-                if($placePublisherAndDate){
-                    $text = $text . ", " . $placePublisherAndDate->getData();
-                }
-//                if($enumerationAndFirstPage){
-//                    $text = $text . ", " . $enumerationAndFirstPage->getData();
-//                }
-
-                if($recordControlNumber){
-                    preg_match('/^\(.*\)(.*)$/', $recordControlNumber->getData(), $match);
-                    if($match && sizeof($match) == 2){
-                        $ctrlNumber = $match[1];
-                    }
-                }
-
-                array_push($results, array('id' => $ctrlNumber, 'label' => $text));
+            $recordControlNumber = $currentField->getSubfield('w');
+            if($recordControlNumber) {
+                $data = $this->getHostItemLinkData($currentField);
+                if($data) array_push($results, $data);
             }
-
-            $textEntry = $currentField->getSubfield('a');
-            if($textEntry) {
-                array_push($results, array('id' => false, 'label' => $textEntry->getData()));
+            else {
+                $data = $this->getHostItemTextData($currentField);
+                if($data) array_push($results, $data);
             }
         }
         return $results;
     }
 
-    /**
-     * Get the parent of the record
-     *
-     * @return array
-     */
-    private function getCustomFieldHostItemData()
+    private function getHostItemTextData($currentField)
+    {
+        $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n'], false);
+        if(sizeOf($textEntry) > 0) {
+            return array('id' => false, 'label' => join(', ', $textEntry));
+        }
+        return null;
+    }
+
+    private function getHostItemLinkData($currentField)
+    {
+        preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
+
+        if(!$match || sizeof($match) != 2){
+            // unable to extract controlnumber, fallback to text data object
+            return getHostItemTextData($currentField);
+        }
+
+        $ctrlNumber = $match[1];
+        $text = "";
+
+        $title = $currentField->getSubfield('t');
+        $placePublisherAndDate = $currentField->getSubfield('d');
+        $relatedParts = $currentField->getSubfield('g');
+        $recordControlNumber = $currentField->getSubfield('w');
+
+        if($title){
+            $text = $text . " " . $title->getData();
+        }
+        if($relatedParts){
+            $text = $text . ", " . $relatedParts->getData();
+        }
+        if($placePublisherAndDate){
+            $text = $text . ", " . $placePublisherAndDate->getData();
+        }
+
+        return array('id' => $ctrlNumber, 'label' => $text);
+    }
+
+    private function getCustomFieldHostItemLinkData()
     {
     	$fields = $this->getMarcRecord()->getFields('995');
 
