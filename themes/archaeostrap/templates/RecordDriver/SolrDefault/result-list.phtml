@@ -97,17 +97,16 @@ if ($coverDetails['cover']):
                     }?>
                     </div>
                 <? endif; ?>
-
                 <div class="callnumAndLocation ajax-availability hidden">
                     <? if ($this->driver->supportsAjaxStatus()): ?>
                         <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
                         <span class="callnumber ajax-availability hidden">
-              <?=$this->transEsc('Loading')?>...<br/>
-            </span>
+                          <?=$this->transEsc('Loading')?>...<br/>
+                        </span>
                         <strong><?=$this->transEsc('Located')?>:</strong>
                         <span class="location ajax-availability hidden">
-              <?=$this->transEsc('Loading')?>...
-            </span>
+                          <?=$this->transEsc('Loading')?>...
+                        </span>
                         <div class="locationDetails"></div>
                     <? else: ?>
                         <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
