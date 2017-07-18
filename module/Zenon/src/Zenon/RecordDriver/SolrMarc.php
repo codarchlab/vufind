@@ -73,7 +73,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getHighlightedTitle()
     {
-        return $this->removeTrailingSlash(parent::getHighlightedTitle()[0]);
+        return $this->removeTrailingSlash(parent::getHighlightedTitle());
     }
 
     /**
@@ -208,7 +208,54 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getHostItemInformation()
     {
-        return $this->getFieldArray('773');
+        $results = [];
+
+        $customFieldData = $this->getCustomFieldHostItemData();
+        if($customFieldData) array_push($results, $customFieldData);
+
+        $fields =  $this->getMarcRecord()->getFields('773');
+        foreach($fields as $currentField) {
+            $linkEntry = $currentField->getSubfield('i');
+            if($linkEntry) {
+                $ctrlNumber = false;
+                $text = "";
+
+                $title = $currentField->getSubfield('t');
+                $placePublisherAndDate = $currentField->getSubfield('d');
+                $relatedParts = $currentField->getSubfield('g');
+                //$enumerationAndFirstPage = $currentField->getSubfield('q');
+                $recordControlNumber = $currentField->getSubfield('w');
+                //$internationalStandardSerialNumber = $currentField->getSubfield('x');
+
+                if($title){
+                    $text = $text . " " . $title->getData();
+                }
+                if($relatedParts){
+                    $text = $text . ", " . $relatedParts->getData();
+                }
+                if($placePublisherAndDate){
+                    $text = $text . ", " . $placePublisherAndDate->getData();
+                }
+//                if($enumerationAndFirstPage){
+//                    $text = $text . ", " . $enumerationAndFirstPage->getData();
+//                }
+
+                if($recordControlNumber){
+                    preg_match('/^\(.*\)(.*)$/', $recordControlNumber->getData(), $match);
+                    if($match && sizeof($match) == 2){
+                        $ctrlNumber = $match[1];
+                    }
+                }
+
+                array_push($results, array('id' => $ctrlNumber, 'label' => $text));
+            }
+
+            $textEntry = $currentField->getSubfield('a');
+            if($textEntry) {
+                array_push($results, array('id' => false, 'label' => $textEntry->getData()));
+            }
+        }
+        return $results;
     }
 
     /**
@@ -216,7 +263,7 @@ class SolrMarc extends VufindSolrMarc
      *
      * @return array
      */
-    public function getParent()
+    private function getCustomFieldHostItemData()
     {
     	$fields = $this->getMarcRecord()->getFields('995');
 

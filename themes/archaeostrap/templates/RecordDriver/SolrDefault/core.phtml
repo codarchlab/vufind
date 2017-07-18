@@ -312,21 +312,16 @@
           <th><?=$this->transEsc('Included in')?>: </th>
           <td>
             <? foreach ($hostItems as $hostItem): ?>
-              <?=$this->escapeHtml($hostItem)?>
+                <? if($hostItem['id']): ?>
+                    <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?></a>
+                <? else: ?>
+                    <?=$this->escapeHtml($hostItem['label'])?>
+                <? endif; ?>
             <? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
 
-      <? $parent = $this->driver->getParent(); ?>
-      <? if($parent): ?>
-        <tr>
-          <th><?=$this->transEsc('Included in')?>: </th>
-          <td>
-            <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
-          </td>
-        </tr>
-      <? endif; ?>
 
       <? $parallelEditions = $this->driver->getParallelEditions(); ?>
       <? if($parallelEditions): ?>
