@@ -23,6 +23,7 @@ for record in reader
   begin
     if(record['001'])
       record.append(MARC::DataField.new('024', '7',  ' ', ['a', record['001'].value], ['2', 'iDAI.bibliography']))
+      record['995']['b'].value = 'DAI-' + record['995']['b'].value
       record['001'].value = 'DAI-' + record['001'].value
       writer.write(record)
     else
