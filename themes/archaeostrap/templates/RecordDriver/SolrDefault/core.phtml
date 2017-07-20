@@ -119,8 +119,17 @@
       <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
       <tr>
         <th><?=$this->transEsc('Main Author')?>: </th>
-        <? foreach($authors['primary'] as $author=>$key): ?>
-          <td property="author"><a href="<?=$this->record($this->driver)->getLink('author',$author)?>"><?=$this->escapeHtml($author)?></a></td>
+        <? foreach($authors['primary'] as $author=>$value): ?>
+          <td property="author">
+              <a href="<?=$this->record($this->driver)->getLink('author',$author)?>">
+                  <?=$this->escapeHtml($author)?>
+                    <? if (!empty($value['role'])): ?>
+                        <? foreach ($value['role'] as $role): ?>
+                            , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                        <? endforeach ?>
+                    <? endif ?>
+              </a>
+          </td>
         <? endforeach; ?>
       </tr>
       <? endif; ?>
@@ -129,7 +138,8 @@
       <tr>
         <th><?=$this->transEsc('Corporate Author')?>: </th>
         <? foreach($authors['corporate'] as $author=>$key): ?>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a></td>
+        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+                <?=$this->escapeHtml($author)?></a></td>
         <? endforeach; ?>
       </tr>
       <? endif; ?>
@@ -138,11 +148,16 @@
       <tr>
         <th><?=$this->transEsc('Other Authors')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['secondary'] as $author=>$key): ?>
+          <? $i = 0; foreach ($authors['secondary'] as $author=>$value): ?>
             <?=($i++ == 0)?'':', '?>
             <span property="contributor">
               <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
                   <?=$this->escapeHtml($author)?>
+                  <? if (!empty($value['role'])): ?>
+                      <? foreach ($value['role'] as $role): ?>
+                          , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                      <? endforeach ?>
+                  <? endif ?>
               </a>
             </span>
           <? endforeach; ?>
