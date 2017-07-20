@@ -290,6 +290,31 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get the item's publication information, if no date is found in 260c/264c, parse 008.
+     *
+     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
+     *
+     * @return array
+     */
+    protected function getPublicationInfo($subfield = 'a')
+    {
+        $results = parent::getPublicationInfo($subfield);
+        if(empty($results) && $subfield == 'c'){
+            $generalInformation = $this->getMarcRecord()->getField('008');
+            if($generalInformation) {
+
+                preg_match('/^.{7}(\d{4}).*$/', $generalInformation->getData(), $match);
+                if($match && sizeof($match) == 2){
+                    array_push($results, $match[1]);
+                }
+            }
+        }
+
+        return $results;
+    }
+
+
+    /**
      * Get parallel records for the record (different editions etc.)
      *
      * @return array
