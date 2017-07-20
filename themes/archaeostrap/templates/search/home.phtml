@@ -143,9 +143,18 @@
     <div class="well">
       <h4><i class="fa fa-globe small"></i> <?=$this->translate('e-publications')?></h4>
       <ul class="list-unstyled">
-        <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal&amp;type=LocalNote"><?=$this->translate('e-journals')?></a></li>
+        <li>
+            <a target="_blank" href="http://ezb.uni-regensburg.de/">
+                <?=$this->translate('e-journals')?> <i class="fa fa-external-link"></i>
+            </a>
+        </li>
         <li><a href="<?=$this->url('search-results')?>?lookfor=ebook*&amp;type=LocalNote"><?=$this->translate('e-books')?></a></li>
         <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;type=LocalNote"><?=$this->translate('Online resources')?></a></li>
+        <li>
+            <a target="_blank" href="http://rzblx10.uni-regensburg.de/dbinfo/fachliste.php?bib_id=dai">
+                <?=$this->translate('DBIS (Database Information System)')?> <i class="fa fa-external-link"></i>
+            </a>
+        </li>
       </ul>
     </div>
   </div>
