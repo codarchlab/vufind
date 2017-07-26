@@ -21,16 +21,19 @@ writer = MARC::Writer.new(marc_dir + name + ".mrc")
 error_writer  = MARC::Writer.new(marc_dir + name + "failed.mrc")
 for record in reader
   begin
-    if(record['001'])
+    if record['001']
       record.append(MARC::DataField.new('024', '7',  ' ', ['a', record['001'].value], ['2', 'iDAI.bibliography']))
-      record['995']['b'].value = 'DAI-' + record['995']['b'].value
-      record['001'].value = 'DAI-' + record['001'].value
+      if record['003']
+        record['003'] = 'ZENON'
+      else
+        record.append(MARC::ControlField.new('003', 'ZENON'))
+      end
       writer.write(record)
     else
       error_writer.write(record)
     end
   rescue => e
-    logger.error "Error while writing record #{r['001']} to MARC: #{e.message}"
+    logger.error "Error while writing record #{record['001']} to MARC: #{e.message}"
   end
 end
 
