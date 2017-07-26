@@ -84,7 +84,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getTitleSection()
     {
-        return $this->removeTrailingSlash(parent::getTitleSection());
+        return $this->removeTrailingSlash(parent::getTitleSection()[0]);
     }
 
     /**
@@ -95,7 +95,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getSubtitle()
     {
-        return $this->removeTrailingSlash(parent::getSubtitle());
+        return $this->removeTrailingSlash(parent::getSubtitle()[0]);
     }
 
 	/**
@@ -203,7 +203,7 @@ class SolrMarc extends VufindSolrMarc
 
     /**
      * Get the host item information (MARC 21 field 773), also retrieves custom, and deprecated HostItemInformation
-     * in field 995 (Zenon data).
+     * in field 995 (ZENON data).
      *
      * @return array
      */
@@ -240,6 +240,7 @@ class SolrMarc extends VufindSolrMarc
 
     private function getHostItemLinkData($currentField)
     {
+        // Pattern matches GBV notation, example id: NLEJ102577161, field value 773w: "(DE-601)NLEJ000028940"
         preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
 
         if(!$match || sizeof($match) != 2){
@@ -271,10 +272,11 @@ class SolrMarc extends VufindSolrMarc
     private function getCustomFieldHostItemLinkData()
     {
     	$fields = $this->getMarcRecord()->getFields('995');
+        $controlNumberIdentifier = $this->getMarcRecord()->getField('003')->getData();
 
-    	foreach ($fields as $currentField) {
+        foreach ($fields as $currentField) {
     	    $linkType = $currentField->getSubfield('a')->getData();
-    	    $zenonId = $currentField->getSubfield('b')->getData();
+    	    $zenonId = $controlNumberIdentifier . '-' . $currentField->getSubfield('b')->getData();
     	    $label = $currentField->getSubfield('n')->getData();
 
     		if($linkType == 'ANA') {
