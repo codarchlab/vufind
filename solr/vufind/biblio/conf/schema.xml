@@ -134,6 +134,8 @@
    <!-- Institutional Fields -->
    <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="collection" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="collection_details" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <field name="collection_details_lib" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="building" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
    <!-- Generic Fields -->
    <field name="language" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
