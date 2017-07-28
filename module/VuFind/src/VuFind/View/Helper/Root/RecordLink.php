@@ -232,7 +232,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         $url = $urlHelper('search-results')
             . '?lookfor='
-            . urlencode(addcslashes($driver->getUniqueID(), '"'))
+            . urlencode(addcslashes($driver->getRawData()['is_hierarchy_id'], '"'))
             . '&type=ParentID';
         // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
