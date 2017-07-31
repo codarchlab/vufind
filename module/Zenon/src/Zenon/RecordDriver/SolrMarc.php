@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Zenon\RecordDriver;
-use VuFind\RecordDriver\SolrMarc as VufindSolrMarc,
-    VuFind\View\Helper\Root\RecordLink;
+use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
 use Zend\Config\Reader\Json as configJson;
 

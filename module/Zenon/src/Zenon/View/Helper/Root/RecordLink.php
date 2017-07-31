@@ -19,9 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind
+ * @category Zenon
  * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Simon Hohl <simon.hohl@dainst.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -30,7 +30,7 @@ use VuFind\View\Helper\Root\RecordLink as ParentRecordLink;
 /**
  * Record link view helper for Zenon Module
  *
- * @category VuFind
+ * @category Zenon
  * @package  View_Helpers
  * @author   Simon Hohl <simon.hohl@dainst.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
