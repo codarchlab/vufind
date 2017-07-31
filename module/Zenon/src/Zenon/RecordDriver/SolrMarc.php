@@ -26,9 +26,11 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Zenon\RecordDriver;
-use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
+use VuFind\RecordDriver\SolrMarc as VufindSolrMarc,
+    VuFind\View\Helper\Root\RecordLink;
 use VuFindCode\ISBN;
 use Zend\Config\Reader\Json as configJson;
+
 
 /**
  * Custom record handling for Zenon MARC records.

@@ -9,6 +9,9 @@ return array(
         'vendor/bootstrap-slider.min.js'
     ),
     'helpers' => array(
+        'factories' => array(
+            'recordlink' => 'Zenon\View\Helper\Root\Factory::getRecordLink'
+        ),
         'invokables' => array(
             'resultfeed' => 'Zenon\View\Helper\Root\ResultFeed'
         )
