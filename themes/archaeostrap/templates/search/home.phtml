@@ -162,34 +162,29 @@
   <div class="col-md-3 well">
     <h4><i class="fa fa-calendar small"></i> <?=$this->translate('Accessions')?></h4>
       <?
-        $end = new DateTime("now +1 month");
-        $start = new DateTime("now -1 year + 1 month");
-        $interval = new DateInterval('P1M');
-        $period = new DatePeriod($start, $interval, $end);
+        $start = new DateTime("now");
         $months = [];
       ?>
-      <? foreach ($period as $dt): ?>
-        <?
-          $queryMonth = $dt->format('my');
-          $queries = [];
-          foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
-          $query = join(' OR ', $queries);
-          $months[] = array("date" => $dt, "query" => $query);
-        ?>
-      <? 
-        endforeach;
-        $months = array_reverse($months)
-      ?>
-    <ul class="list-unstyled">
-      <? foreach (array_slice($months,0,12) as $month): ?>
-        <li>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
-            <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
-          </a>
-        </li>
-      <? endforeach; ?>
-    </ul>
+      <? for ($i = 0; $i > -12; $i--): ?>
+          <?
+              $dt = $this->datetime()->monthShifter($start, $i);
+              $queryMonth = $dt->format('my');
+              $queries = [];
+              foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
+              $query = join(' OR ', $queries);
+              $months[] = array("date" => $dt, "query" => $query);
+          ?>
+      <? endfor ?>
 
+      <ul class="list-unstyled">
+          <? foreach (array_slice($months,0,12) as $month): ?>
+              <li>
+                  <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
+                      <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+                  </a>
+              </li>
+          <? endforeach; ?>
+      </ul>
   </div>
 
 </div>

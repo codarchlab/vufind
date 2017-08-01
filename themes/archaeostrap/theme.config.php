@@ -10,7 +10,8 @@ return array(
     ),
     'helpers' => array(
         'factories' => array(
-            'recordlink' => 'Zenon\View\Helper\Root\Factory::getRecordLink'
+            'recordlink' => 'Zenon\View\Helper\Root\Factory::getRecordLink',
+            'datetime' => 'Zenon\View\Helper\Root\Factory::getDateTime'
         ),
         'invokables' => array(
             'resultfeed' => 'Zenon\View\Helper\Root\ResultFeed'
