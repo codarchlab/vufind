@@ -215,9 +215,9 @@ Thesaurus:
       - [ths_fuzzy, ~]
 
 LocalNote:
-  QueryFields:
-    note_txt_mv:
-      - [and, ~]
+  DismaxFields:
+    - note_str_mv
+  DismaxHandler: edismax
 
 JournalNote:
   QueryFields:
