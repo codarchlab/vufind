@@ -96,7 +96,7 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getSubtitle()
     {
-        return $this->removeTrailingSlash(parent::getSubtitle()[0]);
+        return $this->removeTrailingSlash(parent::getSubtitle());
     }
 
 	/**
@@ -213,7 +213,9 @@ class SolrMarc extends VufindSolrMarc
         $results = [];
 
         $customFieldData = $this->getCustomFieldHostItemLinkData();
-        if($customFieldData) array_push($results, $customFieldData);
+        if($customFieldData) {
+            $results = $customFieldData;
+        }
 
         $fields =  $this->getMarcRecord()->getFields('773');
         foreach($fields as $currentField) {
@@ -272,24 +274,9 @@ class SolrMarc extends VufindSolrMarc
 
     private function getCustomFieldHostItemLinkData()
     {
-    	$fields = $this->getMarcRecord()->getFields('995');
-        $controlNumberIdentifier = $this->getMarcRecord()->getField('003')->getData();
+    	$linkType = 'ANA';
 
-        foreach ($fields as $currentField) {
-    	    $linkType = $currentField->getSubfield('a')->getData();
-    	    $zenonId = $controlNumberIdentifier . '-' . $currentField->getSubfield('b')->getData();
-    	    $label = $currentField->getSubfield('n')->getData();
-
-    		if($linkType == 'ANA') {
-    		    return array(
-    		        'id' => $zenonId,
-                    'label' => $label
-                );
-            }
-    	}
-
-        return false;
-
+        return $this->createCustomFieldLinkArray($linkType);
     }
 
     /**
@@ -324,22 +311,9 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getSeeAlso()
     {
+        $linkType = 'UP';
 
-		$result = array();
-		$fields = $this->getMarcRecord()->getFields('995');
-
-		foreach ($fields as $currentField) {
-			$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-			if ($field[0] == 'UP') {
-				$result[] = array(
-					'id' => $field[1],
-					'label' => $field[2]
-					);
-			}
-		}
-
-		return $result;
-
+        return $this->createCustomFieldLinkArray($linkType);
 	}
 
     /**
@@ -349,22 +323,9 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getParallelEditions()
     {
+        $linkType = 'PAR';
 
-        $result = array();
-        $fields = $this->getMarcRecord()->getFields('995');
-
-        foreach ($fields as $currentField) {
-            $field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-            if ($field[0] == 'PAR') {
-                $result[] = array(
-                    'id' => $field[1],
-                    'label' => $field[2]
-                    );
-            }
-        }
-
-        return $result;
-
+        return $this->createCustomFieldLinkArray($linkType);
     }
 
 
@@ -544,6 +505,34 @@ class SolrMarc extends VufindSolrMarc
         } else {
             return $s;
         }
+    }
+
+    /**
+     * Creates an array of link information from custom field 995 and subfields 'a', 'b', and 'n'
+     * @param $linkType
+     * @return array
+     */
+    private function createCustomFieldLinkArray($linkType)
+    {
+        $result = [];
+        $fields = $this->getMarcRecord()->getFields('995');
+
+        foreach ($fields as $currentField) {
+            $currentLinkType = $currentField->getSubfield('a')->getData();
+
+            if($linkType == $currentLinkType) {
+                $controlNumberIdentifier = $this->getMarcRecord()->getField('003')->getData();
+                $zenonId = $controlNumberIdentifier . '-' . $currentField->getSubfield('b')->getData();
+                $label = $currentField->getSubfield('n')->getData();
+                $link = [
+                    'id' => $zenonId,
+                    'label' => $label,
+                ];
+                array_push($result, $link);
+            }
+        }
+
+        return $result;
     }
 
 }

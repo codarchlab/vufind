@@ -340,7 +340,10 @@
           <td>
             <? foreach ($hostItems as $hostItem): ?>
                 <? if($hostItem['id']): ?>
-                    <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?></a>
+                    <a title="<?=$this->escapeHtml($hostItem['label'])?>"
+                       href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
+                        <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
+                    </a>
                 <? else: ?>
                     <?=$this->escapeHtml($hostItem['label'])?>
                 <? endif; ?>
