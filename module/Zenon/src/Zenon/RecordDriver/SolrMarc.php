@@ -45,58 +45,78 @@ class SolrMarc extends VufindSolrMarc
     const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
 
     /**
-     * Get the full title of the record.
-     * Overriden to remove trailing slashes.
+     * Get the title of the record.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getTitle()
     {
-        return $this->removeTrailingSlash(parent::getTitle()[0]);
+        $title = parent::getTitle();
+        if(is_array($title)) {
+            $title = $title[0];
+        }
+        return $this->removeTrailingSlash($title);
     }
 
     /**
      * Get the short (pre-subtitle) title of the record.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getShortTitle()
     {
-        return $this->removeTrailingSlash(parent::getShortTitle()[0]);
+        $shortTitle = parent::getShortTitle();
+        if(is_array($shortTitle)) {
+            $shortTitle = $shortTitle[0];
+        }
+        return $this->removeTrailingSlash($shortTitle);
     }
 
     /**
      * Get a highlighted title string, if available.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getHighlightedTitle()
     {
-        return $this->removeTrailingSlash(parent::getHighlightedTitle());
+        $highlightedTitle = parent::getHighlightedTitle();
+        if(is_array($highlightedTitle)) {
+            $highlightedTitle = $highlightedTitle[0];
+        }
+        return $this->removeTrailingSlash($highlightedTitle);
     }
 
     /**
      * Get the text of the part/section portion of the title.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getTitleSection()
     {
-        return $this->removeTrailingSlash(parent::getTitleSection()[0]);
+        $titleSection = parent::getTitleSection();
+        if(is_array($titleSection)) {
+            $titleSection = $titleSection[0];
+        }
+        return $this->removeTrailingSlash($titleSection);
     }
 
     /**
      * Get the subtitle of the record.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getSubtitle()
     {
-        return $this->removeTrailingSlash(parent::getSubtitle());
+        $subTitle = parent::getSubtitle();
+        if(is_array($subTitle)) {
+            $subTitle = $subTitle[0];
+        }
+        return $this->removeTrailingSlash($subTitle);
     }
 
 	/**
@@ -116,7 +136,7 @@ class SolrMarc extends VufindSolrMarc
 
     		// ND201132015 = Non-descriptor flag
             $ignore = $this->getSubfieldArray($currentField, ['g'], false);
-            if ($ignore[0] == 'ND201132015') continue;
+            if (!empty($ignore) && $ignore[0] == 'ND201132015') continue;
 
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
 
@@ -133,15 +153,15 @@ class SolrMarc extends VufindSolrMarc
 
             // return $m as additional search term for Gazetteer
             $searchterm = $this->getSubfieldArray($currentField, ['m']);
-            if (count($searchterm > 0)) $entry['searchterm'] = $searchterm[0];
+            if (!empty($searchterm)) $entry['searchterm'] = $searchterm[0];
 
             // return $r as additional search term for Gazetteer
             $searchterm2 = $this->getSubfieldArray($currentField, ['r']);
-            if (count($searchterm2 > 0)) $entry['searchterm2'] = $searchterm2[0];
+            if (!empty($searchterm2)) $entry['searchterm2'] = $searchterm2[0];
 
             // yes, ugly.
             $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
-            if(count($belgianLocationLabel > 0))
+            if(!empty($belgianLocationLabel))
                 $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
 
             // TODO: multi language support, until then only show german entries
@@ -331,10 +351,10 @@ class SolrMarc extends VufindSolrMarc
 
     private function createGazetteerQueryString($thsEntry){
         $query = $thsEntry['notation'];
-        if($thsEntry['searchterm']) {
+        if(isset($thsEntry['searchterm'])) {
             $query = $query . ";" . $thsEntry['searchterm'];
         }
-        if($thsEntry['searchterm2']) {
+        if(isset($thsEntry['searchterm2'])) {
             $query = $query  . ";" . $thsEntry['searchterm2'];
         }
         return $query;
@@ -509,6 +529,7 @@ class SolrMarc extends VufindSolrMarc
 
     /**
      * Creates an array of link information from custom field 995 and subfields 'a', 'b', and 'n'
+     *
      * @param $linkType
      * @return array
      */
