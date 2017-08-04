@@ -34,19 +34,19 @@ Dir.glob(dir + '*.xml') do |xml_file|
 				r.leader = r.leader.ljust(24,"0")
 				r.leader = r.leader[0,24]
 
-				r.append(MARC::DataField.new('024', '7',  ' ', ['a', r['001'].value], ['2', 'iDAI.bibliography']))
-				r['001'].value = 'DAI-' + r['001'].value
-
-				if r['003']
-					r['003'] = 'ZENON'
-				else
-					r.append(MARC::ControlField.new('003', 'ZENON'))
-			        end
-
 				msg = "Warning: Invalid leader length in #{xml_file}, fixed on the fly"
 		    	puts msg
 		    	logger.error msg
+      end
+
+			r.append(MARC::DataField.new('024', '7',  ' ', ['a', r['001'].value], ['2', 'iDAI.bibliography']))
+
+			if r['003']
+				r['003'] = 'ZENON'
+			else
+				r.append(MARC::ControlField.new('003', 'ZENON'))
 			end
+
 			writer.write r
 			FileUtils.mv(xml_file, dir + '/collected/')
 			count += 1
