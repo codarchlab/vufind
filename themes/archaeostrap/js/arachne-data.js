@@ -15,13 +15,9 @@ var entityCount = 0;
 
 document.onload = startQuery();
 
-function trimZenonId(zenonId){
-  return zenonId.replace("DAI-", "");
-}
-
 function startQuery() {
   container = document.getElementById('arachne-data');
-  zenonId = trimZenonId(container.getAttribute('zenon-id'));
+  zenonId = container.getAttribute('control-number');
 
   xmlhttp.open("GET", arachneQueryUrl + zenonId, true);
   xmlhttp.send();
