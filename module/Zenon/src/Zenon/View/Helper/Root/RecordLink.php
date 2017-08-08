@@ -72,7 +72,7 @@ class RecordLink extends ParentRecordLink
         return $escaper($url);
     }
 
-    public function getMovedZenonRecord($recordPath) {
+    public function getMovedZenonRecordId($recordPath) {
         $match = null;
         if(preg_match('/.*\/Record\/(\d{9}).*/', $recordPath, $matches)){
             $id = "ZENON-" . $matches[1];
@@ -81,11 +81,11 @@ class RecordLink extends ParentRecordLink
             );
             // Disable highlighting for efficiency; not needed here:
             $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
-            $recordFound = $this->searchService->search('Solr', $query, 0, 0, $params)->getTotal() == 1;
-            return array(
-                'found' => $recordFound,
-                'id' => $id
-            ) ;
+
+            if($this->searchService->search('Solr', $query, 0, 0, $params)->getTotal() == 1) {
+                return $id;
+            }
         }
+        return false;
     }
 }

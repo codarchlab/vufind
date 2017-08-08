@@ -5,6 +5,20 @@
 
 <!-- Custom Zenon Code, shows special message if record not found. -->
 <? if(get_class($this->exception) == "VuFind\Exception\RecordMissing"): ?>
+
+    <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecordId($this->currentPath()); ?>
+    <? if($potentialZenonRecords): ?>
+        <div class="alert alert-success moved-record" role="alert">
+            <p>
+                <?= $this->transEsc('Zenon record moved');?>
+                <a class="alert-link" href="/Record/<?= $potentialZenonRecords ?>">
+                    <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $potentialZenonRecords ?>
+                </a>
+            </p>
+        </div>
+    <? endif; ?>
+
+
     <div id="error" class="alert alert-warning">
         <p><?=$this->transEsc('An error has occurred');?>: <?= $this->exception->getHttpStatus(); ?></p>
 
@@ -14,33 +28,23 @@
             <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
             <br/>
             <? $supportEmail = $this->escapeHtmlAttr($this->systememail()); ?>
-            <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+            <a href="mailto:<?=$supportEmail?>"><?=$supportEmail ?></a>
         </p>
     </div>
-
-    <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecord($this->currentPath()); ?>
-    <? if($potentialZenonRecords['found']): ?>
-    <div class="alert alert-success">
-        <p>
-            <?=$this->transEsc('Zenon record moved');?>:
-            <a href="/Record/<?= $potentialZenonRecords['id'] ?>"><?= $potentialZenonRecords['id'] ?></a>
-        </p>
-    </div>
-    <? endif; ?>
 
 <!-- Standard VuFind Code -->
 <? else: ?>
     <div class="alert alert-danger">
-        <p><?=$this->transEsc('An error has occurred')?></p>
+        <p><?=$this->transEsc('An error has occurred');?></p>
         <p><?=$this->message; ?></p>
 
 
-        <p><?=$this->transEsc($this->message)?></p>
+        <p><?=$this->transEsc($this->message); ?></p>
         <p>
             <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
             <br/>
             <? $supportEmail = $this->escapeHtmlAttr($this->systememail()); ?>
-            <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+            <a href="mailto:<?= $supportEmail ?>"><?= $supportEmail ?></a>
         </p>
     </div>
 <? endif; ?>
