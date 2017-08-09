@@ -39,8 +39,6 @@ Dir.glob(dir + '*.xml') do |xml_file|
 		    	logger.error msg
       end
 
-			r.append(MARC::DataField.new('024', '7',  ' ', ['a', r['001'].value], ['2', 'iDAI.bibliography']))
-
 			if r['003']
 				r['003'] = 'ZENON'
 			else

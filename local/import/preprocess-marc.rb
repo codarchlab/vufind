@@ -22,7 +22,6 @@ error_writer  = MARC::Writer.new(marc_dir + name + "failed.mrc")
 for record in reader
   begin
     if record['001']
-      record.append(MARC::DataField.new('024', '7',  ' ', ['a', record['001'].value], ['2', 'iDAI.bibliography']))
       if record['003']
         record['003'] = 'ZENON'
       else
