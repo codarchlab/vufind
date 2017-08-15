@@ -205,7 +205,7 @@
    <field name="topic_unstemmed" type="textProper" indexed="true" stored="false" multiValued="true"/>
    <field name="topic_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="topic_browse" type="string" indexed="true" stored="false" multiValued="true"/>
-   <field name="author_browse" type="string" indexed="true" stored="false" multiValued="true"/>
+   <field name="author_browse" type="string" indexed="true" stored="false" multiValued="true" docValues="true"/>
    <field name="genre" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="genre_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="geographic" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -278,12 +278,13 @@
  <copyField source="topic" dest="topic_unstemmed"/>
  <copyField source="allfields" dest="allfields_unstemmed"/>
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
+ <copyField source="author" dest="author_facet"/>
+ <copyField source="author2" dest="author_facet"/>
  <!-- CopyFields for Alphabetic Browse -->
  <copyField source="topic" dest="topic_browse"/>
  <copyField source="author" dest="author_browse"/>
  <copyField source="author2" dest="author_browse"/>
  <copyField source="author_corporate" dest="author_browse"/>
- <copyField source="author_browse" dest="author_facet"/>
  <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
  <copyField source="format"    dest="allfields_unstemmed"/>
