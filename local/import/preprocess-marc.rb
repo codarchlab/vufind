@@ -7,7 +7,7 @@ require 'logger'
 
 def split_language_keys(record)
 
-  if record['041']['a'] and record['041']['b']
+  if record['041'] and record['041']['a'] and record['041']['b']
     main_language_key_length = record['041']['a'].length
     if record['041']['b'].kind_of?(String) and
         record['041']['b'].length % main_language_key_length == 0 and
@@ -55,10 +55,9 @@ for record in reader
   begin
     if record['001']
       if record['003']
-        record['003'] = 'ZENON'
-      else
-        record.append(MARC::ControlField.new('003', 'ZENON'))
+        record.fields.delete(record['003'])
       end
+      record.append(MARC::ControlField.new('003', 'DE-XXX'))
       record = split_language_keys(record)
       writer.write(record)
     else

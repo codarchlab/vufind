@@ -26,7 +26,7 @@ count = 0
 
 def split_language_keys(record)
 
-	if record['041']['a'] and record['041']['b']
+	if record['041'] and record['041']['a'] and record['041']['b']
 		main_language_key_length = record['041']['a'].length
 		if record['041']['b'].kind_of?(String) and
 				record['041']['b'].length % main_language_key_length == 0 and
@@ -56,29 +56,26 @@ def split_language_keys(record)
 end
 
 Dir.glob(dir + '*.xml') do |xml_file|
-	puts "reading #{xml_file}"
 	begin
-		reader = MARC::XMLReader.new(xml_file)
-		reader.each do |r|
+		reader = MARC::XMLReader.new(xml_file, :external_encoding => "UTF-8")
+		for record in reader
 			# fix leader if it is not exactly 24 bytes long
-			if r.leader.length != 24
-				r.leader = r.leader.ljust(24,"0")
-				r.leader = r.leader[0,24]
+			if record.leader.length != 24
+				record.leader = record.leader.ljust(24,"0")
+				record.leader = record.leader[0,24]
 
 				msg = "Warning: Invalid leader length in #{xml_file}, fixed on the fly"
 		    	puts msg
 		    	logger.error msg
       end
 
-			if r['003']
-				r['003'] = 'ZENON'
-			else
-				r.append(MARC::ControlField.new('003', 'ZENON'))
-      end
+			if record['003']
+				record.fields.delete(record['003'])
+			end
+      record.append(MARC::ControlField.new('003', 'DE-XXX'))
+			record = split_language_keys(record)
 
-			r = split_language_keys(r)
-
-			writer.write r
+			writer.write record
 			FileUtils.mv(xml_file, dir + '/collected/')
 			count += 1
 		end
@@ -87,6 +84,8 @@ Dir.glob(dir + '*.xml') do |xml_file|
     	msg = "Error while processing #{xml_file}: #{e.message}"
     	puts msg
     	logger.error msg
+    	puts e.backtrace
+    	logger.error e.backtrace
 	end
 end
 
