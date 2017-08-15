@@ -33,7 +33,7 @@ import org.solrmarc.callnum.DeweyCallNumber;
 import org.solrmarc.callnum.LCCallNumber;
 import org.solrmarc.index.SolrIndexer;
 import org.solrmarc.tools.CallNumUtils;
-import org.vufind.index.CreatorTools;
+import org.vufind.index.ConfigManager;
 
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
@@ -103,5 +103,17 @@ public class ControlNumberTools
 
     public String prefixControlNumberWithControlNumberIdentifier(final Record record) {
         return prefixControlNumberWithControlNumberIdentifier(record, "-");
+    }
+
+    /**
+     * Prefixes control number (MARC field 001) with local prefix defined in zenon-config.ini
+     * @param Record record current MARC record
+     * @return Prefixed control number
+     */
+    public String addLocalRecordPrefixToControlNumber(final Record record) {
+        String controlNumber = SolrIndexer.instance().getFirstFieldVal(record, "001");
+        String prefix = ConfigManager.instance().getConfigSetting("zenon-config.ini", "Records", "localRecordPrefix");
+
+        return prefix + controlNumber;
     }
 }

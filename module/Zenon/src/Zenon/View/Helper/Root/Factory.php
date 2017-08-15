@@ -52,7 +52,8 @@ class Factory extends ParentFactory
     public static function getRecordLink(ServiceManager $sm)
     {
         $recordLink = new RecordLink(
-            $sm->getServiceLocator()->get('VuFind\RecordRouter')
+            $sm->getServiceLocator()->get('VuFind\RecordRouter'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('zenon-config')
         );
         $recordLink->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $recordLink;

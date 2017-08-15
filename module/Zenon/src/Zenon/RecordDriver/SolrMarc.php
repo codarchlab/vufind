@@ -45,6 +45,19 @@ class SolrMarc extends VufindSolrMarc
     const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
 
     /**
+     * Zenon configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $zenonConfig;
+
+    public function __construct($mainConfig = null, $recordConfig = null,
+                                $searchSettings = null, $zenonConfig = null
+    ) {
+        $this->zenonConfig = $zenonConfig;
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
+    }
+    /**
      * Get the title of the record.
      * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
@@ -542,8 +555,8 @@ class SolrMarc extends VufindSolrMarc
             $currentLinkType = $currentField->getSubfield('a')->getData();
 
             if($linkType == $currentLinkType) {
-                $controlNumberIdentifier = $this->getMarcRecord()->getField('003')->getData();
-                $zenonId = $controlNumberIdentifier . '-' . $currentField->getSubfield('b')->getData();
+
+                $zenonId = $this->zenonConfig->Records->localRecordPrefix . $currentField->getSubfield('b')->getData();
                 $label = $currentField->getSubfield('n')->getData();
                 $link = [
                     'id' => $zenonId,

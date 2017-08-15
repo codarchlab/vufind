@@ -41,6 +41,23 @@ class RecordLink extends ParentRecordLink
     protected $searchService = null;
 
     /**
+     * Zenon configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $zenonConfig;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Record\Router $router Record router
+     */
+    public function __construct(\VuFind\Record\Router $router, $zenonConfig = null)
+    {
+        $this->zenonConfig = $zenonConfig;
+        parent::__construct($router);
+    }
+    /**
      * Attach a Search Results Plugin Manager connection and related logic to
      * the driver
      *
@@ -75,7 +92,7 @@ class RecordLink extends ParentRecordLink
     public function getMovedZenonRecordId($recordPath) {
         $match = null;
         if(preg_match('/.*\/Record\/(\d{9}).*/', $recordPath, $matches)){
-            $id = "ZENON-" . $matches[1];
+            $id = $this->zenonConfig->Records->localRecordPrefix . $matches[1];
             $query = new \VuFindSearch\Query\Query(
                 'id:"' . $id . '"'
             );
