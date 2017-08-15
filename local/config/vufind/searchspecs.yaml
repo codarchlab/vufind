@@ -231,7 +231,7 @@ SystemNo:
 
 Building:
   QueryFields:
-    building:
+    building_dai_str_mv:
       - [and, ~]
 
 Fulltext:
