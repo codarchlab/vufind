@@ -51,9 +51,12 @@ class Factory extends ParentFactory
      */
     public static function getRecordLink(ServiceManager $sm)
     {
-        return new RecordLink($sm->getServiceLocator()->get('VuFind\RecordRouter'));
+        $recordLink = new RecordLink(
+            $sm->getServiceLocator()->get('VuFind\RecordRouter')
+        );
+        $recordLink->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        return $recordLink;
     }
-
 
     /**
      * Construct the DateTime helper.

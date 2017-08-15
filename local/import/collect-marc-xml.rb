@@ -24,6 +24,37 @@ writer.allow_oversized = true
 
 count = 0
 
+def split_language_keys(record)
+
+	if record['041']['a'] and record['041']['b']
+		main_language_key_length = record['041']['a'].length
+		if record['041']['b'].kind_of?(String) and
+				record['041']['b'].length % main_language_key_length == 0 and
+				record['041']['b'].length != main_language_key_length
+
+			split_b = record['041']['b'].scan(/.{#{main_language_key_length}}/)
+			updated_field = MARC::DataField.new('041',record['indiciator1'],record['indiciator2'])
+
+			# copy all subfields except 'b' from original
+			record['041'].each do |s|
+				if(s.code != 'b')
+					updated_field.append(s)
+				end
+			end
+
+			# build new subfields 'b' from split values
+			split_b.each do |value|
+				updated_field.append(MARC::Subfield.new('b',value))
+			end
+
+			record.fields.delete(record['041'])
+			record.append(updated_field)
+		end
+	end
+
+	record
+end
+
 Dir.glob(dir + '*.xml') do |xml_file|
 	puts "reading #{xml_file}"
 	begin
@@ -39,13 +70,13 @@ Dir.glob(dir + '*.xml') do |xml_file|
 		    	logger.error msg
       end
 
-			r.append(MARC::DataField.new('024', '7',  ' ', ['a', r['001'].value], ['2', 'iDAI.bibliography']))
-
 			if r['003']
 				r['003'] = 'ZENON'
 			else
 				r.append(MARC::ControlField.new('003', 'ZENON'))
-			end
+      end
+
+			r = split_language_keys(r)
 
 			writer.write r
 			FileUtils.mv(xml_file, dir + '/collected/')

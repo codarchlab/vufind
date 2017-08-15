@@ -38,6 +38,21 @@ use VuFind\View\Helper\Root\RecordLink as ParentRecordLink;
  */
 class RecordLink extends ParentRecordLink
 {
+    protected $searchService = null;
+
+    /**
+     * Attach a Search Results Plugin Manager connection and related logic to
+     * the driver
+     *
+     * @param \VuFindSearch\Service $service Search Service Manager
+     *
+     * @return void
+     */
+    public function attachSearchService(\VuFindSearch\Service $service)
+    {
+        $this->searchService = $service;
+    }
+
     /**
      * Given a record driver, generate a URL to fetch all child records for it.
      *
@@ -55,5 +70,22 @@ class RecordLink extends ParentRecordLink
 // Make sure everything is properly HTML encoded:
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($url);
+    }
+
+    public function getMovedZenonRecordId($recordPath) {
+        $match = null;
+        if(preg_match('/.*\/Record\/(\d{9}).*/', $recordPath, $matches)){
+            $id = "ZENON-" . $matches[1];
+            $query = new \VuFindSearch\Query\Query(
+                'id:"' . $id . '"'
+            );
+            // Disable highlighting for efficiency; not needed here:
+            $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+
+            if($this->searchService->search('Solr', $query, 0, 0, $params)->getTotal() == 1) {
+                return $id;
+            }
+        }
+        return false;
     }
 }
