@@ -18,39 +18,15 @@ package org.dainst.index;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import org.marc4j.marc.Record;
-import org.marc4j.marc.VariableField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Subfield;
-import org.solrmarc.callnum.DeweyCallNumber;
-import org.solrmarc.callnum.LCCallNumber;
+
 import org.solrmarc.index.SolrIndexer;
-import org.solrmarc.tools.CallNumUtils;
+
 import org.vufind.index.ConfigManager;
 
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.marc4j.marc.DataField;
-import org.solrmarc.index.SolrIndexer;
-import org.apache.log4j.Logger;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.LinkedList;
 /**
  * Control number indexing routines.
  */
