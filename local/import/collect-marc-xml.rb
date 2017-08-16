@@ -72,7 +72,7 @@ Dir.glob(dir + '*.xml') do |xml_file|
 			if record['003']
 				record.fields.delete(record['003'])
 			end
-      record.append(MARC::ControlField.new('003', 'DE-XXX'))
+      # record.append(MARC::ControlField.new('003', 'DE-XXX')) # TODO: Add control number identifier
 			record = split_language_keys(record)
 
 			writer.write record
