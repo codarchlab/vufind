@@ -435,15 +435,20 @@ class SolrMarc extends VufindSolrMarc
      */
 
     public function getPublicationsLink() {
+        $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
 
-        $zenonId = $this->getControlNumber();
+        if($content == null){
+            return false;
+        }
+
+        $controlNumber = $this->getControlNumber();
         $reader = new configJson();
-        $data   = $reader->fromFile('./local/iDAI.world/publications_mapping.json');
+        $data = $reader->fromString($content);
 
-        if(array_key_exists($zenonId, $data))
-            return $data[$zenonId];
+        if (array_key_exists($controlNumber, $data))
+            return $data[$controlNumber];
 
-        return False;
+        return false;
     }
 
     public function getControlNumber() {
