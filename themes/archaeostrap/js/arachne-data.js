@@ -35,10 +35,9 @@ xmlhttp.onreadystatechange = function() {
         container.style.visibility = 'hidden';
       }
     }
-}
+};
 
 function createBuckets(entities) {
-  var bucketCounter = 0;
   var bucket = [];
   for(var index in entities) {
     if(index != 0 && index % resultBucketSize == 0) {
@@ -81,6 +80,12 @@ function selectBucket(newIndex) {
 
   if(newIndex < 0) return;
   if(newIndex > resultBuckets.length - 1) return;
+  // If there are more results overall for this record than entities yet retrieved (default: 50 per search),
+  // apply an offset and load the next batch of entities in the background.
+  if(entityCount > resultBuckets.length * resultBucketSize && newIndex === (resultBuckets.length - 2)) {
+    xmlhttp.open("GET", arachneQueryUrl + zenonId + "&offset=" + resultBuckets.length * resultBucketSize, true);
+    xmlhttp.send();
+  }
 
   resultBucketIndex = newIndex;
   showCurrentBucket()
@@ -100,9 +105,9 @@ function addPaginationButtons() {
   previousIcon.setAttribute('area-hidden', true);
   previousLink.onclick = function() {
     selectBucket(resultBucketIndex - 1);
-  }
+  };
   previousLink.appendChild(previousIcon);
-  previous.appendChild(previousLink)
+  previous.appendChild(previousLink);
   if(resultBucketIndex == 0){
     previous.className += 'disabled'
   }
@@ -125,7 +130,7 @@ function addPaginationButtons() {
   counterSpan.appendChild(counterLink);
   counterSpan.appendChild(document.createTextNode(' '));
 
-  ul.append(counterSpan)
+  ul.append(counterSpan);
 
   // Add arrow right
   var next = document.createElement('li');
@@ -135,9 +140,9 @@ function addPaginationButtons() {
   nextIcon.setAttribute('area-hidden', true);
   nextLink.onclick = function() {
     selectBucket(resultBucketIndex + 1);
-  }
+  };
   nextLink.appendChild(nextIcon);
-  next.appendChild(nextLink)
+  next.appendChild(nextLink);
   if(resultBucketIndex == resultBuckets.length - 1){
     next.className += 'disabled'
   }
@@ -158,12 +163,12 @@ function addArachneEntityLink(entity) {
   var subtitleElement = null;
   if(entity['subtitle']) {
     var subtitleText = document.createTextNode(" | " + entity['subtitle']);
-    var subtitleElement = document.createElement('small');
+    subtitleElement = document.createElement('small');
     subtitleElement.appendChild(subtitleText);
   }
 
   icon.className += 'fa fa-university';
-  icon.setAttribute('area-hidden', true);
+  icon.setAttribute('area-hidden', 'true');
 
   a.appendChild(icon);
   a.appendChild(textElement);
