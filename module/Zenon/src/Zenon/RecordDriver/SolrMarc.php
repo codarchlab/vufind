@@ -395,7 +395,8 @@ class SolrMarc extends VufindSolrMarc
             }
             if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
                 || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false
-                || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false) {
+                || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false
+                || strrpos($thsEntry['notation'], 'xTopRAIRomKircheinz', -strlen($thsEntry['notation'])) !== false) {
     			$result[] = array(
     				'label' => $thsEntry['label'],
     				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
