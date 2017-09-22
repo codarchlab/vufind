@@ -17,10 +17,9 @@ Dir.mkdir dir + '/collected' unless File.exists? dir + 'collected'
 Dir.mkdir dir + '/errors' unless File.exists? dir + 'errors'
 Dir.mkdir dir + '/log' unless File.exists? dir + 'log'
 output_file_name = 'collect_' + Time.new.strftime("%Y-%m-%d_%H-%M-%S");
-output_file = dir + output_file_name + '.mrc'
+output_file = dir + output_file_name + '.xml'
 logger = Logger.new(dir + 'log/' + output_file_name + ".log")
-writer = MARC::Writer.new(output_file)
-writer.allow_oversized = true
+writer = MARC::XMLWriter.new(output_file)
 
 count = 0
 
@@ -55,7 +54,7 @@ def split_language_keys(record)
 	record
 end
 
-Dir.glob(dir + '*.xml') do |xml_file|
+Dir[dir + '*.xml'].reject { |xml_file| xml_file == output_file }.each do |xml_file|
 	begin
 		reader = MARC::XMLReader.new(xml_file, :external_encoding => "UTF-8")
 		for record in reader
