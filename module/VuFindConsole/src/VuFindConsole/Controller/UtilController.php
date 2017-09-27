@@ -300,6 +300,9 @@ class UtilController extends AbstractBase
         // Parse the command line parameters -- check verbosity, see if we are in
         // "flat file" mode, find out what file we are reading in, and determine
         // the index we are affecting!
+
+        $zenonConfig = $this->serviceLocator->get('VuFind\Config')->get('zenon-config');
+
         $request = $this->getRequest();
         $verbose = $request->getParam('verbose');
         $filename = $request->getParam('filename');
@@ -362,7 +365,7 @@ class UtilController extends AbstractBase
             foreach (explode("\n", file_get_contents($filename)) as $id) {
                 $id = trim($id);
                 if (!empty($id)) {
-                    $ids[] = $id;
+                    $ids[] =  $zenonConfig->Records->localRecordPrefix . $id;
                 }
             }
         } else {
@@ -376,7 +379,7 @@ class UtilController extends AbstractBase
             while ($record = $collection->next()) {
                 $idField = $record->getField('001');
                 if ($idField) {
-                    $ids[] = (string)$idField->getData();
+                    $ids[] = $zenonConfig->Records->localRecordPrefix . (string) $idField->getData();
                 } else {
                     $missingIdCount++;
                 }
