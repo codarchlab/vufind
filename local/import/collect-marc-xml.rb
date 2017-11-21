@@ -18,7 +18,7 @@ Dir.mkdir dir + '/errors' unless File.exists? dir + 'errors'
 Dir.mkdir dir + '/log' unless File.exists? dir + 'log'
 output_file_name = 'collect_' + Time.new.strftime("%Y-%m-%d_%H-%M-%S");
 output_file = dir + output_file_name + '.xml'
-logger = Logger.new(dir + 'log/' + output_file_name + ".log")
+logger = Logger.new(dir + 'log/' + output_file_name + "_aggregation.log")
 writer = MARC::XMLWriter.new(output_file)
 
 count = 0
@@ -63,9 +63,9 @@ Dir[dir + '*.xml'].reject { |xml_file| xml_file == output_file }.each do |xml_fi
 				record.leader = record.leader.ljust(24,"0")
 				record.leader = record.leader[0,24]
 
-				msg = "Warning: Invalid leader length in #{xml_file}, fixed on the fly"
+				msg = "Invalid leader length in #{xml_file}, fixed on the fly"
 		    	puts msg
-		    	logger.error msg
+		    	logger.warning msg
       end
 
 			if record['003']
