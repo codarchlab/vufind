@@ -61,8 +61,9 @@ public class FormatCalculator
 
         // check the 007 - this is a repeating field
         List<VariableField> fields = record.getVariableFields("007");
-        Iterator<VariableField> fieldsIter = fields.iterator();
+
         if (fields != null) {
+            Iterator<VariableField> fieldsIter = fields.iterator();
             // TODO: update loop to for(:) syntax, but problem with type casting.
             ControlField formatField;
             while(fieldsIter.hasNext()) {

@@ -64,14 +64,14 @@ Dir[dir + '*.xml'].reject { |xml_file| xml_file == output_file }.each do |xml_fi
 				record.leader = record.leader[0,24]
 
 				msg = "Invalid leader length in #{xml_file}, fixed on the fly"
-		    	puts msg
-		    	logger.warning msg
-      end
+				logger.warn msg
+			end
 
 			if record['003']
 				record.fields.delete(record['003'])
 			end
-                        record.append(MARC::ControlField.new('003', 'DE-2553'))
+			record.append(MARC::ControlField.new('003', 'DE-2553'))
+
 			record = split_language_keys(record)
 
 			writer.write record
