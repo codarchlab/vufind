@@ -10,12 +10,15 @@
     <? if($potentialZenonRecords): ?>
         <div class="alert alert-success moved-record" role="alert">
             <p>
-                <?= $this->transEsc('Zenon record moved');?>
+                <?= $this->transEsc('Zenon record moved');?>:
                 <a class="alert-link" href="/Record/<?= $potentialZenonRecords ?>">
                     <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $potentialZenonRecords ?>
                 </a>
+
             </p>
+            <p><?= $this->transEsc('You will be redirected in 5 seconds'); ?>...</p>
         </div>
+        <? $this->headMeta()->appendHttpEquiv('Refresh', '5;URL=/Record/' . $potentialZenonRecords); ?>
     <? endif; ?>
 
 
