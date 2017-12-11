@@ -67,6 +67,7 @@
           <? elseif ($handlerCount == 1): ?>
             <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
           <? endif; ?>
+          <input type="hidden" name="hiddenFilters[]" value='collection:"iDAI.bibliography"'>
           <div class="col-sm-2">
             <button type="submit" name="submit" class="btn btn-primary form-control" style="float:none; display:inline-block; margin-left:0;" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
           </div>
