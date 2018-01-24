@@ -149,10 +149,14 @@
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
       <tr>
         <th><?=$this->transEsc('Corporate Author')?>: </th>
+        <td property="creator">
         <? foreach($authors['corporate'] as $author=>$key): ?>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
-                <?=$this->escapeHtml($author)?></a></td>
+            <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+                <?=$this->escapeHtml($author)?>
+            </a>
+            <br/>
         <? endforeach; ?>
+        </td>
       </tr>
       <? endif; ?>
 
