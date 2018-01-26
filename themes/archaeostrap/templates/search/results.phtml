@@ -7,11 +7,6 @@
       $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   }
 
-  $showingPlus = true;
-  if($this->params->getHiddenFilters()['collection'][0] == 'iDAI.bibliography'){
-    $showingPlus = false;
-  }
-
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
@@ -55,13 +50,30 @@
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
 ?>
-<div class="breadcrumb">
-    <? if ($showingPlus): ?>
-      iDAI.bibliography + Plus
-    <? else: ?>
-      Nur iDAI.bibliography
+
+<? $tabConfig = $this->searchtabs()->getTabConfig($this->params->getSearchClassId(),
+                                                  $lookfor,
+                                                  $this->params->getSearchHandler(),
+                                                  $this->params->getSearchType(),
+                                                  $this->params->getHiddenFilters());
+?>
+<? $selectedSearchTab = $tabConfig["selected"]; ?>
+<? if (isset($selectedSearchTab)): ?>
+  <ul class="breadcrumb">
+    <? if ($selectedSearchTab["label"] == 'Combined index'): ?>
+      <? // $this->layout()->breadcrumbs .= '<li class="active">' . $this->translate('combined_index_info') . '</li>'; ?>
+      <li class="active">
+        <?=$this->translate('Combined index info'); ?>
+      </li>
     <? endif; ?>
-</div>
+    <? if ($selectedSearchTab["label"] == 'DAI index'): ?>
+      <li class="active">
+        <?=$this->translate('Dai index info'); ?>
+      </li>
+    <? endif; ?>
+  </ul>
+<? endif; ?>
+
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
