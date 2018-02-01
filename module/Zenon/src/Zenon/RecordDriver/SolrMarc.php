@@ -432,9 +432,18 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get Marc control number.
+     */
+    public function getControlNumber() {
+        if(!$this->getMarcRecord()->getField('001')->toRaw())
+            return null;
+
+        return trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
+    }
+
+    /**
      * Get Link (if exists) to iDAI.publications.
      */
-
     public function getPublicationsLink() {
         $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
 
@@ -452,11 +461,24 @@ class SolrMarc extends VufindSolrMarc
         return false;
     }
 
-    public function getControlNumber() {
-      if(!$this->getMarcRecord()->getField('001')->toRaw())
-          return null;
+    /**
+     * Get Link (if exists) to CHRE.
+     */
+    public function getCHRELink() {
+        $fileContent = file('./local/iDAI.world/URL_CHRE_Zenon20180114.csv');
+        if($fileContent == null){
+            return false;
+        }
 
-      return trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
+        $csvData = array_map('str_getcsv', $fileContent);
+        $controlNumber = $this->getControlNumber();
+        foreach ($csvData as $csvLines => $csvLine) {
+            if ($csvLine[0] == $controlNumber) {
+                return "http://chre.ashmus.ox.ac.uk/reference/" . $csvLine[1];
+            }
+        }
+
+        return false;
     }
 
     /**

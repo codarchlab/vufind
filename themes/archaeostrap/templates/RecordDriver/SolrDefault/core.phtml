@@ -312,7 +312,7 @@
         </tr>
       <? endif; ?>
 
-      <? $publicationsLink = $this->driver->getPublicationsLink() ?>
+      <? $publicationsLink = $this->driver->getPublicationsLink(); ?>
       <? if($publicationsLink): ?>
           <tr>
               <th>iDAI.publications</th>
@@ -320,7 +320,6 @@
                   <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?> <small><i class="fa fa-external-link"></i></small></a>
               </td>
           </tr>
-
       <? endif; ?>
 
       <tr id="arachne-data" control-number="<?= $this->driver->getControlNumber(); ?>"></tr>
@@ -368,6 +367,15 @@
         </tr>
       <? endif; ?>
 
+      <? $chreLink = $this->driver->getCHRELink(); ?>
+      <? if(!empty($chreLink)): ?>
+        <tr>
+          <th>CHRE:</th>
+          <td>
+            <a href="<?=$chreLink?>" target="_blank"><?=$chreLink?> <small><i class="fa fa-external-link"></i></small></a>
+          </td>
+        </tr>
+      <? endif; ?>
 
       <? $parallelEditions = $this->driver->getParallelEditions(); ?>
       <? if($parallelEditions): ?>
