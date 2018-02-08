@@ -61,17 +61,22 @@
 <? if (isset($selectedSearchTab)): ?>
   <div class="alert alert-success" style="padding:20px 15px 15px 15px">
     <? if ($selectedSearchTab["label"] == 'Combined index'): ?>
-      <div class="active">
-        <strong><?= $this->translate('Combined index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
-        <p><?=$this->translate('Combined index info'); ?></p>
-      </div>
+      <strong><?= $this->translate('Combined index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
+      <p>
+        <?=$this->translate('Combined index info'); ?>.
+        <a href="<?=$this->url('help-home')?>?topic=search_scopes" data-lightbox class="help-link alert-link" style="float:right"
+          title="<?=$this->transEsc('Search Tips')?>"><?=$this->translate('Description'); ?></a>
+      </p>
     <? endif; ?>
     <? if ($selectedSearchTab["label"] == 'DAI index'): ?>
-      <div class="active">
-        <strong><?= $this->translate('DAI index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
-        <p><?= $this->translate('Dai index info'); ?></p>
-      </div>
+      <strong><?= $this->translate('DAI index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
+      <p>
+        <?= $this->translate('Dai index info'); ?>
+        <a href="<?=$this->url('help-home')?>?topic=search_scopes" data-lightbox class="help-link alert-link" style="float:right"
+          title="<?=$this->transEsc('Search Tips')?>"><?=$this->translate('Description'); ?></a>
+      </p>
     <? endif; ?>
+
   </div>
 <? endif; ?>
 
