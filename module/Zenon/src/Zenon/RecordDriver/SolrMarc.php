@@ -465,7 +465,7 @@ class SolrMarc extends VufindSolrMarc
      * Get Link (if exists) to CHRE.
      */
     public function getCHRELink() {
-        $fileContent = file('./local/iDAI.world/URL_CHRE_Zenon20180114.csv');
+        $fileContent = file('./local/iDAI.world/chre_mapping.csv');
         if($fileContent == null){
             return false;
         }
