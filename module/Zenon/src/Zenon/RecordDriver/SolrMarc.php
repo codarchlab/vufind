@@ -313,22 +313,28 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the item's publication information, if no date is found in 260c/264c, parse 008.
+     * Get the item's publication information, if no date is found in 260c/264c, get manufacturing date out of 260g/264g
+     * if there is also no date information found in 260g/264g, parse control field 008 for a date match
      *
-     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
+     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = publish date)
      *
      * @return array
      */
     protected function getPublicationInfo($subfield = 'a')
     {
         $results = parent::getPublicationInfo($subfield);
-        if(empty($results) && $subfield == 'c'){
-            $generalInformation = $this->getMarcRecord()->getField('008');
-            if($generalInformation) {
 
-                preg_match('/^.{7}(\d{4}).*$/', $generalInformation->getData(), $match);
-                if($match && sizeof($match) == 2){
-                    array_push($results, $match[1]);
+        if (empty($results) && $subfield == 'c') {
+            $results = parent::getPublicationInfo('g');
+
+            if (empty($results)) {
+                $generalInformation = $this->getMarcRecord()->getField('008');
+
+                if ($generalInformation) {
+                    preg_match('/^.{7}(\d{4}).*$/', $generalInformation->getData(), $match);
+                    if ($match && sizeof($match) == 2) {
+                        array_push($results, $match[1]);
+                    }
                 }
             }
         }
