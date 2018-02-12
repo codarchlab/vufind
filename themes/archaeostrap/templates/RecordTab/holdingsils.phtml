@@ -94,10 +94,14 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
             $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
             $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
             ?>
-            <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
+            <? if (!empty($row['status'])): ?>
                 <tr vocab="http://schema.org/" typeof="Offer">
-                    <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
-                    <td>
+                    <? if (!empty($row['number'])): ?>
+                        <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?>:</th>
+                    <? else: ?>
+                        <th><?= $this->transEsc("Copy") ?>:</th>
+                    <? endif; ?>
+                    <td width="50%">
                         <? if ($row['reserve'] == "Y"): ?>
                             <link property="availability" href="http://schema.org/InStoreOnly" />
                             <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
@@ -142,12 +146,9 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                                 </div>
                             <? endif; ?>
                         <? endif; ?>
-                        <? /* Embed item structured data: library, barcode, call number */ ?>
+                        <? /* Embed item structured data: library, call number */ ?>
                         <? if ($row['location']): ?>
                             <meta property="seller" content="<?=$this->escapeHtmlAttr($row['location'])?>" />
-                        <? endif; ?>
-                        <? if ($row['barcode']): ?>
-                            <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($row['barcode'])?>" />
                         <? endif; ?>
                         <? if ($row['callnumber']): ?>
                             <meta property="sku" content="<?=$this->escapeHtmlAttr($row['callnumber'])?>" />
