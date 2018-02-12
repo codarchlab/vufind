@@ -37,7 +37,8 @@ if ($coverDetails['cover']):
                             <? endforeach; ?>
                         <? endif; ?>
 
-                        <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+                        <? $journalTitle = $this->driver->getContainerTitle(); ?>
+                        <? $pubDetails = $this->driver->getPublicationDetails(); ?>
                         <? if (!empty($journalTitle)): ?>
                             <?=!empty($summAuthor) ? '<br />' : ''?>
                             <?=$this->transEsc('Published in')?>
@@ -45,10 +46,10 @@ if ($coverDetails['cover']):
                             <? $containerID = $this->driver->getContainerRecordID(); ?>
                             <? /* TODO: handle highlighting more elegantly here: */?>
                             <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
-                            <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
-                        <? elseif (!empty($summDate)): ?>
-                            <?=!empty($summAuthor) ? '<br />' : ''?>
-                            <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
+                            <?=!empty($pubDetails) ? ' (' . $this->escapeHtml($pubDetails[0]) . ')' : ''?>
+                        <? elseif (!empty($pubDetails)): ?>
+                            <?= !empty($summAuthor) ? '<br />' : '' ?>
+                            <?= $this->escapeHtml($pubDetails[0]) ?>
                         <? endif; ?>
                         <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
                             <? foreach ($summInCollection as $collId => $collText): ?>
