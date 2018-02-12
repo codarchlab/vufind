@@ -30,28 +30,68 @@ if ($coverDetails['cover']):
                     <? if($this->driver->isCollection()): ?>
                         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
                     <? else: ?>
-                        <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+                        <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
+                        <? $journalTitle = $this->driver->getContainerTitle(); ?>
+                        <? $pubDetails = $this->driver->getPublicationDetails(); ?>
+                        <? $series = $this->driver->getSeries(); ?>
+                        <? $summInCollection = $this->driver->getContainingCollections(); ?>
+
+                        <? if (!empty($summAuthors)): ?>
                             <?=$this->transEsc('by')?>
                             <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
                                 <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
                             <? endforeach; ?>
+                            <br/>
                         <? endif; ?>
 
-                        <? $journalTitle = $this->driver->getContainerTitle(); ?>
-                        <? $pubDetails = $this->driver->getPublicationDetails(); ?>
+                        <? if (!empty($series)): ?>
+                            <? foreach ($series as $field): ?>
+                                <?/* Depending on the record driver, $field may either be an array with
+                                "name" and "number" keys or a flat string containing only the series
+                                name.  We should account for both cases to maximize compatibility. */?>
+                                <? if (is_array($field)): ?>
+                                    <? if (!empty($field['name'])): ?>
+                                        <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>">
+                                            <?=$this->escapeHtml($field['name'])?>
+                                        </a>
+                                        <? if (!empty($field['number'])): ?>
+                                            <?=$this->escapeHtml($field['number'])?>
+                                        <? endif; ?>
+                                        <br/>
+                                    <? endif; ?>
+                                <? else: ?>
+                                    <a href="<?=$this->record($this->driver)->getLink('series', $field)?>">
+                                        <?=$this->escapeHtml($field)?>
+                                    </a>
+                                    <br/>
+                                <? endif; ?>
+                            <? endforeach; ?>
+                        <? endif; ?>
+
                         <? if (!empty($journalTitle)): ?>
-                            <?=!empty($summAuthor) ? '<br />' : ''?>
-                            <?=$this->transEsc('Published in')?>
                             <? $containerSource = $this->driver->getSourceIdentifier(); ?>
                             <? $containerID = $this->driver->getContainerRecordID(); ?>
+                            <?= $this->transEsc('Published in') ?>
                             <? /* TODO: handle highlighting more elegantly here: */?>
-                            <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
-                            <?=!empty($pubDetails) ? ' (' . $this->escapeHtml($pubDetails[0]) . ')' : ''?>
-                        <? elseif (!empty($pubDetails)): ?>
-                            <?= !empty($summAuthor) ? '<br />' : '' ?>
-                            <?= $this->escapeHtml($pubDetails[0]) ?>
+                            <a href="<?=($containerID ?
+                                $this->recordLink()->getUrl("$containerSource|$containerID") :
+                                $this->record($this->driver)->getLink(
+                                    'journaltitle',
+                                    str_replace(array('{{{{START_HILITE}}}}',
+                                    '{{{{END_HILITE}}}}'),
+                                    '',
+                                    $journalTitle))) ?>">
+                                        <?=$this->highlight($journalTitle) ?>
+                            </a>
+                            <br/>
                         <? endif; ?>
-                        <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+
+                        <? if (!empty($pubDetails)): ?>
+                            <?= $this->escapeHtml($pubDetails[0]) ?>
+                            <br/>
+                        <? endif; ?>
+
+                        <? if (!empty($summInCollection)): ?>
                             <? foreach ($summInCollection as $collId => $collText): ?>
                                 <div>
                                     <b><?=$this->transEsc("in_collection_label")?></b>
