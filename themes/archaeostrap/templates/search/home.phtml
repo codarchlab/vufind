@@ -47,8 +47,8 @@
           );
           $handlerCount = count($handlers);
           $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
-          $lastSort = $options->getLastSort();
-          $lastLimit = $options->getLastLimit();
+          $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+          $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
       ?>
       
       <form class="form-inline" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
@@ -67,6 +67,7 @@
           <? elseif ($handlerCount == 1): ?>
             <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
           <? endif; ?>
+          <input type="hidden" name="hiddenFilters[]" value='collection:"iDAI.bibliography"'>
           <div class="col-sm-2">
             <button type="submit" name="submit" class="btn btn-primary form-control" style="float:none; display:inline-block; margin-left:0;" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
           </div>
@@ -98,37 +99,37 @@
   <div class="col-md-6 well">
     <h4><i class="fa fa-home small"></i> <?=$this->translate('Participating libraries')?></h4>
     <ul class="list-unstyled">
-      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
+      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;Zentrale Berlin&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
     </ul>
     <div class="row">
       <div class="col-md-6">
         <ul class="list-unstyled">
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Athen&quot;&filter[]=~building:&quot;DAI&quot;">Athen</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Damascus&quot;&filter[]=~building:&quot;DAI&quot;">Damaskus</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;DEI Amman&quot;&filter[]=~building:&quot;DAI&quot;">DEI Amman</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Eurasien-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Eurasien-Abteilung</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Istanbul&quot;&filter[]=~building:&quot;DAI&quot;">Istanbul</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;KAAK Bonn&quot;&filter[]=~building:&quot;DAI&quot;">KAAK Bonn</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Kairo&quot;&filter[]=~building:&quot;DAI&quot;">Kairo</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Madrid&quot;&filter[]=~building:&quot;DAI&quot;">Madrid</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Athen&quot;">Athen</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Damascus&quot;">Damaskus</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DEI Amman&quot;">DEI Amman</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Eurasien-Abteilung&quot;">Eurasien-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Istanbul&quot;">Istanbul</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;KAAK Bonn&quot;">KAAK Bonn</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Kairo&quot;">Kairo</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Madrid&quot;">Madrid</a></li>
         </ul>
       </div>
       <div class="col-md-6">
         <ul class="list-unstyled">
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Orient-Abteilung&quot;&filter[]=~building:&quot;DAI&quot;">Orient-Abteilung</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Peking&quot;&filter[]=~building:&quot;DAI&quot;">Peking</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;RGK&quot;&filter[]=~building:&quot;DAI&quot;">RGK Frankfurt</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Rom&quot;&filter[]=~building:&quot;DAI&quot;">Rom</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Sanaa&quot;&filter[]=~building:&quot;DAI&quot;">Sanaa</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Teheran&quot;&filter[]=~building:&quot;DAI&quot;">Teheran</a></li>
-          <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;Zentrale Berlin&quot;&filter[]=~building:&quot;DAI&quot;">Zentrale Berlin</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Orient-Abteilung&quot;">Orient-Abteilung</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Peking&quot;">Peking</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;RGK&quot;">RGK Frankfurt</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Rom&quot;">Rom</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Sanaa&quot;">Sanaa</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Teheran&quot;">Teheran</a></li>
+          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;Zentrale Berlin&quot;">Zentrale Berlin</a></li>
         </ul>
       </div>
     </div>
     <ul class="list-unstyled">
-      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;BSA&quot;">Bibliothek der British School at Athens</a></li>
-      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;WINCK&quot;">Bibliothek der Winckelmann-Gesellschaft, Stendal</a></li>
-      <li><a href="<?=$this->url('search-results')?>?filter[]=~building:&quot;ZADAR&quot;">Bibliothek des International Centre for Underwater Archaeology Zadar</a></li>
+      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;BSA&quot;">Bibliothek der British School at Athens</a></li>
+      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;WINCK&quot;">Bibliothek der Winckelmann-Gesellschaft, Stendal</a></li>
+      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;ZADAR&quot;">Bibliothek des International Centre for Underwater Archaeology Zadar</a></li>
     </ul>
   </div>
 
@@ -136,16 +137,25 @@
     <div class="well">
       <h4><i class="fa fa-file small"></i> <?=$this->translate('Journals')?></h4>
       <ul class="list-unstyled">
-        <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=LocalNote"><?=$this->translate('DAI journals')?></a></li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=a*gz04 OR argz06 OR argz04xx&amp;type=JournalNote"><?=$this->translate('Zenon journal holdings')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('DAI journals')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=a*gz04 OR argz06 OR argz04xx&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=JournalNote"><?=$this->translate('Zenon journal holdings')?></a></li>
       </ul>
     </div>
     <div class="well">
       <h4><i class="fa fa-globe small"></i> <?=$this->translate('e-publications')?></h4>
       <ul class="list-unstyled">
-        <li><a href="<?=$this->url('search-results')?>?lookfor=ejournal&amp;type=LocalNote"><?=$this->translate('e-journals')?></a></li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=ebook*&amp;type=LocalNote"><?=$this->translate('e-books')?></a></li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;type=LocalNote"><?=$this->translate('Online resources')?></a></li>
+        <li>
+            <a target="_blank" href="http://ezb.uni-regensburg.de/">
+                <?=$this->translate('e-journals')?> <i class="fa fa-external-link"></i>
+            </a>
+        </li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=ebook*&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('e-books')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('Online resources')?></a></li>
+        <li>
+            <a target="_blank" href="http://rzblx10.uni-regensburg.de/dbinfo/fachliste.php?bib_id=dai">
+                <?=$this->translate('DBIS (Database Information System)')?> <i class="fa fa-external-link"></i>
+            </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -153,34 +163,29 @@
   <div class="col-md-3 well">
     <h4><i class="fa fa-calendar small"></i> <?=$this->translate('Accessions')?></h4>
       <?
-        $end = new DateTime("now +1 month");
-        $start = new DateTime("now -1 year + 1 month");
-        $interval = new DateInterval('P1M');
-        $period = new DatePeriod($start, $interval, $end);
+        $start = new DateTime("now");
         $months = [];
       ?>
-      <? foreach ($period as $dt): ?>
-        <?
-          $queryMonth = $dt->format('my');
-          $queries = [];
-          foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
-          $query = join(' OR ', $queries);
-          $months[] = array("date" => $dt, "query" => $query);
-        ?>
-      <? 
-        endforeach;
-        $months = array_reverse($months)
-      ?>
-    <ul class="list-unstyled">
-      <? foreach (array_slice($months,0,12) as $month): ?>
-        <li>
-          <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;type=LocalNote">
-            <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
-          </a>
-        </li>
-      <? endforeach; ?>
-    </ul>
+      <? for ($i = 0; $i > -12; $i--): ?>
+          <?
+              $dt = $this->datetime()->monthShifter($start, $i);
+              $queryMonth = $dt->format('my');
+              $queries = [];
+              foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
+              $query = join(' OR ', $queries);
+              $months[] = array("date" => $dt, "query" => $query);
+          ?>
+      <? endfor ?>
 
+      <ul class="list-unstyled">
+          <? foreach (array_slice($months,0,12) as $month): ?>
+              <li>
+                  <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote">
+                      <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+                  </a>
+              </li>
+          <? endforeach; ?>
+      </ul>
   </div>
 
 </div>

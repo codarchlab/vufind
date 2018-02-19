@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Translate;
@@ -32,11 +32,11 @@ use VuFind\I18n\TranslatableString;
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class TranslateTest extends \PHPUnit_Framework_TestCase
 {
@@ -80,20 +80,6 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     {
         $translate = new Translate();
         $translate->__invoke([1, 2, 3]);
-    }
-
-    /**
-     * Test invalid translation string
-     *
-     * @return void
-     *
-     * @expectedException        Exception
-     * @expectedExceptionMessage Unexpected value sent to translator!
-     */
-    public function testTranslateWithDoubleTextDomainArray()
-    {
-        $translate = new Translate();
-        $translate->__invoke('a::b::c');
     }
 
     /**
@@ -233,7 +219,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testLocaleWithTranslator()
     {
         $translate = new Translate();
-        $translator = $this->getMock('Zend\I18n\Translator\Translator');
+        $translator = $this->createMock('Zend\I18n\Translator\Translator');
         $translator->expects($this->once())->method('getLocale')
             ->will($this->returnValue('foo'));
         $translate->setTranslator($translator);
@@ -248,7 +234,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
     public function testGetTranslator()
     {
         $translate = new Translate();
-        $translator = $this->getMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }
@@ -266,7 +252,7 @@ class TranslateTest extends \PHPUnit_Framework_TestCase
             return isset($translations[$domain][$str])
                 ? $translations[$domain][$str] : $str;
         };
-        $translator = $this->getMock('Zend\I18n\Translator\TranslatorInterface');
+        $translator = $this->createMock('Zend\I18n\Translator\TranslatorInterface');
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
         return $translator;

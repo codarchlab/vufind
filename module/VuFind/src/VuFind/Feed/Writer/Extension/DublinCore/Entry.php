@@ -17,13 +17,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Feed_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore;
 use Zend\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
@@ -37,11 +37,11 @@ use Zend\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
  * equivalent Itunes plugin.  This works fine, but perhaps in future there will
  * be a more elegant way to achieve the same effect.
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Feed_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class Entry extends ParentEntry
 {
@@ -65,14 +65,6 @@ class Entry extends ParentEntry
      * @var array
      */
     protected $dcDescriptions = [];
-
-
-    /**
-     * References
-     * @var array
-     */
-    protected $containerReference = null;
-
 
     /**
      * Date
@@ -130,18 +122,6 @@ class Entry extends ParentEntry
     }
 
     /**
-     * Add container references.
-     *
-     * @param string $references References to add.
-     *
-     * @return void
-     */
-    public function setContainerReference($containerReference)
-    {
-        $this->containerReference = $containerReference;
-    }
-
-    /**
      * Get the Dublin Core date.
      *
      * @return string
@@ -169,16 +149,6 @@ class Entry extends ParentEntry
     public function getDCDescriptions()
     {
         return $this->dcDescriptions;
-    }
-
-    /**
-     * Get the container references.
-     *
-     * @return array
-     */
-    public function getContainerReference()
-    {
-        return $this->containerReference;
     }
 
     /**

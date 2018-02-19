@@ -14,10 +14,11 @@ then
   VUFIND_HOME="/usr/local/vufind"
 fi
 
-for filename in $1*.gz 
+for filename in $1* #.gz
 do 
-	echo "converting ${filename}"
-	ruby $VUFIND_HOME/local/import/aleph2marc.rb ${filename}
+	echo "preprocessing ${filename}"
+	# ruby $VUFIND_HOME/local/import/aleph2marc.rb ${filename}
+	ruby $VUFIND_HOME/local/import/preprocess-marc.rb ${filename}
 	echo "importing ${filename}"
-	bash $VUFIND_HOME/import-marc.sh $VUFIND_HOME/local/import/mrc/$(basename "$filename" .gz).mrc
+	bash $VUFIND_HOME/import-marc.sh $VUFIND_HOME/local/import/mrc/$(basename $filename)
 done

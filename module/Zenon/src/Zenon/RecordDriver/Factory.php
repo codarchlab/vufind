@@ -52,7 +52,8 @@ class Factory
         $driver = new SolrMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('zenon-config')
         );
         $driver->attachILS(
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),

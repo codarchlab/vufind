@@ -7,15 +7,30 @@
   }
 ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <? $QRCode = $this->record($this->driver)->getQRCode("core"); 
-     $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('medium'));
-     $preview = $this->record($this->driver)->getPreviews(); ?>
-  <? if ($QRCode || $cover || $preview): ?>
+  <?
+  $QRCode = $this->record($this->driver)->getQRCode("core");
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
+  $preview = $this->record($this->driver)->getPreviews();
+  ?>
+
+    <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecordId($this->currentPath()); ?>
+    <? if($potentialZenonRecords): ?>
+        <div class="alert alert-success moved-record" role="alert">
+            <p>
+                <?=$this->transEsc('Zenon record moved'); ?>
+                <a class="alert-link" href="/Record/<?= $potentialZenonRecords ?>">
+                    <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $potentialZenonRecords ?>
+                </a>
+            </p>
+        </div>
+    <? endif; ?>
+
+  <? if ($QRCode || $coverDetails['cover'] || strlen($preview) > 0): ?>
   <div class="col-sm-3">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
-      <? if($cover): ?>
-        <?=$cover?>
+      <? if($coverDetails['cover']): ?>
+        <?= $coverDetails['html']; ?>
       <? endif; ?>
 
       <? /* Display qrcode if appropriate: */ ?>
@@ -38,7 +53,15 @@
   <div class="col-sm-12">
   <? endif; ?>
 
-    <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+    <h3 property="name">
+        <?=$this->escapeHtml($this->driver->getShortTitle()); ?>
+        <? if(!empty($this->driver->getSubtitle())): ?>
+            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getSubtitle())); ?>
+        <? endif ?>
+        <? if(!empty($this->driver->getTitleSection())): ?>
+            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getTitleSection())); ?>
+        <? endif ?>
+    </h3>
 
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
@@ -105,17 +128,35 @@
       <? endif; ?>
 
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
-      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+      <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
       <tr>
         <th><?=$this->transEsc('Main Author')?>: </th>
-        <td property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
+        <? foreach($authors['primary'] as $author=>$value): ?>
+          <td property="author">
+              <a href="<?=$this->record($this->driver)->getLink('author',$author)?>">
+                  <?=$this->escapeHtml($author)?>
+                    <? if (!empty($value['role'])): ?>
+                        <? foreach ($value['role'] as $role): ?>
+                            , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                        <? endforeach ?>
+                    <? endif ?>
+              </a>
+          </td>
+        <? endforeach; ?>
       </tr>
       <? endif; ?>
 
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
       <tr>
         <th><?=$this->transEsc('Corporate Author')?>: </th>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+        <td property="creator">
+        <? foreach($authors['corporate'] as $author=>$key): ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+                <?=$this->escapeHtml($author)?>
+            </a>
+            <br/>
+        <? endforeach; ?>
+        </td>
       </tr>
       <? endif; ?>
 
@@ -123,7 +164,19 @@
       <tr>
         <th><?=$this->transEsc('Other Authors')?>: </th>
         <td>
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
+          <? $i = 0; foreach ($authors['secondary'] as $author=>$value): ?>
+            <?=($i++ == 0)?'':', '?>
+            <span property="contributor">
+              <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+                  <?=$this->escapeHtml($author)?>
+                  <? if (!empty($value['role'])): ?>
+                      <? foreach ($value['role'] as $role): ?>
+                          , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                      <? endforeach ?>
+                  <? endif ?>
+              </a>
+            </span>
+          <? endforeach; ?>
         </td>
       </tr>
       <? endif; ?>
@@ -238,7 +291,9 @@
           <th><?=$this->transEsc('Thesaurus')?>: </th>
           <td>
             <? foreach ($thsEntries as $thsEntry): ?>
-              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>"><?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small></a>
+              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
+                <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
+              </a>
             <? endforeach; ?>
           </td>
         </tr>
@@ -256,6 +311,18 @@
           </td>
         </tr>
       <? endif; ?>
+
+      <? $publicationsLink = $this->driver->getPublicationsLink(); ?>
+      <? if($publicationsLink): ?>
+          <tr>
+              <th>iDAI.publications</th>
+              <td>
+                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?> <small><i class="fa fa-external-link"></i></small></a>
+              </td>
+          </tr>
+      <? endif; ?>
+
+      <tr id="arachne-data" control-number="<?= $this->driver->getControlNumber(); ?>"></tr>
 
       <? $locations = $this->driver->getLocation(); ?>
       <? if($locations): ?>
@@ -282,23 +349,30 @@
       <? endif; ?>
 
       <? $hostItems = $this->driver->getHostItemInformation(); ?>
-      <? if($hostItems): ?>
+      <? if(!empty($hostItems)): ?>
         <tr>
           <th><?=$this->transEsc('Included in')?>: </th>
           <td>
             <? foreach ($hostItems as $hostItem): ?>
-              <?=$this->escapeHtml($hostItem)?>
+                <? if($hostItem['id']): ?>
+                    <a title="<?=$this->escapeHtml($hostItem['label'])?>"
+                       href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
+                        <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
+                    </a>
+                <? else: ?>
+                    <?=$this->escapeHtml($hostItem['label'])?>
+                <? endif; ?>
             <? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
 
-      <? $parent = $this->driver->getParent(); ?>
-      <? if($parent): ?>
+      <? $chreLink = $this->driver->getCHRELink(); ?>
+      <? if(!empty($chreLink)): ?>
         <tr>
-          <th><?=$this->transEsc('Included in')?>: </th>
+          <th>CHRE:</th>
           <td>
-            <a title="<?=$this->escapeHtml($parent['label'])?>" href="<?=$this->url('record', array('id' => $parent['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($parent['label'])?></a>
+            <a href="<?=$chreLink?>" target="_blank"><?=$chreLink?> <small><i class="fa fa-external-link"></i></small></a>
           </td>
         </tr>
       <? endif; ?>
@@ -355,7 +429,7 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $additionalPhysicalFormNotes = $this->driver->getAdditionalPhysicalFormAvailableNote(); ?>
       <? if(!empty($additionalPhysicalFormNotes)): ?>
         <tr>
@@ -404,4 +478,6 @@
     </table>
     <?/* End Main Details */?>
   </div>
+
+  <script src="/themes/archaeostrap/js/arachne-data.js"></script>
 </div>

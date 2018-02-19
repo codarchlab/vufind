@@ -12,7 +12,12 @@ body {
     bottom: 0;
     width: 100%;
     padding: 30px;
-    background-color: #e2e2e2;
+    background-color: #f3f3f3;
+}
+
+.moved-record.alert-success {
+	padding: 20px;
+	font-size: x-large;
 }
 
 mark {
@@ -31,6 +36,15 @@ mark {
 .searchHomeContent .navbar-form select,
 .searchHomeContent .navbar-form button {
 	margin-top: 0;
+}
+
+.arachne-nav {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.arachne-nav li {
+  font-size:  xx-small;
 }
 
 .record .label-info {
@@ -74,7 +88,7 @@ mark {
 }
 
 .tt-suggestion {
-	cursor: pointer;	
+	cursor: pointer;
 }
 
 .tt-suggestion p {

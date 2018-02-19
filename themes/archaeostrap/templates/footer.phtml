@@ -1,3 +1,4 @@
+<hr/>
 <div class="idai-footer row">
   <div class="col-md-12 text-center">
     <p>
@@ -15,7 +16,7 @@
         $query = join(' OR ', $queries);
       ?>
       <a href="<?=$this->url('search-results')?>?lookfor=<?=$query?>&amp;type=LocalNote"><?=$this->transEsc('Accessions')?></a> |
-      <a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a> |
+      <a href="<?=$this->url('help-home')?>?topic=search"  data-lightbox  class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a> |
 <!-- 15.09.2016 Übernahme nach zenon-branch      <a href="<?=$this->url('help-home')?>?topic=faq" class="help-link" title="<?=$this->transEsc('FAQ')?>"><?=$this->transEsc('FAQ')?></a> | -->
       <a href="http://www.dainst.org/forschung/infrastruktur/bibliotheken"><?=$this->transEsc('Ask a Librarian')?></a>
     </p>

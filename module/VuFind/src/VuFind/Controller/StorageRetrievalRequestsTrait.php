@@ -17,24 +17,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 namespace VuFind\Controller;
 
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
- * @category VuFind2
+ * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org Main Site
  */
 trait StorageRetrievalRequestsTrait
 {
@@ -87,9 +87,10 @@ trait StorageRetrievalRequestsTrait
         }
 
         // Block invalid requests:
-        if (!$catalog->checkStorageRetrievalRequestIsValid(
+        $validRequest = $catalog->checkStorageRetrievalRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
-        )) {
+        );
+        if (!$validRequest) {
             return $this->blockedStorageRetrievalRequestAction();
         }
 
@@ -112,15 +113,16 @@ trait StorageRetrievalRequestsTrait
 
             // Success: Go to Display Storage Retrieval Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()->addMessage(
-                    'storage_retrieval_request_place_success', 'success'
-                );
-                if ($this->inLightbox()) {
-                    return false;
-                }
-                return $this->redirect()->toRoute(
-                    'myresearch-storageretrievalrequests'
-                );
+                $msg = [
+                    'html' => true,
+                    'msg' => 'storage_retrieval_request_place_success_html',
+                    'tokens' => [
+                        '%%url%%' => $this->url()
+                            ->fromRoute('myresearch-storageretrievalrequests')
+                    ],
+                ];
+                $this->flashMessenger()->addMessage($msg, 'success');
+                return $this->redirectToRecord('#top');
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.
@@ -137,7 +139,7 @@ trait StorageRetrievalRequestsTrait
         // Find and format the default required date:
         $defaultRequired = $this->storageRetrievalRequests()
             ->getDefaultRequiredDate($checkRequests);
-        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+        $defaultRequired = $this->serviceLocator->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
             $defaultPickup

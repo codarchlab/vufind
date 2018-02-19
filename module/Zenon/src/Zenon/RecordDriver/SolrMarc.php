@@ -28,6 +28,8 @@
 namespace Zenon\RecordDriver;
 use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
+use Zend\Config\Reader\Json as configJson;
+
 
 /**
  * Custom record handling for Zenon MARC records.
@@ -40,61 +42,95 @@ use VuFindCode\ISBN;
  */
 class SolrMarc extends VufindSolrMarc
 {
+
     const COVERS_DIR = "/usr/local/vufind/local/cache/covers";
 
     /**
-     * Get the full title of the record.
-     * Overriden to remove trailing slashes.
+     * Zenon configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $zenonConfig;
+
+    public function __construct($mainConfig = null, $recordConfig = null,
+                                $searchSettings = null, $zenonConfig = null
+    ) {
+        $this->zenonConfig = $zenonConfig;
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
+    }
+    /**
+     * Get the title of the record.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getTitle()
     {
-        return $this->removeTrailingSlash(parent::getTitle());
+        $title = parent::getTitle();
+        if(is_array($title)) {
+            $title = $title[0];
+        }
+        return $this->removeTrailingSlash($title);
     }
 
     /**
      * Get the short (pre-subtitle) title of the record.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getShortTitle()
     {
-        return $this->removeTrailingSlash(parent::getShortTitle());
+        $shortTitle = parent::getShortTitle();
+        if(is_array($shortTitle)) {
+            $shortTitle = $shortTitle[0];
+        }
+        return $this->removeTrailingSlash($shortTitle);
     }
 
     /**
      * Get a highlighted title string, if available.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getHighlightedTitle()
     {
-        return $this->removeTrailingSlash(parent::getHighlightedTitle());
+        $highlightedTitle = parent::getHighlightedTitle();
+        if(is_array($highlightedTitle)) {
+            $highlightedTitle = $highlightedTitle[0];
+        }
+        return $this->removeTrailingSlash($highlightedTitle);
     }
 
     /**
      * Get the text of the part/section portion of the title.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getTitleSection()
     {
-        return $this->removeTrailingSlash(parent::getTitleSection());
+        $titleSection = parent::getTitleSection();
+        if(is_array($titleSection)) {
+            $titleSection = $titleSection[0];
+        }
+        return $this->removeTrailingSlash($titleSection);
     }
 
     /**
      * Get the subtitle of the record.
-     * Overriden to remove trailing slashes.
+     * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.
      *
      * @return string
      */
     public function getSubtitle()
     {
-        return $this->removeTrailingSlash(parent::getSubtitle());
+        $subTitle = parent::getSubtitle();
+        if(is_array($subTitle)) {
+            $subTitle = $subTitle[0];
+        }
+        return $this->removeTrailingSlash($subTitle);
     }
 
 	/**
@@ -106,13 +142,18 @@ class SolrMarc extends VufindSolrMarc
     {
 
     	$result = array();
-    	$fields = $this->marcRecord->getFields('999');
+    	$fields = $this->getMarcRecord()->getFields('999');
 
     	foreach ($fields as $currentField) {
 
     		$entry = [];
 
+    		// ND201132015 = Non-descriptor flag
+            $ignore = $this->getSubfieldArray($currentField, ['g'], false);
+            if (!empty($ignore) && $ignore[0] == 'ND201132015') continue;
+
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
+
             if (count($label > 0)) $entry['label'] = $label[0];
             else continue;
 
@@ -126,11 +167,16 @@ class SolrMarc extends VufindSolrMarc
 
             // return $m as additional search term for Gazetteer
             $searchterm = $this->getSubfieldArray($currentField, ['m']);
-            if (count($searchterm > 0)) $entry['searchterm'] = $searchterm[0];
+            if (!empty($searchterm)) $entry['searchterm'] = $searchterm[0];
 
             // return $r as additional search term for Gazetteer
             $searchterm2 = $this->getSubfieldArray($currentField, ['r']);
-            if (count($searchterm2 > 0)) $entry['searchterm2'] = $searchterm2[0];
+            if (!empty($searchterm2)) $entry['searchterm2'] = $searchterm2[0];
+
+            // yes, ugly.
+            $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
+            if(!empty($belgianLocationLabel))
+                $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
 
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
@@ -191,39 +237,112 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the host item information (MARC 21 field 773)
+     * Get the host item information (MARC 21 field 773), also retrieves custom, and deprecated HostItemInformation
+     * in field 995 (ZENON data).
      *
      * @return array
      */
     public function getHostItemInformation()
     {
-        return $this->getFieldArray('773');
+        $results = [];
+
+        $customFieldData = $this->getCustomFieldHostItemLinkData();
+        if($customFieldData) {
+            $results = $customFieldData;
+        }
+
+        $fields =  $this->getMarcRecord()->getFields('773');
+        foreach($fields as $currentField) {
+            $recordControlNumber = $currentField->getSubfield('w');
+            if($recordControlNumber) {
+                $data = $this->getHostItemLinkData($currentField);
+                if($data) array_push($results, $data);
+            }
+            else {
+                $data = $this->getHostItemTextData($currentField);
+                if($data) array_push($results, $data);
+            }
+        }
+        return $results;
+    }
+
+    private function getHostItemTextData($currentField)
+    {
+        $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n'], false);
+        if(sizeOf($textEntry) > 0) {
+            return array('id' => false, 'label' => join(', ', $textEntry));
+        }
+        return null;
+    }
+
+    private function getHostItemLinkData($currentField)
+    {
+        // Pattern matches GBV notation, example id: NLEJ102577161, field value 773w: "(DE-601)NLEJ000028940"
+        preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
+
+        if(!$match || sizeof($match) != 2){
+            // unable to extract controlnumber, fallback to text data object
+            return getHostItemTextData($currentField);
+        }
+
+        $ctrlNumber = $match[1];
+        $text = "";
+
+        $title = $currentField->getSubfield('t');
+        $placePublisherAndDate = $currentField->getSubfield('d');
+        $relatedParts = $currentField->getSubfield('g');
+        $recordControlNumber = $currentField->getSubfield('w');
+
+        if($title){
+            $text = $text . " " . $title->getData();
+        }
+        if($relatedParts){
+            $text = $text . ", " . $relatedParts->getData();
+        }
+        if($placePublisherAndDate){
+            $text = $text . ", " . $placePublisherAndDate->getData();
+        }
+
+        return array('id' => $ctrlNumber, 'label' => $text);
+    }
+
+    private function getCustomFieldHostItemLinkData()
+    {
+    	$linkType = 'ANA';
+
+        return $this->createCustomFieldLinkArray($linkType);
     }
 
     /**
-     * Get the parent of the record
+     * Get the item's publication information, if no date is found in 260c/264c, get manufacturing date out of 260g/264g
+     * if there is also no date information found in 260g/264g, parse control field 008 for a date match
+     *
+     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = publish date)
      *
      * @return array
      */
-    public function getParent()
+    protected function getPublicationInfo($subfield = 'a')
     {
+        $results = parent::getPublicationInfo($subfield);
 
-    	$result = array();
-    	$fields = $this->marcRecord->getFields('995');
+        if (empty($results) && $subfield == 'c') {
+            $results = parent::getPublicationInfo('g');
 
-    	foreach ($fields as $currentField) {
-    		$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-    		if ($field[0] == 'ANA') {
-	    		return array(
-	    			'id' => $field[1],
-	    			'label' => $field[2]
-	    		);
-	    	}
-    	}
+            if (empty($results)) {
+                $generalInformation = $this->getMarcRecord()->getField('008');
 
-        return false;
+                if ($generalInformation) {
+                    preg_match('/^.{7}(\d{4}).*$/', $generalInformation->getData(), $match);
+                    if ($match && sizeof($match) == 2) {
+                        array_push($results, $match[1]);
+                    }
+                }
+            }
+        }
 
+        return $results;
     }
+
 
     /**
      * Get parallel records for the record (different editions etc.)
@@ -232,22 +351,9 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getSeeAlso()
     {
+        $linkType = 'UP';
 
-		$result = array();
-		$fields = $this->marcRecord->getFields('995');
-
-		foreach ($fields as $currentField) {
-			$field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-			if ($field[0] == 'UP') {
-				$result[] = array(
-					'id' => $field[1],
-					'label' => $field[2]
-					);
-			}
-		}
-
-		return $result;
-
+        return $this->createCustomFieldLinkArray($linkType);
 	}
 
     /**
@@ -257,23 +363,11 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getParallelEditions()
     {
+        $linkType = 'PAR';
 
-        $result = array();
-        $fields = $this->marcRecord->getFields('995');
-
-        foreach ($fields as $currentField) {
-            $field = $this->getSubfieldArray($currentField, ['a','b','n'], false);
-            if ($field[0] == 'PAR') {
-                $result[] = array(
-                    'id' => $field[1],
-                    'label' => $field[2]
-                    );
-            }
-        }
-
-        return $result;
-
+        return $this->createCustomFieldLinkArray($linkType);
     }
+
 
     /**
      * Get links to iDAI.gazetteer
@@ -307,6 +401,56 @@ class SolrMarc extends VufindSolrMarc
             }
         }
         return $result;
+    }
+
+    /**
+     * Get Marc control number.
+     */
+    public function getControlNumber() {
+        if(!$this->getMarcRecord()->getField('001')->toRaw())
+            return null;
+
+        return trim($this->getMarcRecord()->getField('001')->toRaw(), "\x00..\x1F");
+    }
+
+    /**
+     * Get Link (if exists) to iDAI.publications.
+     */
+    public function getPublicationsLink() {
+        $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
+
+        if($content == null){
+            return false;
+        }
+
+        $controlNumber = $this->getControlNumber();
+        $reader = new configJson();
+        $data = $reader->fromString($content);
+
+        if (array_key_exists($controlNumber, $data))
+            return $data[$controlNumber];
+
+        return false;
+    }
+
+    /**
+     * Get Link (if exists) to CHRE.
+     */
+    public function getCHRELink() {
+        $fileContent = file('./local/iDAI.world/chre_mapping.csv');
+        if($fileContent == null){
+            return false;
+        }
+
+        $csvData = array_map('str_getcsv', $fileContent);
+        $controlNumber = $this->getControlNumber();
+        foreach ($csvData as $csvLines => $csvLine) {
+            if ($csvLine[0] == $controlNumber) {
+                return "http://chre.ashmus.ox.ac.uk/reference/" . $csvLine[1];
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -353,7 +497,7 @@ class SolrMarc extends VufindSolrMarc
     public function getAdditionalPhysicalFormAvailableNote()
     {
         $result = array();
-        $fields = $this->marcRecord->getFields('530');
+        $fields = $this->getMarcRecord()->getFields('530');
 
         foreach ($fields as $currentField) {
             $field = $this->getSubfieldArray($currentField, ['a','u'], false);
@@ -361,7 +505,7 @@ class SolrMarc extends VufindSolrMarc
               'label' => $field[0],
               'uri' => $field[1]
             );
-            
+
         }
 
         return $result;
@@ -386,7 +530,7 @@ class SolrMarc extends VufindSolrMarc
     {
         return $this->getFieldArray('542',['d']);
     }
-    
+
     private function removeTrailingSlash($s)
     {
         if (strrpos($s, '/') == strlen($s)-1) {
@@ -394,6 +538,35 @@ class SolrMarc extends VufindSolrMarc
         } else {
             return $s;
         }
+    }
+
+    /**
+     * Creates an array of link information from custom field 995 and subfields 'a', 'b', and 'n'
+     *
+     * @param $linkType
+     * @return array
+     */
+    private function createCustomFieldLinkArray($linkType)
+    {
+        $result = [];
+        $fields = $this->getMarcRecord()->getFields('995');
+
+        foreach ($fields as $currentField) {
+            $currentLinkType = $currentField->getSubfield('a')->getData();
+
+            if($linkType == $currentLinkType) {
+
+                $zenonId = $this->zenonConfig->Records->localRecordPrefix . $currentField->getSubfield('b')->getData();
+                $label = $currentField->getSubfield('n')->getData();
+                $link = [
+                    'id' => $zenonId,
+                    'label' => $label,
+                ];
+                array_push($result, $link);
+            }
+        }
+
+        return $result;
     }
 
 }
