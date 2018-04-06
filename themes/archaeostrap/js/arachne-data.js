@@ -13,7 +13,7 @@ var resultBucketIndex = 0;
 
 var entityCount = 0;
 
-document.onload = startQuery();
+window.onload = startQuery;
 
 function startQuery() {
   container = document.getElementById('arachne-data');
