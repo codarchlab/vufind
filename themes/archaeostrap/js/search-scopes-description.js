@@ -13,8 +13,6 @@ function setup() {
     defaultDescription = document.querySelector('#default-description');
     plusDescription = document.querySelector('#plus-description');
 
-    console.dir(document.querySelector('#combined-index-info'));
-
     if(document.querySelector('#combined-index-info') === null) showDefaultDescription();
     else showPlusDescription();
 }
