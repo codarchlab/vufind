@@ -4,7 +4,7 @@ var plusDescriptionLink;
 var defaultDescription;
 var plusDescription;
 
-document.onload = setup();
+window.onload = setup();
 
 function setup() {
     defaultDescriptionLink = document.querySelector('#show-default-description');
@@ -13,9 +13,9 @@ function setup() {
     defaultDescription = document.querySelector('#default-description');
     plusDescription = document.querySelector('#plus-description');
 
-    var initialRequest = window.location.href;
+    console.dir(document.querySelector('#combined-index-info'));
 
-    if(initialRequest.includes('hiddenFilters%5B%5D=collection%3A%22iDAI.bibliography%22')) showDefaultDescription();
+    if(document.querySelector('#combined-index-info') === null) showDefaultDescription();
     else showPlusDescription();
 }
 

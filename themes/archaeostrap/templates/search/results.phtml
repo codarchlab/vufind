@@ -62,20 +62,18 @@
   <div class="alert alert-success container col-md-12" style="padding:20px 15px 15px 15px">
     <div class="col-md-10">
       <? if ($selectedSearchTab["label"] == 'Combined index'): ?>
-        <strong><?= $this->translate('Combined index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
+        <strong id="combined-index-info"><?= $this->translate('Combined index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
         <p>
           <?=$this->translate('Combined index info'); ?>
-
         </p>
       <? endif; ?>
       <? if ($selectedSearchTab["label"] == 'DAI index'): ?>
-        <strong><?= $this->translate('DAI index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
+        <strong id="dai-index-info"><?= $this->translate('DAI index'); ?> <i class="fa fa-eye" aria-hidden="true"></i></strong>
         <p>
           <?= $this->translate('DAI index info'); ?>
         </p>
       <? endif; ?>
     </div>
-
     <div class="col-md-2 text-right">
       <a href="<?=$this->url('help-home')?>?topic=search_scopes" data-lightbox
         class="help-link alert-link">
