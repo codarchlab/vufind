@@ -172,7 +172,9 @@ JS;
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
 
-
-    <script src="/themes/archaeostrap/js/idai-cookie-notice.js"></script>
+    <script type="text/javascript" src="/themes/archaeostrap/js/idai-cookie-notice.js"></script>
+    <script>
+        IDaiCookieNotice.init('http://www.dainst.org/de/datenschutz');
+    </script>
   </body>
 </html>

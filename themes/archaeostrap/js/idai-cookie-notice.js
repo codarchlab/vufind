@@ -1,5 +1,3 @@
-// Version: https://github.com/dainst/idai-cookie-notice/commit/5c40ca88fba9dde879ad7decabfb5a103d4fe49a
-
 var IDaiCookieNotice = (function () {
 
     function setCookie() {
@@ -21,15 +19,15 @@ var IDaiCookieNotice = (function () {
         setCookie();
     }
 
-    function create() {
+    function create(privacyUrl) {
 
         var userLang = navigator.language || navigator.userLanguage;
 
         if (userLang.startsWith("de")) {
-            text = "Um unsere Webseite für Sie optimal zu gestalten und fortlaufend verbessern zu können, verwenden wir Cookies. Durch die weitere Nutzung der Webseite stimmen Sie der Verwendung von Cookies zu. Weitere Informationen zu Cookies erhalten Sie in unserer <a href='/privacy'>Datenschutzerklärung<a>.";
+            text = "Um unsere Webseite für Sie optimal zu gestalten und fortlaufend verbessern zu können, verwenden wir Cookies. Durch die weitere Nutzung der Webseite stimmen Sie der Verwendung von Cookies zu. Weitere Informationen zu Cookies erhalten Sie in unserer <a href='" + privacyUrl + "'>Datenschutzerklärung<a>.";
             buttonLabel = "Akzeptieren";
         } else {
-            text = "This website uses cookies to ensure the best possible experience. By continuing to use this website you are giving consent to cookies being used. For further information on cookies visit our <a href='/privacy'>Privacy Policy</a>.";
+            text = "This website uses cookies to ensure the best possible experience. By continuing to use this website you are giving consent to cookies being used. For further information on cookies visit our <a href='" + privacyUrl + "'>Privacy Policy</a>.";
             buttonLabel = "Got it!"
         }
 
@@ -42,11 +40,16 @@ var IDaiCookieNotice = (function () {
         document.write(html);
     }
 
-    if (!isCookieSet()) {
-        create();
+    function init(privacyUrl) {
+        if (!isCookieSet()) {
+            if(typeof privacyUrl === "undefined")
+                privacyUrl = '/privacy';
+            create(privacyUrl);
+        }
     }
 
     return {
+        init: init,
         dismiss: dismiss
     }
 
