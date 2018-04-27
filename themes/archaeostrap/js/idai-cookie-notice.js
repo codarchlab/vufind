@@ -19,15 +19,15 @@ var IDaiCookieNotice = (function () {
         setCookie();
     }
 
-    function create(privacyUrl) {
+    function create() {
 
         var userLang = navigator.language || navigator.userLanguage;
 
         if (userLang.startsWith("de")) {
-            text = "Um unsere Webseite für Sie optimal zu gestalten und fortlaufend verbessern zu können, verwenden wir Cookies. Durch die weitere Nutzung der Webseite stimmen Sie der Verwendung von Cookies zu. Weitere Informationen zu Cookies erhalten Sie in unserer <a href='" + privacyUrl + "'>Datenschutzerklärung<a>.";
+            text = "Um unsere Webseite für Sie optimal zu gestalten und fortlaufend verbessern zu können, verwenden wir Cookies. Durch die weitere Nutzung der Webseite stimmen Sie der Verwendung von Cookies zu. Weitere Informationen zu Cookies erhalten Sie in unserer <a href='http://www.dainst.org/de/datenschutz' target='_blank'>Datenschutzerklärung<a>.";
             buttonLabel = "Akzeptieren";
         } else {
-            text = "This website uses cookies to ensure the best possible experience. By continuing to use this website you are giving consent to cookies being used. For further information on cookies visit our <a href='" + privacyUrl + "'>Privacy Policy</a>.";
+            text = "This website uses cookies to ensure the best possible experience. By continuing to use this website you are giving consent to cookies being used. For further information on cookies visit our <a href='http://www.dainst.org/en/datenschutz' target='_blank'>Privacy Policy</a>.";
             buttonLabel = "Got it!"
         }
 
@@ -40,16 +40,12 @@ var IDaiCookieNotice = (function () {
         document.write(html);
     }
 
-    function init(privacyUrl) {
-        if (!isCookieSet()) {
-            if(typeof privacyUrl === "undefined")
-                privacyUrl = '/privacy';
-            create(privacyUrl);
-        }
+
+    if (!isCookieSet()) {
+        create();
     }
 
     return {
-        init: init,
         dismiss: dismiss
     }
 
