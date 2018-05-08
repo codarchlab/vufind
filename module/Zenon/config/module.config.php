@@ -3,12 +3,6 @@ namespace Zenon\Module\Config;
 
 $config = [
 
-	'controllers' => [
-        'factories' => [
-            'thesaurus' => 'Zenon\Controller\Factory::getThesaurusController',
-        ]
-    ],
-
     'service_manager' => [
         'factories' => [
         	'VuFind\Mailer' => 'Zenon\Mailer\Factory',

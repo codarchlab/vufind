@@ -20,6 +20,8 @@ then
   VUFIND_HOME="/usr/local/vufind"
 fi
 
-php $VUFIND_HOME/harvest/harvest_oai.php dai-ths --from $1
-$VUFIND_HOME/harvest/batch-import-marc.sh dai-ths $VUFIND_HOME/import/marc_auth_zenon_ths.properties
-$VUFIND_HOME/harvest/batch-delete.sh dai-ths
+
+# TODO: Update for Koha
+# php $VUFIND_HOME/harvest/harvest_oai.php dai-ths --from $1
+# $VUFIND_HOME/harvest/batch-import-marc.sh dai-ths $VUFIND_HOME/import/marc_auth_zenon_ths.properties
+# $VUFIND_HOME/harvest/batch-delete.sh dai-ths
