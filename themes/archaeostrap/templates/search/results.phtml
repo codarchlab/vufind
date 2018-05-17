@@ -57,6 +57,7 @@
                                                   $this->params->getSearchType(),
                                                   $this->params->getHiddenFilters());
 ?>
+<!--
 <? $selectedSearchTab = $tabConfig["selected"]; ?>
 <? if (isset($selectedSearchTab)): ?>
   <div class="alert alert-success container col-md-12" style="padding:20px 15px 15px 15px">
@@ -83,7 +84,7 @@
 
 </div>
 <? endif; ?>
-
+-->
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
