@@ -13,6 +13,7 @@
   $preview = $this->record($this->driver)->getPreviews();
   ?>
 
+    <!--
     <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecordId($this->currentPath()); ?>
     <? if($potentialZenonRecords): ?>
         <div class="alert alert-success moved-record" role="alert">
@@ -24,7 +25,7 @@
             </p>
         </div>
     <? endif; ?>
-
+    -->
   <? if ($QRCode || $coverDetails['cover'] || strlen($preview) > 0): ?>
   <div class="col-sm-3">
     <div class="text-center">
