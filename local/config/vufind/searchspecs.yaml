@@ -198,7 +198,7 @@ CallNumber:
 
 
 # custom Zenon searchspecs
-Thesaurus:
+Thesaurus:  
   CustomMunge:
     ths_fuzzy:
       # Strip whitespace and quotes:
@@ -207,7 +207,7 @@ Thesaurus:
       - [preg_replace, "/(\\:)/", ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks, then add a new one:
-      - [preg_replace, "/*+$/", ""]
+      - [preg_replace, "/\\*+$/", ""]
       - [append, "*"]
   QueryFields:
     ths_str_mv:
