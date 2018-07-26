@@ -171,18 +171,43 @@
               $dt = $this->datetime()->monthShifter($start, $i);
               $queryMonth = $dt->format('my');
               $queries = [];
-              foreach(['a','e','i','k','c','m','o','f','r','za','zs', 'ebook'] as $char) $queries[] = $char.$queryMonth;
-              $query = join(' OR ', $queries);
-              $months[] = array("date" => $dt, "query" => $query);
+
+              $prefixes = ['a','e','i','k','c','m','o','f','r','za','zs'];
+              $prefixMeanings = ['Athen', 'Eurasien-Abteilung', 'Istanbul', 'KAAK Bonn', 'Kairo', 'Madrid', 'Orient-Abteilung', 'RGK Frankfurt', 'Rom', 'Zentrale Berlin', 'Zentrale Berlin'];
+              foreach($prefixes as $char){
+                  $queries[] = $char.$queryMonth;
+              }
+              $queries[] = 'ebook'.$queryMonth;
+              $generalQuery = join(' OR ', $queries);
+              $specificQueries = [];
+
+              for ($j = 0; $j < sizeof($prefixes); $j++) {
+                  $specificQueries[] = array('label' => $prefixMeanings[$j], 'query' => $prefixes[$j].$queryMonth.' OR ebook'.$queryMonth);
+              }
+
+              $months[] = array("date" => $dt, "generalQuery" => $generalQuery, 'specificQueries' => $specificQueries);
           ?>
       <? endfor ?>
 
-      <ul class="list-unstyled">
+          <ul class="list-unstyled" >
           <? foreach (array_slice($months,0,12) as $month): ?>
-              <li>
-                  <a href="<?=$this->url('search-results')?>?lookfor=<?=$month["query"]?>&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote">
-                      <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
-                  </a>
+              <li style="display:flex">
+                  <div class="btn-group container">
+                      <a type="button" class="col-md-2 btn btn-default dropdown-toggle btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <span class="caret"></span>
+                          <span class="sr-only">Toggle Dropdown</span>
+                      </a>
+                      <ul class="dropdown-menu">
+                          <? foreach ($month['specificQueries'] as $specificQuery): ?>
+                              <li><a href="<?=$this->url('search-results')?>?lookfor=<?= $specificQuery['query'] ?>&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?= $specificQuery['label'] ?></a></li>
+                          <? endforeach; ?>
+                      </ul>
+
+                      <a class="col-md-10 btn btn-default btn-xs" href="<?=$this->url('search-results')?>?lookfor=<?=$month["generalQuery"]?>&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote">
+                          <?=$this->transEsc($month["date"]->format('F'))?> <?=$month["date"]->format('Y')?>
+                      </a>
+
+                  </div>
               </li>
           <? endforeach; ?>
       </ul>
