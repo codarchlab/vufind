@@ -55,8 +55,7 @@ class BaseFormatter
                 $this->filterArrayValues($value);
                 $this->resetArrayIndices($value);
             }
-
-            if ((is_array($value) && empty($value))
+            if ((is_numeric($key) && is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {

@@ -266,44 +266,30 @@ class SolrMarc extends VufindSolrMarc
         return $results;
     }
 
-    private function getHostItemTextData($currentField)
-    {
-        $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n'], false);
-        if(sizeOf($textEntry) > 0) {
-            return array('id' => false, 'label' => join(', ', $textEntry));
-        }
-        return null;
-    }
-
     private function getHostItemLinkData($currentField)
     {
-        // Pattern matches GBV notation, example id: NLEJ102577161, field value 773w: "(DE-601)NLEJ000028940"
-        preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
-
-        if(!$match || sizeof($match) != 2){
-            // unable to extract controlnumber, fallback to text data object
-            return getHostItemTextData($currentField);
-        }
-
-        $ctrlNumber = $match[1];
-        $text = "";
-
-        $title = $currentField->getSubfield('t');
-        $placePublisherAndDate = $currentField->getSubfield('d');
-        $relatedParts = $currentField->getSubfield('g');
         $recordControlNumber = $currentField->getSubfield('w');
 
-        if($title){
-            $text = $text . " " . $title->getData();
+        if($recordControlNumber) {
+            $recordControlNumber = $recordControlNumber->getData();
         }
-        if($relatedParts){
-            $text = $text . ", " . $relatedParts->getData();
-        }
-        if($placePublisherAndDate){
-            $text = $text . ", " . $placePublisherAndDate->getData();
+        else{
+            $recordControlNumber = false;
         }
 
-        return array('id' => $ctrlNumber, 'label' => $text);
+        // Pattern matches GBV notation, example id: NLEJ102577161, field value 773w: "(DE-601)NLEJ000028940"
+//        preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
+//        if(sizeof($match) == 2){
+//            $recordControlNumber = $match[1];
+//        }
+
+        $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n', 'x'], false);
+        if(sizeOf($textEntry) > 0) {
+            return array('id' => $recordControlNumber, 'label' => join(', ', $textEntry));
+        }
+        else {
+            return null;
+        }
     }
 
     private function getCustomFieldHostItemLinkData()

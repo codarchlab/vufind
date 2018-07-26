@@ -1,3 +1,4 @@
 # Only used to keep log directory in git
 
-*.log
+log/*.log
+

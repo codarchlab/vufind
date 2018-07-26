@@ -13,7 +13,7 @@ var resultBucketIndex = 0;
 
 var entityCount = 0;
 
-document.onload = startQuery();
+window.onload = startQuery;
 
 function startQuery() {
   container = document.getElementById('arachne-data');
@@ -94,6 +94,7 @@ function selectBucket(newIndex) {
 function addPaginationButtons() {
   var nav = document.createElement('nav');
   nav.className += 'navbar-right';
+  nav.style = 'margin-right:1px';
   var ul = document.createElement('ul');
   ul.className += 'pager arachne-nav';
 

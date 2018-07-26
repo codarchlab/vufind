@@ -171,7 +171,7 @@
               $dt = $this->datetime()->monthShifter($start, $i);
               $queryMonth = $dt->format('my');
               $queries = [];
-              foreach(['a','e','i','k','c','m','o','f','r','za','zs'] as $char) $queries[] = $char.$queryMonth;
+              foreach(['a','e','i','k','c','m','o','f','r','za','zs', 'ebook'] as $char) $queries[] = $char.$queryMonth;
               $query = join(' OR ', $queries);
               $months[] = array("date" => $dt, "query" => $query);
           ?>
