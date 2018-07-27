@@ -20,6 +20,13 @@ body {
 	font-size: x-large;
 }
 
+/* Custom bootstrap 3 button style for Zenon */
+.btn-zenon-default {
+	background-color: #f3f3f3;
+	border-top-color: rgb(221, 221, 221);
+	border-bottom-color: rgb(221, 221, 221);
+}
+
 mark {
 	background-color: #ffffcc;
 }

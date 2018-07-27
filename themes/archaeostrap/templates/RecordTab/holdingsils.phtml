@@ -52,34 +52,53 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings['holdings'] as $holding): ?>
-    <h3>
+    <? $toggleTargetId = 'collapse' . str_replace(' ','',$holding['location']); ?>
+    <a  class="btn btn-zenon-default btn-block" role="button" data-toggle="collapse" href="#<?= $toggleTargetId; ?>" aria-expanded="false" aria-controls="collapseExample">
         <? $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
         <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
             <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
         <? else: ?>
             <?=$locationText?>
         <? endif; ?>
-    </h3>
+    </a>
     <? usort($holding['items'], function($a, $b) { return $b['summary'] - $a['summary']; } ); ?>
-    <table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
-        <tr>
-            <th width="25%"><?=$this->transEsc("Call Number")?></th>
-            <th width="25%"><?= $this->transEsc("holdings::Description") ?></th>
-            <th width="25%"><?= $this->transEsc("holdings::Item Status") ?></th>
-            <th width="25%"><?= $this->transEsc("holdings::Notes") ?></th>
-        </tr>
-        <? foreach ($holding['items'] as $row): ?>
+    <div class="collapse" id="<?= $toggleTargetId; ?>">
+        <table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
+            <tr>
+                <th width="25%"><?=$this->transEsc("Call Number")?></th>
+                <th width="25%"><?= $this->transEsc("holdings::Description") ?></th>
+                <th width="25%"><?= $this->transEsc("holdings::Item Status") ?></th>
+                <th width="25%"><?= $this->transEsc("holdings::Notes") ?></th>
+            </tr>
+            <? foreach ($holding['items'] as $row): ?>
 
-            <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
-                <tr>
-                    <td><?=$this->transEsc($row['callnumber'])?></td>
-                    <td><?=$this->transEsc($row['summary'])?></td>
-                    <td><?=$this->transEsc($row['status'])?></td>
-                    <td><?=$this->transEsc($row['notes'])?></td>
-                </tr>
-            <? endif; ?>
-        <? endforeach; ?>
-    </table>
+                <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
+                    <tr>
+                        <td><?=$this->transEsc($row['callnumber'])?></td>
+                        <td><?=$this->transEsc($row['summary'])?></td>
+                        <td><?=$this->transEsc($row['status'])?></td>
+                        <td>
+                            <?=$this->transEsc($row['notes'])?>
+                            <? if($holding['location'] == 'Rom'): ?>
+                                <? $subject = 'Magazinbestellung%3A%20' . $this->transEsc($row['callnumber']) ?>
+                                <? $body =
+                                    $this->transEsc('Title') . '%3A%0D%0A%0D%0A%20' . $this->driver->getShortTitle() . '%20' .  $this->driver->getSubtitle() .  '%0D%0A%0D%0A' .
+                                    $this->transEsc("Call Number") . '%3A%0D%0A%0D%0A%20' . $this->transEsc($row['callnumber']);
+                                ?>
+                                <?= $this->transEsc("for_stack_room_order_at_DAI_Rom") ?>:
+                                <p>
+                                    <a href="mailto:magroma@dainst.de?subject=<?= $subject ?> &amp;body=<?= $body ?>">
+                                        magroma@dainst.de
+                                        <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                                    </a>
+                                </p>
+                            <? endif; ?>
+                        </td>
+                    </tr>
+                <? endif; ?>
+            <? endforeach; ?>
+        </table>
+    </div>
 <? endforeach; ?>
 
 <? $history = $this->driver->getRealTimeHistory(); ?>
