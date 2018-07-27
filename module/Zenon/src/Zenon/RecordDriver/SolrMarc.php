@@ -260,7 +260,7 @@ class SolrMarc extends VufindSolrMarc
             else {
                 $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n', 'x'], false);
                 if(sizeOf($textEntry) > 0) {
-                    array_push($results, array('id' => $recordControlNumber, 'label' => join(', ', $textEntry)));
+                    array_push($results, array('id' => null, 'label' => join(', ', $textEntry)));
                 }
             }
         }
