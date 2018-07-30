@@ -292,7 +292,7 @@
           <th><?=$this->transEsc('Thesaurus')?>: </th>
           <td>
             <? foreach ($thsEntries as $thsEntry): ?>
-              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
+              <a class="label label-default" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
                 <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
               </a>
             <? endforeach; ?>
