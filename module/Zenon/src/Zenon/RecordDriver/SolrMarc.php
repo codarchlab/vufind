@@ -153,15 +153,15 @@ class SolrMarc extends VufindSolrMarc
 
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
 
-            if (count($label > 0)) $entry['label'] = $label[0];
+            if (count($label) > 0) $entry['label'] = $label[0];
             else continue;
 
             $language = $this->getSubfieldArray($currentField, ['9']);
-            if (count($language > 0)) $entry['language'] = $language[0];
+            if (count($language) > 0) $entry['language'] = $language[0];
             else $entry['language'] = 'ger';
 
             $notation = $this->getSubfieldArray($currentField, ['1']);
-            if (count($notation > 0)) $entry['notation'] = $notation[0];
+            if (count($notation) > 0) $entry['notation'] = $notation[0];
             else continue;
 
             // return $m as additional search term for Gazetteer
