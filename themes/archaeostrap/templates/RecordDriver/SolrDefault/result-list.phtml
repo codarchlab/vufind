@@ -102,6 +102,11 @@ if ($coverDetails['cover']):
                             <? endforeach; ?>
                         <? endif; ?>
                     <? endif; ?>
+                    <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
+                      <? foreach ($physical as $field): ?>
+                        <?= $this->transEsc('Physical Description')?>:  <?=$this->escapeHtml($field)?><br/>
+                      <? endforeach; ?>
+                    <? endif; ?>
                 </div>
 
                 <? if(!$this->driver->isCollection()): ?>
