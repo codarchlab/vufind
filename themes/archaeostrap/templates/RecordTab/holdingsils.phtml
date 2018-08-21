@@ -82,31 +82,20 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
 
                             <? if($holding['location'] == 'Rom'): ?>
                                 <?
-                                    $isInMagazine = (substr(strtolower($row['callnumber']), -3) === 'mag'
-                                        || substr(strtolower($row['callnumber']), -4) === 'rara'
-                                        || substr(strtolower($row['callnumber']), 0, 5) === 'platn'
-                                        || strpos(strtolower($row['callnumber']), 'kl. fol') !== false
-                                        || strpos(strtolower($row['callnumber']), 'kl.fol') !== false
-                                        || strpos(strtolower($row['callnumber']), 'gr. fol') !== false
-                                        || strpos(strtolower($row['callnumber']), 'gr.fol') !== false);
-                                    if($isInMagazine) {
                                         $subject = 'Magazinbestellung%3A%20' . $this->transEsc($row['callnumber']);
                                         $body =
                                             $this->transEsc('Title') . '%3A%0D%0A%0D%0A%20' . $this->driver->getShortTitle() . '%20' .  $this->driver->getSubtitle() .  '%0D%0A%0D%0A' .
                                             $this->transEsc("Call Number") . '%3A%0D%0A%0D%0A%20' . $this->transEsc($row['callnumber']);
-                                    }
                                 ?>
-                                <? if($isInMagazine): ?>
-                                    <p>
-                                        <em>
-                                        <?= $this->transEsc("for_stack_room_order_at_DAI_Rom") ?>:
-                                            <a href="mailto:magroma@dainst.de?subject=<?= $subject ?> &amp;body=<?= $body ?>">
-                                                magroma@dainst.de
-                                                <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                                            </a>
-                                        </em>
-                                    </p>
-                                <? endif ?>
+                                <p>
+                                    <em>
+                                    <?= $this->transEsc("for_stack_room_order_at_DAI_Rom") ?>:
+                                        <a href="mailto:magroma@dainst.de?subject=<?= $subject ?> &amp;body=<?= $body ?>">
+                                            magroma@dainst.de
+                                            <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                                        </a>
+                                    </em>
+                                </p>
                             <? endif; ?>
                         </td>
                     </tr>
