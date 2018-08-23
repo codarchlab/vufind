@@ -3,17 +3,24 @@
 // Collect citation data:
 $helper = $this->citation($this->driver);
 
-$citations = [];
-foreach ($this->driver->getCitationFormats() as $format) {
-
-$citations[$format . ' Citation'] = $helper->getCitation($format);
+// Check if template was called with a specified format, if not show all available formats
+if (!$this->citeFormat){
+    $citations = [];
+    foreach ($this->driver->getCitationFormats() as $format) {
+        $citations[$format . ' Citation'] = $helper->getCitation($format);
+    }
+} else {
+    $citations[$this->citeFormat . ' Citation'] = $helper->getCitation($this->citeFormat);
 }
+
 ?>
 <? if (count($citations) == 0): ?>
     <?=$this->transEsc('No citations are available for this record')?>
 <? else: ?>
     <? foreach ($citations as $caption => $citation): ?>
-    <strong><?=$this->transEsc($caption)?></strong>
+    <? if (sizeof($citations) > 1): ?>
+      <strong><?=$this->transEsc($caption)?></strong>
+    <? endif; ?>
     <p class="text-left">
         <?=$citation?>
     </p>

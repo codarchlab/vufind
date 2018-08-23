@@ -1,20 +1,14 @@
 <? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
 <? $i = $this->indexStart; ?>
+
+<h1><?=$this->transEsc('Cite this')?></h1>
+<p>
+<div class="container">
 <? foreach ($this->results->getResults() as $current): ?>
-  <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
-  <h3>
-    <? if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
-    <label>
-        <?=$this->record($current)->getCheckbox('', 'search-cart-form')?>
-        <?=$recordNumber ?>
-    </label>
-    <? else: ?>
-        <?=$recordNumber ?>
-    <? endif; ?>
-  </h3>
-  <div id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>">
-    <div>
+  <div class="row" <?= ($i != 0) ? 'style="border-top: 1px solid #000;"' : '' ?>>
+    <? $recordNumber = $this->results->getStartRecord() + $i-$this->indexStart; ?>
     <?=$this->record($current)->getSearchResult('list-cite') ?>
-    </div>
   </div>
+<?$i++ ?>
 <? endforeach; ?>
+</div>
