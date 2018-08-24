@@ -266,10 +266,8 @@
       </tr>
       <? endif; ?>
 
-      <? $subjects = $this->driver->getAllSubjectHeadings();?>
-      <? $thsEntries = $this->driver->getThsEntries(); ?>
-      <? if (!empty($subjects) or !empty($thsEntries)): ?>
-        <tr>
+      <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
+      <tr>
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
           <? foreach ($subjects as $field): ?>
@@ -283,21 +281,25 @@
             <? endforeach; ?>
           </div>
           <? endforeach; ?>
-
-      <? if (!empty($subjects) and !empty($thsEntries)): ?>
-            <br/>
-     <? endif ?>
-
-        <? foreach ($thsEntries as $thsEntry): ?>
-            <div class="subjectLine" property="keywords">
-            <a class="label label-default" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
-                <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
-            </a>
-            </div>
-        <? endforeach; ?>
         </td>
       </tr>
       <? endif; ?>
+
+      <?/* display connected zenon thesaurus concepts */?>
+      <? $thsEntries = $this->driver->getThsEntries(); ?>
+      <? if(!empty($thsEntries)): ?>
+        <tr>
+          <th><?=$this->transEsc('Thesaurus')?>: </th>
+          <td>
+            <? foreach ($thsEntries as $thsEntry): ?>
+              <a class="label label-default" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
+                <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
+              </a>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <?/* display links to gazetteer */?>
       <? $gazLinks = $this->driver->getGazetteerLinks(); ?>
       <? if(!empty($gazLinks)): ?>
