@@ -27,6 +27,7 @@
  */
 namespace Zenon\Controller;
 use VuFind\Controller\RecordsController as VuFindRecordsController;
+use Zend\Form\Element;
 
 /**
  * Records Controller
@@ -39,6 +40,9 @@ use VuFind\Controller\RecordsController as VuFindRecordsController;
  */
 class RecordsController extends VuFindRecordsController
 {
+
+    protected $citationFormats;
+
     /**
      * Cite action -- show results in available citation styles
      *
@@ -57,7 +61,31 @@ class RecordsController extends VuFindRecordsController
             return $this->redirect()->toUrl($target . $params);
         }
 
+        $config = $this->getConfig();
+        if ($config->Record->citation_formats === false
+            || $config->Record->citation_formats === 'false'
+        ) {
+            $this->citationFormats = [];
+        } else {
+            $this->citationFormats = array_map(
+                'trim', explode(',', $config->Record->citation_formats)
+            );
+        }
+
         // Not exactly one record -- show search results:
         return $this->resultsAction();
+    }
+
+
+    /**
+     * Send search results to results view
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function resultsAction()
+    {
+        $view = parent::resultsAction();
+        $view->citationFormats = $this->citationFormats;
+        return $view;
     }
 }

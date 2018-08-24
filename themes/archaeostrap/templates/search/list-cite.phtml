@@ -1,7 +1,18 @@
-<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $i = $this->indexStart; ?>
+<?
+
+  if (!isset($this->indexStart)) $this->indexStart = 0;
+  $i = $this->indexStart;
+?>
 
 <h1><?=$this->transEsc('Cite this')?></h1>
+
+<label for="format-select">Choose a format:</label>
+<select id="format-select" class="form-control">
+    <? foreach ($this->citationFormats as $format ):  ?>
+      <option onclick="showFormat('<?= $format ?>')"><?= $this->transEsc($format . ' Citation') ?></option>
+    <? endforeach; ?>
+</select>
+
 <p>
 <div class="container">
 <? foreach ($this->results->getResults() as $current): ?>
@@ -12,3 +23,27 @@
 <?$i++ ?>
 <? endforeach; ?>
 </div>
+
+
+<script type="application/javascript">
+  var activeFormat = 'DAI';
+  updateDisplayFormat();
+
+  function showFormat(format) {
+      activeFormat = format;
+      updateDisplayFormat();
+  }
+
+  function updateDisplayFormat() {
+      var allElements = document.getElementsByClassName('citation');
+      var activeElements = document.getElementsByClassName('citation ' + activeFormat);
+
+      var i;
+      for(i = 0; i < allElements.length; i++){
+          allElements[i].hidden = true;
+      }
+      for(i = 0; i < activeElements.length; i++){
+          activeElements[i].hidden = false;
+      }
+  }
+</script>
