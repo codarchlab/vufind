@@ -40,7 +40,7 @@ use VuFind\Controller\RecordsController as VuFindRecordsController;
 class RecordsController extends VuFindRecordsController
 {
     /**
-     * Home action -- call standard results action
+     * Cite action -- show results in available citation styles
      *
      * @return mixed
      */
