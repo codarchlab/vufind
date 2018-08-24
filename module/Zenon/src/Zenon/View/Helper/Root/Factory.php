@@ -43,6 +43,30 @@ use VuFind\View\Helper\Root\Factory as ParentFactory;
 class Factory extends ParentFactory
 {
     /**
+     * Construct the Citation helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Citation
+     */
+    public static function getCitation(ServiceManager $sm)
+    {
+        return new Citation($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
+     * Construct the DateTime helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return DateTime
+     */
+    public static function getDateTime(ServiceManager $sm)
+    {
+        return new DateTime($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
      * Construct the RecordLink helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -76,17 +100,4 @@ class Factory extends ParentFactory
         );
         return $helper;
     }
-
-    /**
-     * Construct the DateTime helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return DateTime
-     */
-    public static function getDateTime(ServiceManager $sm)
-    {
-        return new DateTime($sm->getServiceLocator()->get('VuFind\DateConverter'));
-    }
-
 }

@@ -534,6 +534,27 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Try parsing the page range for an artical from the physical description filed (300a).
+     *
+     * @return string
+     */
+    public function getPageRangeFromPhysicalDescription() {
+
+        $value = $this->getFieldArray('300',['a']);
+        if(!empty($value)){
+            preg_match('/((\d+-\d+)|(\d+))/', $value[0], $matches);
+            if(!empty($matches)){
+                return $matches[1];
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+
+    /**
     * Get Terms Governing Use and Reproduction Note (MARC field 540)
      *
      * @return array
@@ -591,6 +612,18 @@ class SolrMarc extends VufindSolrMarc
         return $result;
     }
 
+    /**
+     * Get an array of strings representing citation formats supported
+     * by this record's data (empty if none).  For possible legal values,
+     * see /application/themes/root/helpers/Citation.php, getCitation()
+     * method.
+     *
+     * @return array Strings representing citation formats.
+     */
+    protected function getSupportedCitationFormats()
+    {
+        return ['DAI', 'APA', 'Chicago', 'MLA'];
+    }
 }
 
 ?>
