@@ -6,7 +6,7 @@
 
 <h1><?=$this->transEsc('Cite this')?></h1>
 
-<label for="format-select">Choose a format:</label>
+<label for="format-select"><?=$this->transEsc('cite_choose_format')?>:</label>
 <select id="format-select" class="form-control">
     <? foreach ($this->citationFormats as $format ):  ?>
       <option onclick="showFormat('<?= $format ?>')"><?= $this->transEsc($format . ' Citation') ?></option>
