@@ -71,6 +71,11 @@ class Citation extends VufindCitation
             $dai['hostItemInformation'] = $dai['hostItemInformation'][0]['label'];
         }
 
+        $titleSection = $this->driver->tryMethod('getTitleSection');
+        if (!empty($titleSection)) {
+            $dai['titleSection'] = $titleSection;
+        }
+
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
