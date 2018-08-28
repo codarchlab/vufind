@@ -76,10 +76,6 @@ class Citation extends VufindCitation
             $dai['titleSection'] = $titleSection;
         }
 
-        echo "<pre>";
-        print_r($dai);
-        echo "</pre>";
-
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
