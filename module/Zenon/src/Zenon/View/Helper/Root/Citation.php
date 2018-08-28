@@ -52,7 +52,7 @@ class Citation extends VufindCitation
         $series = $this->driver->tryMethod('getSeries');
 
         if (!empty($series)){
-            $this->details['series'] = $series[0];
+            $this->details['series'] = $series;
         }
 
         $dai = [
@@ -75,6 +75,10 @@ class Citation extends VufindCitation
         if (!empty($titleSection)) {
             $dai['titleSection'] = $titleSection;
         }
+
+        echo "<pre>";
+        print_r($dai);
+        echo "</pre>";
 
         // Behave differently for books vs. journals:
         $partial = $this->getView()->plugin('partial');
@@ -160,7 +164,14 @@ class Citation extends VufindCitation
         $seriesStr = '';
 
         if (isset($this->details['series'])) {
-            $seriesStr = $this->stripPunctuation($this->details['series']['name']) . ' ' . $this->details['series']['number'];
+            $i = 0;
+            foreach($this->details['series'] as $series){
+                if($i != 0){
+                    $seriesStr = $seriesStr . ' = ';
+                }
+                $seriesStr = $seriesStr . $this->stripPunctuation($series['name']) . ' ' . $series['number'];
+                $i++;
+            }
         }
 
         return $seriesStr;

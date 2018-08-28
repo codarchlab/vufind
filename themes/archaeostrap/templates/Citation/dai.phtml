@@ -1,5 +1,5 @@
 <? if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?><? endif; ?>
 <span style="font-style:italic;">&nbsp;<?=$this->escapeHtml($this->title)?></span><? if (!empty($this->hostItemInformation)): ?>, <?= $this->hostItemInformation ?><? endif; ?>
 <? if(!empty($this->titleSection)): ?>, <?= $this->titleSection ?><? endif; ?>
-<? if (!empty($this->series)): ?> <?= $this->escapeHtml($this->series)?> <? endif; ?>
+<? if (!empty($this->series)): ?>, <?= $this->escapeHtml($this->series)?> <? endif; ?>
 <? if (!empty($this->pubPlace)) : ?> (<?= $this->escapeHtml($this->pubPlace) ?>) <? endif; ?>
