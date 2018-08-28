@@ -77,27 +77,7 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                         <td><?=$this->transEsc($row['callnumber'])?></td>
                         <td><?=$this->transEsc($row['summary'])?></td>
                         <td><?=$this->transEsc($row['status'])?></td>
-                        <td>
-                            <?=$this->transEsc($row['notes'])?>
-
-                            <? if($holding['location'] == 'Rom'): ?>
-                                <?
-                                        $subject = 'Magazinbestellung%3A%20' . $this->transEsc($row['callnumber']);
-                                        $body =
-                                            $this->transEsc('Title') . '%3A%0D%0A%0D%0A%20' . $this->driver->getShortTitle() . '%20' .  $this->driver->getSubtitle() .  '%0D%0A%0D%0A' .
-                                            $this->transEsc("Call Number") . '%3A%0D%0A%0D%0A%20' . $this->transEsc($row['callnumber']);
-                                ?>
-                                <p>
-                                    <em>
-                                    <?= $this->transEsc("for_stack_room_order_at_DAI_Rom") ?>:
-                                        <a href="mailto:magroma@dainst.de?subject=<?= $subject ?> &amp;body=<?= $body ?>">
-                                            magroma@dainst.de
-                                            <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                                        </a>
-                                    </em>
-                                </p>
-                            <? endif; ?>
-                        </td>
+                        <td><?=$this->transEsc($row['notes'])?></td>
                     </tr>
                 <? endif; ?>
             <? endforeach; ?>
