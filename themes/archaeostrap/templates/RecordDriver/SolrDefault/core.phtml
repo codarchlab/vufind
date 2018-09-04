@@ -57,10 +57,10 @@
     <h3 property="name">
         <?=$this->escapeHtml($this->driver->getShortTitle()); ?>
         <? if(!empty($this->driver->getSubtitle())): ?>
-            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getSubtitle())); ?>
+            <?= $this->escapeHtml(' ' .  $this->driver->getSubtitle()); ?>
         <? endif ?>
         <? if(!empty($this->driver->getTitleSection())): ?>
-            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getTitleSection())); ?>
+            <?= $this->escapeHtml(' ' . $this->driver->getTitleSection()); ?>
         <? endif ?>
     </h3>
 
