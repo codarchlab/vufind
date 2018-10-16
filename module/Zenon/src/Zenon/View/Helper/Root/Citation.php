@@ -39,6 +39,26 @@ use VuFind\View\Helper\Root\Citation as VufindCitation;
  */
 class Citation extends VufindCitation
 {
+
+    private $serialAbbreviations;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $converter)
+    {
+        parent::__construct($converter);
+
+        $fileContent = file('./local/iDAI.world/serial_abbreviations.csv');
+        $csvData = array_map('str_getcsv', $fileContent);
+        foreach ($csvData as $csvLines => $csvLine) {
+            $this->serialAbbreviations[$csvLine[0]] = $csvLine[1];
+        }
+    }
+
+
     /**
      * Get DAI citation.
      *
@@ -123,6 +143,15 @@ class Citation extends VufindCitation
         return $title;
     }
 
+    protected function abbreviateJournalTitle($original)
+    {
+        if(array_key_exists($original, $this->serialAbbreviations)){
+            return $this->serialAbbreviations[$original];
+        } else {
+            return $original;
+        }
+    }
+
     /**
      * Get an array of authors for an DAI citation.
      *
@@ -158,7 +187,6 @@ class Citation extends VufindCitation
     protected function getDAISeries()
     {
         $seriesStr = '';
-
         if (isset($this->details['series'])) {
             $i = 0;
             foreach($this->details['series'] as $series){
