@@ -105,7 +105,7 @@ class Citation extends VufindCitation
         } else {
             list($dai['volume'], $dai['issue'], $dai['date'])
                 = $this->getAPANumbersAndDate();
-            $dai['journal'] = $this->details['journal'];
+            $dai['journal'] = $this->abbreviateJournalTitle($this->details['journal']);
             $dai['pageRange'] = $this->getPageRange();
 
             if (empty($dai['pageRange'])){
