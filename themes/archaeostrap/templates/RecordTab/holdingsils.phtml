@@ -46,7 +46,13 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     <h3><?=$this->transEsc("Internet")?></h3>
     <? if (!empty($urls)): ?>
         <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <?
+              $url = $this->proxyUrl($current['url']);
+              if(strcmp(substr($url, 0, 4 ), "wwww.")) {
+                  $url = "http://" . $url;
+              }
+            ?>
+            <a href="<?= $url ?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
         <? endforeach; ?>
     <? endif; ?>
     <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
