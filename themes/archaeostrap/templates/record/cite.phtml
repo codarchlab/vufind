@@ -17,7 +17,10 @@ foreach ($this->driver->getCitationFormats() as $format) {
 <? if (count($citations) == 0): ?>
     <?=$this->transEsc('No citations are available for this record')?>
 <? else: ?>
-    <p class="bg-danger" style="padding: 20px; text-align: center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</p>
+  <p class="bg-danger" style="padding: 20px; text-align: center">
+      <?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.
+    <a href="https://www.dainst.org/65" target="_blank"><i class="fa fa-question-circle-o"></i></a>
+  </p>
     <? foreach ($citations as $caption => $citation): ?>
         <strong><?=$this->transEsc($caption)?></strong>
         <p class="text-left">
