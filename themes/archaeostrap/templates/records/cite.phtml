@@ -2,6 +2,9 @@
 $this->overrideTitle = $this->translate('View Records');
 $this->overrideSearchHeading = '';
 $this->params->setView('cite');
+?>
+<p class="bg-danger" style="padding: 20px; text-align: center"><?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.</p>
+<?
 // Load standard settings from the default search results screen:
 echo $this->render('search/results.phtml');
 
