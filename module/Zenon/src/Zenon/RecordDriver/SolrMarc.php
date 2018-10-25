@@ -154,15 +154,15 @@ class SolrMarc extends VufindSolrMarc
 
             $label = $this->getSubfieldArray($currentField, ['a','r','m','e'], true);
 
-            if (count($label > 0)) $entry['label'] = $label[0];
+            if (count($label) > 0) $entry['label'] = $label[0];
             else continue;
 
             $language = $this->getSubfieldArray($currentField, ['9']);
-            if (count($language > 0)) $entry['language'] = $language[0];
+            if (count($language) > 0) $entry['language'] = $language[0];
             else $entry['language'] = 'ger';
 
             $notation = $this->getSubfieldArray($currentField, ['1']);
-            if (count($notation > 0)) $entry['notation'] = $notation[0];
+            if (count($notation) > 0) $entry['notation'] = $notation[0];
             else continue;
 
             // return $m as additional search term for Gazetteer
@@ -500,6 +500,27 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Try parsing the page range for an artical from the physical description filed (300a).
+     *
+     * @return string
+     */
+    public function getPageRangeFromPhysicalDescription() {
+
+        $value = $this->getFieldArray('300',['a']);
+        if(!empty($value)){
+            preg_match('/((\d+-\d+)|(\d+))/', $value[0], $matches);
+            if(!empty($matches)){
+                return $matches[1];
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+
+    /**
     * Get Terms Governing Use and Reproduction Note (MARC field 540)
      *
      * @return array
@@ -557,6 +578,18 @@ class SolrMarc extends VufindSolrMarc
         return $result;
     }
 
+    /**
+     * Get an array of strings representing citation formats supported
+     * by this record's data (empty if none).  For possible legal values,
+     * see /application/themes/root/helpers/Citation.php, getCitation()
+     * method.
+     *
+     * @return array Strings representing citation formats.
+     */
+    protected function getSupportedCitationFormats()
+    {
+        return ['APA', 'Chicago', 'MLA'];
+    }
 }
 
 ?>

@@ -2,7 +2,13 @@
 namespace Zenon\Module\Config;
 
 $config = [
-
+	'controllers' => [
+        'factories' => [
+            'thesaurus' => 'Zenon\Controller\Factory::getThesaurusController',
+            'cart' => 'Zenon\Controller\Factory::getCartController',
+            'records' => 'Zenon\Controller\Factory::getRecordsController',
+        ]
+    ],
     'service_manager' => [
         'factories' => [
         	'VuFind\Mailer' => 'Zenon\Mailer\Factory',
@@ -46,9 +52,16 @@ $config = [
             ]
         ]
 
-	]
+	],
 
+    // Define static routes -- Controller/Action strings
+    $staticRoutes = [
+        'Records/Cite'
+    ]
 ];
+
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 return $config;
 

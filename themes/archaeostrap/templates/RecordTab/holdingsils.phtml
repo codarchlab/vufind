@@ -46,7 +46,13 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     <h3><?=$this->transEsc("Internet")?></h3>
     <? if (!empty($urls)): ?>
         <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <?
+              $url = $this->proxyUrl($current['url']);
+              if(strcmp(substr($url, 0, 4 ), "wwww.")) {
+                  $url = "http://" . $url;
+              }
+            ?>
+            <a href="<?= $url ?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
         <? endforeach; ?>
     <? endif; ?>
     <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
@@ -77,23 +83,7 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                         <td><?=$this->transEsc($row['callnumber'])?></td>
                         <td><?=$this->transEsc($row['summary'])?></td>
                         <td><?=$this->transEsc($row['status'])?></td>
-                        <td>
-                            <?=$this->transEsc($row['notes'])?>
-                            <? if($holding['location'] == 'Rom'): ?>
-                                <? $subject = 'Magazinbestellung%3A%20' . $this->transEsc($row['callnumber']) ?>
-                                <? $body =
-                                    $this->transEsc('Title') . '%3A%0D%0A%0D%0A%20' . $this->driver->getShortTitle() . '%20' .  $this->driver->getSubtitle() .  '%0D%0A%0D%0A' .
-                                    $this->transEsc("Call Number") . '%3A%0D%0A%0D%0A%20' . $this->transEsc($row['callnumber']);
-                                ?>
-                                <?= $this->transEsc("for_stack_room_order_at_DAI_Rom") ?>:
-                                <p>
-                                    <a href="mailto:magroma@dainst.de?subject=<?= $subject ?> &amp;body=<?= $body ?>">
-                                        magroma@dainst.de
-                                        <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                                    </a>
-                                </p>
-                            <? endif; ?>
-                        </td>
+                        <td><?=$this->transEsc($row['notes'])?></td>
                     </tr>
                 <? endif; ?>
             <? endforeach; ?>

@@ -57,10 +57,10 @@
     <h3 property="name">
         <?=$this->escapeHtml($this->driver->getShortTitle()); ?>
         <? if(!empty($this->driver->getSubtitle())): ?>
-            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getSubtitle())); ?>
+            <?= $this->escapeHtml(' ' .  $this->driver->getSubtitle()); ?>
         <? endif ?>
         <? if(!empty($this->driver->getTitleSection())): ?>
-            <?= $this->escapeHtml(' ' .  $this->escapeHtml($this->driver->getTitleSection())); ?>
+            <?= $this->escapeHtml(' ' . $this->driver->getTitleSection()); ?>
         <? endif ?>
     </h3>
 
@@ -266,6 +266,23 @@
       </tr>
       <? endif; ?>
 
+      <?/* display connected zenon thesaurus concepts */?>
+      <? $thsEntries = $this->driver->getThsEntries(); ?>
+      <? if(!empty($thsEntries)): ?>
+        <tr>
+          <th><?=$this->transEsc('Thesaurus')?>: </th>
+          <td>
+              <? foreach ($thsEntries as $thsEntry): ?>
+                <div>
+                  <a class="label label-default" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
+                      <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
+                  </a>
+                </div>
+              <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+      
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr>
         <th><?=$this->transEsc('Subjects')?>: </th>
@@ -283,21 +300,6 @@
           <? endforeach; ?>
         </td>
       </tr>
-      <? endif; ?>
-
-      <?/* display connected zenon thesaurus concepts */?>
-      <? $thsEntries = $this->driver->getThsEntries(); ?>
-      <? if(!empty($thsEntries)): ?>
-        <tr>
-          <th><?=$this->transEsc('Thesaurus')?>: </th>
-          <td>
-            <? foreach ($thsEntries as $thsEntry): ?>
-              <a class="label label-info" title="<?=$this->escapeHtml($thsEntry['label'])?>" href="<?=$this->record($this->driver)->getLink('thesaurus', $thsEntry['notation'])?>">
-                <?=$this->escapeHtml($thsEntry['label'])?> <small style="font-weight:normal"><?=$this->escapeHtml($thsEntry['notation'])?></small>
-              </a>
-            <? endforeach; ?>
-          </td>
-        </tr>
       <? endif; ?>
 
       <?/* display links to gazetteer */?>
@@ -422,7 +424,13 @@
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <?
+              $url = $this->proxyUrl($current['url']);
+              if(strcmp(substr($url, 0, 4 ), "wwww.")) {
+                  $url = "http://" . $url;
+              }
+            ?>
+            <a href="<?= $url ?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
           <? if ($openUrlActive): ?>
             <?=$openUrl->renderTemplate()?><br/>

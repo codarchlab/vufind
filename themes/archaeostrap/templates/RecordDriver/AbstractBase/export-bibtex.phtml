@@ -10,7 +10,7 @@ if (is_object($marc)) {
 $journalTitle = $this->driver->tryMethod('getContainerTitle');
 $formats = $this->driver->tryMethod('getFormats');
 if ($marcProceedingsField) {
-    $format = 'proceedings';
+    $format = 'Inproceedings';
 } else if ($marcPhdField) {
     $format = 'phdthesis';
 } else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
@@ -18,17 +18,29 @@ if ($marcProceedingsField) {
 } else if (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'misc';
 } else {
-    $format = 'book';
+    $format = 'Book';
 }
 
 // Open format tag:
 echo '@' . $format . "{\n";
 
 // Citation key:
-echo $this->driver->getResourceSource() . '-' .  $this->driver->getUniqueId() . ",\n";
+echo $this->driver->getUniqueId() . ",\n";
 
-$title = rtrim($this->driver->getTitle(), " /");
+
+$author = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($author)) {
+    echo "author = {{$author}},\n";
+}
+
+$title = rtrim($this->driver->getShortTitle(), " /;.,:");
 echo "title = {{$title}},\n";
+
+if(!empty($this->driver->getSubtitle())){
+    $subtitle = ucfirst(rtrim($this->driver->getSubtitle(), " /;.,:"));
+    echo "subtitle = {". $subtitle . "},\n";
+}
+
 
 if (!empty($journalTitle)) {
     echo "journal = {{$journalTitle}},\n";
@@ -52,25 +64,37 @@ if (!empty($journalTitle)) {
             echo "pages = {{$start}},\n";
         }
     }
+    else {
+        // Try to find a page count in the physical description:
+        $physical = $this->driver->tryMethod('getPageRangeFromPhysicalDescription');
+        if (!empty($physical)) {
+            echo "pages = {{$physical}},\n";
+        }
+    }
 }
 
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        echo "series = {" . (is_array($current) ? $current['name'] . " " . $current['number'] : $current) . "},\n";
+        $series = rtrim((is_array($current) ? $current['name'] : $current), " /;.,");
+        echo "series = {" . $series . "},\n";
+
+        if(is_array($current)) {
+            echo "number = {" . $current['number'] . "},\n";
+        }
     }
 }
 
-$author = $this->driver->tryMethod('getPrimaryAuthor');
-if (!empty($author)) {
-    echo "author = {{$author}},\n";
-}
 
 $secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
-if (is_array($secondaryAuthors)) {
-    foreach ($secondaryAuthors as $current) {
-        echo "editor = {{$current}},\n";
+if (is_array($secondaryAuthors) && sizeof($secondaryAuthors) > 0) {
+    $firstEditor = rtrim($secondaryAuthors[0], ";.,");
+    echo "editor = {". $firstEditor;
+    for ($i = 1; $i < sizeof($secondaryAuthors); $i++) {
+        $nextEditor = rtrim($secondaryAuthors[$i], ";.,");
+        echo " and $nextEditor";
     }
+    echo "},\n";
 }
 
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
@@ -84,7 +108,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "address = {" . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "},\n";
+            echo "location = {" . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "},\n";
         }
         if (isset($pubNames[$i])) {
             echo "publisher = {" . rtrim($pubNames[$i], ", ") . "},\n";
@@ -108,13 +132,7 @@ if ($marcPhdField && $subfield = $marcPhdField->getSubfield('a')) {
     echo "school = {" . $subfield->getData() . "},\n";
 }
 
-// Try to find a page count in the physical description:
-$physical = $this->driver->tryMethod('getPhysicalDescriptions');
-if (is_array($physical)) {
-    foreach ($physical as $current) {
-        echo "pages = {{$current}},\n";
-    }
-}
+
 
 $notes = $this->driver->tryMethod('getGeneralNotes');
 if (is_array($notes)) {
@@ -128,6 +146,8 @@ foreach ($this->record($this->driver)->getUrlList() as $url) {
 }
 
 echo "crossref = {" . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "},\n";
+echo "url = {" . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "},\n";
+echo "urldate ={" . date('Y-m-d') . "},\n";
 
 // custom additions for ZENON
 
@@ -141,10 +161,9 @@ if (is_array($summ)) {
 $languages = $this->driver->getLanguages();
 if (is_array($languages)) {
     foreach ($languages as $language) {
-        echo "language = {{$language}},\n";
+        echo "language = {". strtolower($language) . "},\n";
     }
 }
 
 // Record separator:
 echo "}\n\n";
-?>
