@@ -622,7 +622,7 @@ class SolrMarc extends VufindSolrMarc
      */
     protected function getSupportedCitationFormats()
     {
-        return ['APA', 'Chicago', 'MLA'];
+        return ['DAI', 'APA', 'Chicago', 'MLA'];
     }
 }
 
