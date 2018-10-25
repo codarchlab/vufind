@@ -426,7 +426,7 @@
           <? foreach ($urls as $current): ?>
             <?
               $url = $this->proxyUrl($current['url']);
-              if(strcmp(substr($url, 0, 4 ), "wwww.")) {
+              if(strcmp(substr($url, 0, 4 ), "wwww.") == 0) {
                   $url = "http://" . $url;
               }
             ?>
