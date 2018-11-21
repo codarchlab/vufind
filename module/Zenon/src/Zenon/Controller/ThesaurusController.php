@@ -28,7 +28,9 @@
 namespace Zenon\Controller;
 
 use VuFind\Controller\AjaxController as AjaxController;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\AjaxHandler\PluginManager as AjaxPluginManager;
+use Vufind\AjaxHandler\AjaxHandlerInterface;
+use VuFind\Search\Results\PluginManager as SearchPluginManager;
 
 /**
  * Return thesaurus entries from the index
@@ -41,6 +43,18 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class ThesaurusController extends AjaxController
 {
+    protected $search;
+    /**
+     * Constructor
+     *
+     * @param AjaxPluginManager $am AJAX Handler Plugin Manager
+     * @param SearchPluginManager $sm Search Plugin Manager
+     */
+    public function __construct(AjaxPluginManager $am, SearchPluginManager $sm)
+    {
+        parent::__construct($am);
+        $this->search = $sm->get('SolrAuth');
+    }
 
     /**
      * List children of a given thesaurus entry
@@ -49,13 +63,10 @@ class ThesaurusController extends AjaxController
      */
     public function childrenAction()
     {
-
         $this->outputMode = 'json';
-
         $id = $this->params()->fromQuery('id');
-        $search = $this->serviceLocator->get('VuFind\SearchResultsPluginManager')->get('SolrAuth');
 
-        $params = $search->getParams();
+        $params = $this->search->getParams();
         if ($id) {
             $params->setOverrideQuery("parent_id_str:$id");
         } else {
@@ -64,14 +75,16 @@ class ThesaurusController extends AjaxController
         $params->setLimit(10000);
         $params->setSort("heading", true);
 
-        $results = $search->getResults();
+        $results = $this->search->getResults();
 
         $json = array();
         foreach ($results as $result) {
             $json[] = $result->getJSON();
         }
 
-        return $this->output($json, parent::STATUS_OK);
+
+
+        return $this->getAjaxResponse('application/javascript', $json,200);
         
     }
 

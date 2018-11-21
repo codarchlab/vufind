@@ -7,7 +7,7 @@ $config = [
         'factories' => [
             'Zenon\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'Zenon\Controller\RecordsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'Zenon\Controller\ThesaurusController' =>  'VuFind\Controller\AjaxControllerFactory',
+            'Zenon\Controller\ThesaurusController' =>  'Zenon\Controller\ThesaurusControllerFactory',
         ],
         'aliases' => [
             'Cart' => 'Zenon\Controller\CartController',
@@ -15,6 +15,7 @@ $config = [
             'Records' => 'Zenon\Controller\RecordsController',
             'records' => 'Zenon\Controller\RecordsController',
             'thesaurus' => 'Zenon\Controller\ThesaurusController',
+            'Thesaurus' => 'Zenon\Controller\ThesaurusController',
         ]
     ],
 
