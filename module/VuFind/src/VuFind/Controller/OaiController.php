@@ -2,7 +2,7 @@
 /**
  * OAI Module Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -100,13 +100,13 @@ class OaiController extends AbstractBase
                 $this->getRequest()->getPost()->toArray()
             );
             $server = new $serverClass(
-                $this->serviceLocator->get('VuFind\SearchResultsPluginManager'),
-                $this->serviceLocator->get('VuFind\RecordLoader'),
-                $this->serviceLocator->get('VuFind\DbTablePluginManager'),
+                $this->serviceLocator->get('VuFind\Search\Results\PluginManager'),
+                $this->serviceLocator->get('VuFind\Record\Loader'),
+                $this->serviceLocator->get('VuFind\Db\Table\PluginManager'),
                 $config, $baseURL, $params
             );
             $server->setRecordLinkHelper(
-                $this->getViewRenderer()->plugin('recordlink')
+                $this->getViewRenderer()->plugin('recordLink')
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {

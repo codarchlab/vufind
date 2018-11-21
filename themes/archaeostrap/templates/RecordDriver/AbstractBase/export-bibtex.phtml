@@ -76,11 +76,14 @@ if (!empty($journalTitle)) {
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        $series = rtrim((is_array($current) ? $current['name'] : $current), " /;.,");
-        echo "series = {" . $series . "},\n";
-
-        if(is_array($current)) {
-            echo "number = {" . $current['number'] . "},\n";
+        if(is_array($current)){
+            echo "series = {" . rtrim($current['name'], " /;.,") . "},\n";
+            if(array_key_exists('number', $current)){
+                echo "number = {" . $current['number'] . "},\n";
+            }
+        }
+        else {
+            echo "series = {" . rtrim($current, " /;.,") . "},\n";
         }
     }
 }

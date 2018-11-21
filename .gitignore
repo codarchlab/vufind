@@ -3,6 +3,7 @@
 ChangeLog
 \#*
 .\#*
+.php_cs_cache
 TAGS
 *~
 
@@ -42,6 +43,8 @@ local/iDAI.world/publications_mapping.json
 /solr/vendor
 /vendor
 composer.phar
-import/solrmarc.log
+import/solrmarc.log*
 node_modules
 public/swagger-ui
+.vagrant
+lessphp_*.list

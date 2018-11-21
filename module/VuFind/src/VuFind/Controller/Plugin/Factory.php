@@ -2,7 +2,7 @@
 /**
  * Factory for controller plugins.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\Controller\Plugin;
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -51,9 +52,9 @@ class Factory
     public static function getFavorites(ServiceManager $sm)
     {
         return new Favorites(
-            $sm->getServiceLocator()->get('VuFind\RecordLoader'),
-            $sm->getServiceLocator()->get('VuFind\RecordCache'),
-            $sm->getServiceLocator()->get('VuFind\Tags')
+            $sm->get('VuFind\Record\Loader'),
+            $sm->get('VuFind\Record\Cache'),
+            $sm->get('VuFind\Tags')
         );
     }
 
@@ -62,12 +63,12 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\Mvc\Controller\Plugin\FlashMessenger
+     * @return \Zend\Mvc\Plugin\FlashMessenger\FlashMessenger
      */
     public static function getFlashMessenger(ServiceManager $sm)
     {
-        $plugin = new \Zend\Mvc\Controller\Plugin\FlashMessenger();
-        $sessionManager = $sm->getServiceLocator()->get('VuFind\SessionManager');
+        $plugin = new \Zend\Mvc\Plugin\FlashMessenger\FlashMessenger();
+        $sessionManager = $sm->get('Zend\Session\SessionManager');
         $plugin->setSessionManager($sessionManager);
         return $plugin;
     }
@@ -83,7 +84,7 @@ class Factory
     {
         return new Followup(
             new \Zend\Session\Container(
-                'Followup', $sm->getServiceLocator()->get('VuFind\SessionManager')
+                'Followup', $sm->get('Zend\Session\SessionManager')
             )
         );
     }
@@ -98,24 +99,9 @@ class Factory
     public static function getHolds(ServiceManager $sm)
     {
         return new Holds(
-            $sm->getServiceLocator()->get('VuFind\HMAC'),
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\Crypt\HMAC'),
+            $sm->get('Zend\Session\SessionManager')
         );
-    }
-
-    /**
-     * Construct the NewItems plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Reserves
-     */
-    public static function getNewItems(ServiceManager $sm)
-    {
-        $search = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $config = isset($search->NewItem)
-            ? $search->NewItem : new \Zend\Config\Config([]);
-        return new NewItems($config);
     }
 
     /**
@@ -128,9 +114,39 @@ class Factory
     public static function getILLRequests(ServiceManager $sm)
     {
         return new ILLRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC'),
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\Crypt\HMAC'),
+            $sm->get('Zend\Session\SessionManager')
         );
+    }
+
+    /**
+     * Construct the NewItems plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return NewItems
+     */
+    public static function getNewItems(ServiceManager $sm)
+    {
+        $search = $sm->get('VuFind\Config\PluginManager')->get('searches');
+        $config = isset($search->NewItem)
+            ? $search->NewItem : new \Zend\Config\Config([]);
+        return new NewItems($config);
+    }
+
+    /**
+     * Construct the Permission plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Permission
+     */
+    public static function getPermission(ServiceManager $sm)
+    {
+        $pdm = $sm->get('VuFind\Role\PermissionDeniedManager');
+        $pm = $sm->get('VuFind\Role\PermissionManager');
+        $auth = $sm->get('VuFind\Auth\Manager');
+        return new Permission($pm, $pdm, $auth);
     }
 
     /**
@@ -142,11 +158,8 @@ class Factory
      */
     public static function getRecaptcha(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        return new Recaptcha(
-            $sm->getServiceLocator()->get('VuFind\Recaptcha'),
-            $config
-        );
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
+        return new Recaptcha($sm->get('VuFind\Service\ReCaptcha'), $config);
     }
 
     /**
@@ -158,10 +171,10 @@ class Factory
      */
     public static function getReserves(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $sm->get('VuFind\Config\PluginManager')->get('config');
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
-        $ss = $useIndex ? $sm->getServiceLocator()->get('VuFind\Search') : null;
+        $ss = $useIndex ? $sm->get('VuFindSearch\Service') : null;
         return new Reserves($useIndex, $ss);
     }
 
@@ -177,9 +190,9 @@ class Factory
         return new ResultScroller(
             new \Zend\Session\Container(
                 'ResultScroller',
-                $sm->getServiceLocator()->get('VuFind\SessionManager')
+                $sm->get('Zend\Session\SessionManager')
             ),
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->get('VuFind\Search\Results\PluginManager')
         );
     }
 
@@ -193,8 +206,8 @@ class Factory
     public static function getStorageRetrievalRequests(ServiceManager $sm)
     {
         return new StorageRetrievalRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC'),
-            $sm->getServiceLocator()->get('VuFind\SessionManager')
+            $sm->get('VuFind\Crypt\HMAC'),
+            $sm->get('Zend\Session\SessionManager')
         );
     }
 }

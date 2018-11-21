@@ -49,7 +49,7 @@ class Factory
      */
     public static function getAccess(ServiceManager $sm)
     {
-        $catalog = $sm->getServiceLocator()->get('VuFind\ILSConnection');
+        $catalog = $sm->get('VuFind\ILSConnection');
         return new Access($catalog);
     }
 

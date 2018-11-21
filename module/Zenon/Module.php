@@ -26,10 +26,9 @@
  * @link     http://vufind.org
  */
 namespace Zenon;
-use Zend\Mvc\MvcEvent;
 
 /**
- * ZF2 module definition for the Zenon vuFind module
+ * ZF2 module definition for the Zenon module
  *
  * @category VuFind2
  * @package  Module
@@ -56,12 +55,12 @@ class Module
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 }

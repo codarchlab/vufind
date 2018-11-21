@@ -2,7 +2,7 @@
 /**
  * Mink test class to test advanced search.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -26,6 +26,7 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFindTest\Mink;
+
 use Behat\Mink\Element\Element;
 
 /**
@@ -143,12 +144,12 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         // Test edit search
         $this->editAdvancedSearch($page);
         $this->assertEquals('bride', $this->findCss($page, '#search_lookfor0_0')->getValue());
-        $this->assertEquals('tomb',  $this->findCss($page, '#search_lookfor0_1')->getValue());
+        $this->assertEquals('tomb', $this->findCss($page, '#search_lookfor0_1')->getValue());
         $this->assertEquals('Title', $this->findCss($page, '#search_type0_1')->getValue());
-        $this->assertEquals('garbage',  $this->findCss($page, '#search_lookfor0_2')->getValue());
-        $this->assertEquals('1883',  $this->findCss($page, '#search_lookfor0_3')->getValue());
-        $this->assertEquals('year',  $this->findCss($page, '#search_type0_3')->getValue());
-        $this->assertEquals('miller',  $this->findCss($page, '#search_lookfor1_0')->getValue());
+        $this->assertEquals('garbage', $this->findCss($page, '#search_lookfor0_2')->getValue());
+        $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_3')->getValue());
+        $this->assertEquals('year', $this->findCss($page, '#search_type0_3')->getValue());
+        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor1_0')->getValue());
 
         // Term removal
         $session->executeScript("deleteSearch(0, 2)"); // search0_2 x click
@@ -171,6 +172,6 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
 
         // Test edit search (modified search is restored properly)
         $this->editAdvancedSearch($page);
-        $this->assertEquals('miller',  $this->findCss($page, '#search_lookfor0_0')->getValue());
+        $this->assertEquals('miller', $this->findCss($page, '#search_lookfor0_0')->getValue());
     }
 }
