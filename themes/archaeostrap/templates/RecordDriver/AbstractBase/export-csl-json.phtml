@@ -15,7 +15,7 @@
 
     $zenonId = $this->driver->getUniqueId();
     $title = rtrim($this->driver->getShortTitle(), " /;.,:");
-    $authors = $this->driver->tryMethod('getDeduplicatedAuthors')['primary'];
+    $authors = $this->driver->tryMethod('getDeduplicatedAuthors')['primary']; // Todo: Andere Autoren auch in List aufnehmen
     $languages = $this->driver->tryMethod('getLanguages');
     $pubDates = $this->driver->tryMethod('getPublicationDates');
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
@@ -51,4 +51,4 @@
       $result['issued'] = ["raw" => implode('/', $pubDates)];
     }
 
-    echo json_encode($result);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE);
