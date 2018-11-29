@@ -20,33 +20,35 @@
     $pubDates = $this->driver->tryMethod('getPublicationDates');
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
     $pubNames = $this->driver->tryMethod('getPublishers');
-?>
-{"id": "<?= $zenonId; ?>"
-<? if($format): ?>
-,"type": "<?= $format; ?>"
-<? endif ?>
-<? if($title): ?>
-,"title": "<?= $title; ?>"
-<? endif ?>
-<? if(!empty($pubNames)): ?>
-,"publisher": "<?= rtrim(implode('/', $pubNames), ',') ?>"
-<? endif ?>
-<? if(!empty($pubPlaces)): ?>
-,"publisher-place": "<?= rtrim(implode('/', $pubPlaces), ',') ?>"
-<? endif ?>
-<? if(!empty($authors)): ?>
-,"author":[
-<? $counter = 0 ?>
-<? foreach ($authors as $key => $value): ?>
-<? $split = explode(',', $key) ?>
-<? if($counter != 0):?>,<?endif?>{"family": "<?= trim($split[0]) ?>"<? if(count($split) > 1): ?>, "given": "<?= trim($split[1]) ?>"<? endif ?>}
-<? $counter += 1 ?>
-<? endforeach ?>
-]
-<? endif ?>
-<? if(!empty($pubDates)): ?>
-,"issued": {
-"raw":"<?= implode('/', $pubDates) ?>"
-<? endif ?>
-}
-}
+
+    $result = array('id' => $zenonId);
+    if($format){
+      $result['type'] = $format;
+    }
+    if($title){
+      $result['title'] = $title;
+    }
+    if($pubNames){
+      $result['publisher'] = rtrim(implode('/', $pubNames), ',');
+    }
+    if($pubPlaces){
+      $result['publisher-place'] = rtrim(implode('/', $pubPlaces), ',');
+    }
+    if(!empty($authors)){
+      $authorList = [];
+      foreach($authors as $key => $value){
+        $split = explode(',', $key);
+        $author = ['family' => $split[0]];
+        if(count($split) > 1){
+          $author['given'] = trim($split[1]);
+        }
+        array_push($authorList, $author);
+      }
+      $result['author'] = $authorList;
+    }
+
+    if(!empty($pubDates)){
+      $result['issued'] = ["raw" => implode('/', $pubDates)];
+    }
+
+    echo json_encode($result);
