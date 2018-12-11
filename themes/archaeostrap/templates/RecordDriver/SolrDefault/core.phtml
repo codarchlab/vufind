@@ -315,12 +315,18 @@
         </tr>
       <? endif; ?>
 
-      <? $publicationsLink = $this->driver->getPublicationsLink(); ?>
-      <? if($publicationsLink): ?>
+      <? $publicationsLinks = $this->driver->getPublicationsLink(); ?>
+      <? if(!empty($publicationsLinks)): ?>
           <tr>
               <th>iDAI.publications</th>
               <td>
-                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?> <small><i class="fa fa-external-link"></i></small></a>
+                <? foreach($publicationsLinks as $publicationsLink): ?>
+                <div>
+                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?>
+                    <small><i class="fa fa-external-link"></i></small>
+                  </a>
+                </div>
+                <? endforeach; ?>
               </td>
           </tr>
       <? endif; ?>
