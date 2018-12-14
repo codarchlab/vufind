@@ -174,9 +174,9 @@ class SolrMarc extends VufindSolrMarc
             if (!empty($searchterm2)) $entry['searchterm2'] = $searchterm2[0];
 
             // yes, ugly.
-            $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
-            if(!empty($belgianLocationLabel))
-                $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
+            $specialLabel = $this->getSubfieldArray($currentField, ['r']);
+            if(!empty($specialLabel))
+                $entry['specialLabel'] = $specialLabel[0];
 
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
@@ -405,20 +405,31 @@ class SolrMarc extends VufindSolrMarc
      * Get Link (if exists) to iDAI.publications.
      */
     public function getPublicationsLink() {
+
+        $result = array();
+
         $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
 
-        if($content == null){
-            return false;
+        if($content != null){
+            $controlNumber = $this->getControlNumber();
+            $reader = new configJson();
+            $data = $reader->fromString($content);
+
+            if (array_key_exists($controlNumber, $data))
+                array_push($result, $data[$controlNumber]);
         }
 
-        $controlNumber = $this->getControlNumber();
-        $reader = new configJson();
-        $data = $reader->fromString($content);
+        $content_static = file_get_contents('./local/iDAI.world/publications_mapping_static.json');
+        if($content_static != null){
+            $controlNumber = $this->getControlNumber();
+            $reader = new configJson();
+            $data = $reader->fromString($content_static);
 
-        if (array_key_exists($controlNumber, $data))
-            return $data[$controlNumber];
+            if (array_key_exists($controlNumber, $data))
+                array_push($result, $data[$controlNumber]);
+        }
 
-        return false;
+        return $result;
     }
 
     /**

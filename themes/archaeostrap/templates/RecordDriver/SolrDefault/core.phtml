@@ -130,21 +130,22 @@
 
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Main Author')?>: </th>
-        <? foreach($authors['primary'] as $author=>$value): ?>
+        <tr>
+          <th><?=$this->transEsc('Main Author')?>: </th>
           <td property="author">
-              <a href="<?=$this->record($this->driver)->getLink('author',$author)?>">
-                  <?=$this->escapeHtml($author)?>
+              <? $i = 0; foreach($authors['primary'] as $author=>$value): ?>
+                  <?=($i++ == 0)?'':', '?>
+                <a href="<?=$this->record($this->driver)->getLink('author',$author)?>">
+                    <?=$this->escapeHtml($author)?>
                     <? if (!empty($value['role'])): ?>
                         <? foreach ($value['role'] as $role): ?>
-                            , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                        , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
                         <? endforeach ?>
                     <? endif ?>
-              </a>
+                </a>
+              <? endforeach; ?>
           </td>
-        <? endforeach; ?>
-      </tr>
+        </tr>
       <? endif; ?>
 
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
@@ -315,12 +316,18 @@
         </tr>
       <? endif; ?>
 
-      <? $publicationsLink = $this->driver->getPublicationsLink(); ?>
-      <? if($publicationsLink): ?>
+      <? $publicationsLinks = $this->driver->getPublicationsLink(); ?>
+      <? if(!empty($publicationsLinks)): ?>
           <tr>
               <th>iDAI.publications</th>
               <td>
-                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?> <small><i class="fa fa-external-link"></i></small></a>
+                <? foreach($publicationsLinks as $publicationsLink): ?>
+                <div>
+                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?>
+                    <small><i class="fa fa-external-link"></i></small>
+                  </a>
+                </div>
+                <? endforeach; ?>
               </td>
           </tr>
       <? endif; ?>
@@ -426,7 +433,7 @@
           <? foreach ($urls as $current): ?>
             <?
               $url = $this->proxyUrl($current['url']);
-              if(strcmp(substr($url, 0, 4 ), "wwww.") == 0) {
+              if(strcmp(substr($url, 0, 4 ), "www.") == 0) {
                   $url = "http://" . $url;
               }
             ?>
