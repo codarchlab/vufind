@@ -394,14 +394,14 @@ class SolrMarc extends VufindSolrMarc
                 || strrpos($notation, 'xtoplandit', -strlen($notation)) !== false) {
                 $result[] = array(
                     'label' => $thsEntry['label'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation']
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
 
             if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false) {
                 $result[] = array(
                     'label' => $thsEntry['label'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
     	}
