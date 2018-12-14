@@ -22,12 +22,12 @@ fi
 
 today=$(date +"%Y-%m-%d")
 
-if [ -z "$VUFIND_HOME" ]
+if [ -z "$KOHA_DOWNLOAD_URL" ]
 then
   KOHA_DOWNLOAD_URL="https://kohadev.dainst.org/download/exports/$today/bibliographic_data.xml"
 fi
 
-wget $KOHA_DOWNLOAD_URL -P $VUFIND_HOME/local/harvest/dai-katalog/
+wget "$KOHA_DOWNLOAD_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/"
 
 $VUFIND_HOME/harvest/batch-import-marc.sh dai-katalog > $VUFIND_HOME/local/harvest/dai-katalog/log/import_$today.log
 $VUFIND_HOME/harvest/batch-delete.sh dai-katalog
