@@ -173,9 +173,9 @@ class SolrMarc extends VufindSolrMarc
             if (!empty($searchterm2)) $entry['searchterm2'] = $searchterm2[0];
 
             // yes, ugly.
-            $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
-            if(!empty($belgianLocationLabel))
-                $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
+            $specialLabel = $this->getSubfieldArray($currentField, ['r']);
+            if(!empty($specialLabel))
+                $entry['specialLabel'] = $specialLabel[0];
 
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
@@ -381,18 +381,16 @@ class SolrMarc extends VufindSolrMarc
     	foreach ($thsEntries as $thsEntry) {
             $notation = strtolower($thsEntry['notation']);
             $query = $this->createGazetteerQueryString($thsEntry);
-            if(strrpos($notation, 'xtoplandbelgort', -strlen($notation)) !== false) {
+	    $label = array_key_exists('specialLabel', $thsEntry) ? $thsEntry['specialLabel'] : $thsEntry['label'];
+
+            if (strrpos($notation, 'gazetteer', -strlen($notation)) !== false
+		|| strrpos($notation, 'xtoplandbelgort', -strlen($notation)) !== false
+                || strrpos($notation, 'xtoplandit', -strlen($notation)) !== false
+                || strrpos($notation, 'xtoprairomkircheinz', -strlen($notation)) !== false
+		|| strrpos($notation, 'zeuropsüdeuitali', -strlen($notation)) !== false
+		|| strrpos($notation, 'ztopog', -strlen($notation)) !== false) {
                 $result[] = array(
-                    'label' => $thsEntry['belgianLocationLabel'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
-                );
-            }
-            if (strrpos($notation, 'ztopog', -strlen($notation)) !== false
-                || strrpos($notation, 'zeuropsüdeuitali', -strlen($notation)) !== false
-                || strrpos($notation, 'gazetteer', -strlen($notation)) !== false
-                || strrpos($notation, 'xtop', -strlen($notation)) !== false) {
-                $result[] = array(
-                    'label' => $thsEntry['label'],
+                    'label' => $label,
                     'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
