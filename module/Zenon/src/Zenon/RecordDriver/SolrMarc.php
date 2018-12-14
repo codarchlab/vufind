@@ -379,46 +379,23 @@ class SolrMarc extends VufindSolrMarc
     	$thsEntries = $this->getThsEntries();
 
     	foreach ($thsEntries as $thsEntry) {
-
+            $notation = strtolower($thsEntry['notation']);
             $query = $this->createGazetteerQueryString($thsEntry);
-            if(strrpos($thsEntry['notation'], 'xTopLandBelgOrt', -strlen($thsEntry['notation'])) !== false) {
+            if(strrpos($notation, 'xtoplandbelgort', -strlen($notation)) !== false) {
                 $result[] = array(
                     'label' => $thsEntry['belgianLocationLabel'],
                     'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
-            if (strrpos($thsEntry['notation'], 'zTopog', -strlen($thsEntry['notation'])) !== false
-                || strrpos($thsEntry['notation'], 'zEuropSüdeuItali', -strlen($thsEntry['notation'])) !== false
-                || strrpos($thsEntry['notation'], 'gazetteer', -strlen($thsEntry['notation'])) !== false
-                || strrpos($thsEntry['notation'], 'xTopRAIRomKircheinz', -strlen($thsEntry['notation'])) !== false) {
-    			$result[] = array(
-    				'label' => $thsEntry['label'],
-    				'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$thsEntry['notation']
-                );
-    		}
-                 // use 999 $m (= $thsEntry['searchterm'] as additional
-                 // parameter in Gazetteer link, if 999 $1 == 3.00.01.01.*
-                 // or 999 $1 == 3.00.01.02.* (in $thsEntry['notation'])
-// 15.09.2016 Übernahme nach zenon-branch
-/*                 if (strrpos($thsEntry['notation'], '3.00.01.01', -strlen($thsEntry['notation'])) !== false
-                    || strrpos($thsEntry['notation'], '3.00.01.02', -strlen($thsEntry['notation'])) !== false) {
-                      $result[] = array(
-                                'label' => $thsEntry['label'],
-                                'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
-                        );
-                 } */
-                 // use 999 $r (= $thsEntry['searchterm2'] as additional
-                 // parameter in Gazetteer link, if 999 $1 == xtop* ($thsEntry['notation'])
-
-
-            if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false) {
+            if (strrpos($notation, 'ztopog', -strlen($notation)) !== false
+                || strrpos($notation, 'zeuropsüdeuitali', -strlen($notation)) !== false
+                || strrpos($notation, 'gazetteer', -strlen($notation)) !== false
+                || strrpos($notation, 'xtop', -strlen($notation)) !== false) {
                 $result[] = array(
                     'label' => $thsEntry['label'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
-
-
     	}
 
         return $result;
@@ -439,20 +416,31 @@ class SolrMarc extends VufindSolrMarc
      * Get Link (if exists) to iDAI.publications.
      */
     public function getPublicationsLink() {
+
+        $result = array();
+
         $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
 
-        if($content == null){
-            return false;
+        if($content != null){
+            $controlNumber = $this->getControlNumber();
+            $reader = new configJson();
+            $data = $reader->fromString($content);
+
+            if (array_key_exists($controlNumber, $data))
+                array_push($result, $data[$controlNumber]);
         }
 
-        $controlNumber = $this->getControlNumber();
-        $reader = new configJson();
-        $data = $reader->fromString($content);
+        $content_static = file_get_contents('./local/iDAI.world/publications_mapping_static.json');
+        if($content_static != null){
+            $controlNumber = $this->getControlNumber();
+            $reader = new configJson();
+            $data = $reader->fromString($content_static);
 
-        if (array_key_exists($controlNumber, $data))
-            return $data[$controlNumber];
+            if (array_key_exists($controlNumber, $data))
+                array_push($result, $data[$controlNumber]);
+        }
 
-        return false;
+        return $result;
     }
 
     /**
