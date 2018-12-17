@@ -27,6 +27,7 @@ then
   KOHA_DOWNLOAD_URL="https://kohadev.dainst.org/download/exports/$today/bibliographic_data.xml"
 fi
 
+echo "Loading updated bibliographic data from $KOHA_DOWNLOAD_URL."
 wget "$KOHA_DOWNLOAD_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/"
 
 $VUFIND_HOME/harvest/batch-import-marc.sh dai-katalog > $VUFIND_HOME/local/harvest/dai-katalog/log/import_$today.log
