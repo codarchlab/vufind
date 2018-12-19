@@ -9,4 +9,4 @@ then
 fi
 
 exec &> $VUFIND_HOME/local/iDAI.world/log/publications_`date +\%Y-\%m-\%d`.log
-curl -H "Accept: application/json" "https://publications.dainst.org/journals/plugins/pubIds/zenon/api.php" > $VUFIND_HOME/local/iDAI.world/publications_mapping.json
+curl -s -S -H "Accept: application/json" "https://publications.dainst.org/journals/plugins/pubIds/zenon/api.php" > $VUFIND_HOME/local/iDAI.world/publications_mapping.json
