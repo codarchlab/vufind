@@ -91,6 +91,29 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     </div>
 <? endforeach; ?>
 
+<? if(empty($holdings['holdings'])): ?>
+  <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
+    <? $hostItems = $this->driver->tryMethod('getHostItemInformation'); ?>
+      <? if(!empty($hostItems)): ?>
+        <tr>
+            <th><?=$this->transEsc('Included in')?>: </th>
+            <td>
+              <? foreach ($hostItems as $hostItem): ?>
+                  <? if($hostItem['id']): ?>
+                  <a title="<?=$this->escapeHtml($hostItem['label'])?>"
+                     href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
+                          <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
+                      </a>
+                  <? else: ?>
+                      <?=$this->escapeHtml($hostItem['label'])?>
+                  <? endif; ?>
+              <? endforeach; ?>
+            </td>
+          </tr>
+      <? endif; ?>
+  </table>
+<? endif; ?>
+
 <? $history = $this->driver->getRealTimeHistory(); ?>
 <? if (is_array($history) && !empty($history)): ?>
     <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
