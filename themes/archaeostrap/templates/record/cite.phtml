@@ -19,7 +19,7 @@ foreach ($this->driver->getCitationFormats() as $format) {
 <? else: ?>
   <p class="bg-danger" style="padding: 20px; text-align: center">
       <?=$this->transEsc('Warning: These citations may not always be 100% accurate')?>.
-    <a href="https://www.dainst.org/65" target="_blank"><i class="fa fa-question-circle-o"></i></a>
+    <!-- <a href="https://www.dainst.org/65" target="_blank"><i class="fa fa-question-circle-o"></i></a> -->
   </p>
     <? foreach ($citations as $caption => $citation): ?>
         <strong><?=$this->transEsc($caption)?></strong>
