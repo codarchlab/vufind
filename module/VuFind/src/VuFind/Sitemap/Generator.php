@@ -2,7 +2,7 @@
 /**
  * VuFind Sitemap
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,8 +26,12 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Sitemap;
-use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
-    VuFindSearch\ParamBag, Zend\Config\Config;
+
+use VuFind\Search\BackendManager;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\ParamBag;
+use Zend\Config\Config;
+use Zend\Console\Console;
 
 /**
  * Class for generating sitemaps
@@ -104,6 +108,13 @@ class Generator
     protected $warnings = [];
 
     /**
+     * Verbose mode
+     *
+     * @var bool
+     */
+    protected $verbose = false;
+
+    /**
      * Mode of retrieving IDs from the index (may be 'terms' or 'search')
      *
      * @var string
@@ -150,12 +161,41 @@ class Generator
     }
 
     /**
+     * Get/set verbose mode
+     *
+     * @param bool $newMode New verbose mode
+     *
+     * @return bool Current or new verbose mode
+     */
+    public function setVerbose($newMode = null)
+    {
+        if (null !== $newMode) {
+            $this->verbose = $newMode;
+        }
+        return $this->verbose;
+    }
+
+    /**
+     * Get the current microtime, formatted to a number.
+     *
+     * @return float
+     */
+    protected function getTime()
+    {
+        $time = explode(" ", microtime());
+        return $time[1] + $time[0];
+    }
+
+    /**
      * Generate the sitemaps based on settings established by the constructor.
      *
      * @return void
      */
     public function generate()
     {
+        // Start timer:
+        $startTime = $this->getTime();
+
         // Initialize variable
         $currentPage = 1;
 
@@ -172,6 +212,13 @@ class Generator
 
         // Set-up Sitemap Index
         $this->buildIndex($currentPage - 1);
+
+        // Display total elapsed time in verbose mode:
+        if ($this->verbose) {
+            Console::writeLine(
+                'Elapsed time (in seconds): ' . ($this->getTime() - $startTime)
+            );
+        }
     }
 
     /**
@@ -222,6 +269,9 @@ class Generator
 
             // Update counters:
             $count += $this->countPerPage;
+            if ($this->verbose) {
+                Console::writeLine("Page $currentPage processed");
+            }
             $currentPage++;
         }
         return $currentPage;

@@ -58,7 +58,16 @@ if (is_array($languages)) {
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        echo '%B ' . (is_array($current) ? $current['name'] . " " . $current['number'] : $current) . "\n";
+        if(is_array($current)){
+            echo '%B ' . $current['name'];
+            if (array_key_exists('number', $current)) {
+                echo " " . $current['number'];
+            }
+            echo "\n";
+        }
+        else{
+            echo '%B ' . $current . "\n";
+        }
     }
 }
 

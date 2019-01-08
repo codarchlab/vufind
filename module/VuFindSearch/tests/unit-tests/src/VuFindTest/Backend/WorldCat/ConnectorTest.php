@@ -3,7 +3,7 @@
 /**
  * Unit tests for WorldCat connector.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -40,7 +40,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConnectorTest extends \PHPUnit_Framework_TestCase
+class ConnectorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test "get holdings"
@@ -55,7 +55,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
         $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/libraries/baz?wskey=key&servicelevel=full'));
+            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/libraries/baz?wskey=key&servicelevel=full&frbrGrouping=on'));
         $body = '<foo>bar</foo>';
         $response = $this->createMock('Zend\Http\Response');
         $response->expects($this->once())->method('getBody')

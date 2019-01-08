@@ -26,6 +26,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace Zenon\View\Helper\Root;
+
 use VuFind\View\Helper\Root\Record as ParentRecord;
 
 /**
@@ -39,6 +40,27 @@ use VuFind\View\Helper\Root\Record as ParentRecord;
  */
 class Record extends ParentRecord
 {
+    /**
+     * Store a record driver object and return this object so that the appropriate
+     * template can be rendered.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
+     *
+     * @return Record
+     */
+    public function __invoke($driver)
+    {
+        // Set up context helper:
+        $contextHelper = $this->getView()->plugin('context');
+        $this->contextHelper = $contextHelper($this->getView());
+
+        // Gets invoked with VuFind\RecordDriver\SolrMarc
+
+        // Set up driver context:
+        $this->driver = $driver;
+        return $this;
+    }
+
     /**
      * Get HTML to render a title.
      *

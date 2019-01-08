@@ -5,30 +5,53 @@ $config = [
 
 	'controllers' => [
         'factories' => [
-            'thesaurus' => 'Zenon\Controller\Factory::getThesaurusController',
-            'cart' => 'Zenon\Controller\Factory::getCartController',
-            'records' => 'Zenon\Controller\Factory::getRecordsController',
+            'Zenon\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
+            'Zenon\Controller\RecordsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Zenon\Controller\ThesaurusController' =>  'Zenon\Controller\ThesaurusControllerFactory',
+        ],
+        'aliases' => [
+            'Cart' => 'Zenon\Controller\CartController',
+            'cart' => 'Zenon\Controller\CartController',
+            'Records' => 'Zenon\Controller\RecordsController',
+            'records' => 'Zenon\Controller\RecordsController',
+            'thesaurus' => 'Zenon\Controller\ThesaurusController',
+            'Thesaurus' => 'Zenon\Controller\ThesaurusController',
         ]
     ],
 
     'service_manager' => [
+        'allow_override' => true,
         'factories' => [
-        	'VuFind\Mailer' => 'Zenon\Mailer\Factory',
-        ]
-    ],
+            'Zenon\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            ],
+        'aliases' => [
+            'Zenon\RecordDriverPluginManager' => 'Zenon\RecordDriver\PluginManager',
+            ]
+        ],
 
 	'vufind' => [
 		'plugin_managers' => [
 			'recorddriver' => [
 				'factories' => [
-					'solrmarc' => 'Zenon\RecordDriver\Factory::getSolrMarc',
-					'solrauth' => 'Zenon\RecordDriver\Factory::getSolrAuth',
-				]
+					'Zenon\RecordDriver\SolrMarc' => 'Zenon\RecordDriver\SolrDefaultFactory',
+                    'Zenon\RecordDriver\SolrAuthMarc' => 'VuFind\RecordDriver\SolrDefaultWithoutSearchServiceFactory',
+				],
+                'delegators' => [
+                    'Zenon\RecordDriver\SolrMarc' => ['VuFind\RecordDriver\IlsAwareDelegatorFactory'],
+                ],
+                'aliases' => [
+                    'solrmarc' => 'Zenon\RecordDriver\SolrMarc',
+                    'solrauthmarc' => 'Zenon\RecordDriver\SolrAuthMarc',
+                    'solrauth' => 'Zenon\RecordDriver\SolrAuthMarc', // legacy name
+                ]
 			],
             'recordtab' => [
                 'factories' => [
-                    'Access' => 'Zenon\RecordTab\Factory::getAccess',
+                    'Zenon\RecordTab\Access' => 'Zenon\RecordTab\Factory::getAccess',
                 ],
+                'aliases' => [
+                    'Access' => 'Zenon\RecordTab\Access',
+                ]
             ],
 		],
 
@@ -39,7 +62,7 @@ $config = [
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
         'recorddriver_tabs' => [
-            'VuFind\RecordDriver\SolrMarc' => [
+            'Zenon\RecordDriver\SolrMarc' => [
                 'tabs' => [
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
@@ -51,9 +74,8 @@ $config = [
                     'Access' => 'Access',
                 ],
                 'defaultTab' => null,
-            ]
-        ]
-
+            ],
+        ],
 	],
 
     // Define static routes -- Controller/Action strings
@@ -66,5 +88,3 @@ $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 return $config;
-
-?>

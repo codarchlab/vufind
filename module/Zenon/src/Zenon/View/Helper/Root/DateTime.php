@@ -1,9 +1,8 @@
 <?php
 
 namespace Zenon\View\Helper\Root;
-use VuFind\View\Helper\Root\DateTime as ParentDateTime;
 
-class DateTime extends ParentDateTime
+class DateTime extends \VuFind\View\Helper\Root\DateTime
 {
     /**
      * correctly calculates end of months when we shift to a shorter or longer month

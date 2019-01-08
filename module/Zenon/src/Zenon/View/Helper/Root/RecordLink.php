@@ -52,9 +52,10 @@ class RecordLink extends ParentRecordLink
      *
      * @param \VuFind\Record\Router $router Record router
      */
-    public function __construct(\VuFind\Record\Router $router, $zenonConfig = null)
+    public function __construct(\VuFind\Record\Router $router, $zenonConfig = null, $searchService = null)
     {
         $this->zenonConfig = $zenonConfig;
+        $this->searchService = $searchService;
         parent::__construct($router);
     }
     /**

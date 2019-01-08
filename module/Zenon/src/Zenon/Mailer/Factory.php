@@ -28,8 +28,13 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Zenon\Mailer;
-use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions,
-    Zend\ServiceManager\ServiceLocatorInterface;
+
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Zend\ServiceManager\Factory\FactoryInterface;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+
 
 /**
  * Factory for instantiating Mailer objects
@@ -40,38 +45,38 @@ use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Factory implements \Zend\ServiceManager\FactoryInterface
+class Factory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create an object
      *
-     * @param ServiceLocatorInterface $sm Service manager
+     * @param ContainerInterface $container Service manager
+     * @param string $requestedName Service being created
+     * @param null|array $options Extra options (optional)
      *
-     * @return mixed
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when creating a service.
+     * @throws ContainerException if any other error occurs
+     * @throws \Exception
      */
-    public function createService(ServiceLocatorInterface $sm)
-    {
-        // Load configurations:
-        $config = $sm->get('VuFind\Config')->get('config');
 
-        // Create mail transport:
-        $settings = array (
-            'host' => $config->Mail->host, 'port' => $config->Mail->port, 'name' => $config->Mail->name
-        );
-        if (isset($config->Mail->username) && isset($config->Mail->password)) {
-            $settings['connection_class'] = 'login';
-            $settings['connection_config'] = array(
-                'username' => $config->Mail->username,
-                'password' => $config->Mail->password
-            );
+    public function __invoke(ContainerInterface $container, $requestedName,
+                             array $options = null
+    ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        if(isset($config->Mail->ssl)) {
-            $settings['connection_config']['ssl'] = $config->Mail->ssl;
-        }
-        $transport = new Smtp();
-        $transport->setOptions(new SmtpOptions($settings));
+
+        // Load configurations:
+        $config = $container->get('VuFind\Config\PluginManager')->get('config');
 
         // Create service:
-        return new \VuFind\Mailer\Mailer($transport);
+        $class = new $requestedName($this->getTransport($config));
+        if (!empty($config->Mail->override_from)) {
+            $class->setFromAddressOverride($config->Mail->override_from);
+        }
+        return $class;
     }
 }
