@@ -9,5 +9,5 @@ then
 fi
 
 echo "Fetching mapping from publications."
-wget "https://publications.dainst.org/journals/plugins/pubIds/zenon/api.php" -P "$VUFIND_HOME/local/iDAI.world/publications_mapping.json" --no-verbose
+wget -O "$VUFIND_HOME/local/iDAI.world/publications_mapping.json"  -P  --no-verbose "https://publications.dainst.org/journals/plugins/pubIds/zenon/api.php"
 echo "Done."
