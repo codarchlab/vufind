@@ -1,8 +1,8 @@
-/*global grecaptcha, isPhoneNumberValid */
+/*global Event, grecaptcha, isPhoneNumberValid */
 /*exported VuFind, htmlEncode, deparam, moreFacets, lessFacets, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler */
 
 // IE 9< console polyfill
-window.console = window.console || {log: function polyfillLog() {}};
+window.console = window.console || { log: function polyfillLog() {} };
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -11,14 +11,31 @@ var VuFind = (function VuFind() {
   var _submodules = [];
   var _translations = {};
 
+  // Emit a custom event
+  // Recommendation: prefix with vf-
+  var emit = function emit(name, detail) {
+    if (typeof detail === 'undefined') {
+      document.dispatchEvent(new Event(name));
+    } else {
+      var event = document.createEvent('CustomEvent');
+      event.initCustomEvent(name, true, true, detail); // name, canBubble, cancelable, detail
+      document.dispatchEvent(event);
+    }
+  };
+  // Listen shortcut to put everyone on the same element
+  var listen = function listen(name, func) {
+    document.addEventListener(name, func, false);
+  };
+
   var register = function register(name, module) {
     if (_submodules.indexOf(name) === -1) {
       _submodules.push(name);
       this[name] = typeof module == 'function' ? module() : module;
-    }
-    // If the object has already initialized, we should auto-init on register:
-    if (_initialized && this[name].init) {
-      this[name].init();
+
+      // If the object has already initialized, we should auto-init on register:
+      if (_initialized && this[name].init) {
+        this[name].init();
+      }
     }
   };
   var init = function init() {
@@ -73,6 +90,8 @@ var VuFind = (function VuFind() {
 
     addTranslations: addTranslations,
     init: init,
+    emit: emit,
+    listen: listen,
     refreshPage: refreshPage,
     register: register,
     translate: translate
@@ -241,8 +260,14 @@ function setupOffcanvas() {
 }
 
 function setupAutocomplete() {
+  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
+  var searchbox = $('#searchForm_lookfor.autocomplete');
+  if (searchbox.length < 1) {
+    return;
+  }
   // Search autocomplete
-  $('#searchForm_lookfor').autocomplete({
+  searchbox.autocomplete({
+    rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading') + '...',
     handler: function vufindACHandler(input, cb) {
@@ -263,10 +288,10 @@ function setupAutocomplete() {
         },
         dataType: 'json',
         success: function autocompleteJSON(json) {
-          if (json.data.length > 0) {
+          if (json.data.suggestions.length > 0) {
             var datums = [];
-            for (var j = 0; j < json.data.length; j++) {
-              datums.push(json.data[j]);
+            for (var j = 0; j < json.data.suggestions.length; j++) {
+              datums.push(json.data.suggestions[j]);
             }
             cb(datums);
           } else {
@@ -278,7 +303,7 @@ function setupAutocomplete() {
   });
   // Update autocomplete on type change
   $('#searchForm_type').change(function searchTypeChange() {
-    $('#searchForm_lookfor').autocomplete('clear cache');
+    searchbox.autocomplete().clearCache();
   });
 }
 
@@ -365,6 +390,11 @@ function setupIeSupport() {
   }
 }
 
+function setupJumpMenus(_container) {
+  var container = _container || $('body');
+  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+}
+
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -376,7 +406,7 @@ $(document).ready(function commonDocReady() {
   keyboardShortcuts();
 
   // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  setupJumpMenus();
 
   // Checkbox select all
   $('.checkbox-select-all').change(function selectAllCheckboxes() {
@@ -429,11 +459,11 @@ $(document).ready(function commonDocReady() {
   // retain filter sessionStorage
   $('.searchFormKeepFilters').click(function retainFiltersInSessionStorage() {
     sessionStorage.setItem('vufind_retain_filters', this.checked ? 'true' : 'false');
+    $('.applied-filter').prop('checked', this.checked);
   });
   if (sessionStorage.getItem('vufind_retain_filters')) {
     var state = (sessionStorage.getItem('vufind_retain_filters') === 'true');
-    $('.searchFormKeepFilters').prop('checked', state);
-    $('#applied-filter').prop('checked', state);
+    $('.searchFormKeepFilters,.applied-filter').prop('checked', state);
   }
 
   setupIeSupport();

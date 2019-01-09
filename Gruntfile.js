@@ -14,6 +14,17 @@ module.exports = function(grunt) {
 
     // Iterate through theme.config.php files collecting parent themes in search path:
     while (config = fs.readFileSync("themes/" + parts[1] + "/theme.config.php", "UTF-8")) {
+      // First identify mixins:
+      var mixinMatches = config.match(/["']mixins["']\s*=>\s*\[([^\]]+)\]/);
+      if (mixinMatches !== null) {
+        var mixinParts = mixinMatches[1].split(',');
+        for (var i = 0; i < mixinParts.length; i++) {
+          parts[1] = mixinParts[i].trim().replace(/['"]/g, '');
+          retVal.push(parts.join('/') + '/');
+        }
+      }
+
+      // Now move up to parent theme:
       var matches = config.match(/["']extends["']\s*=>\s*['"](\w+)['"]/);
 
       // "extends" set to "false" or missing entirely? We've hit the end of the line:
@@ -125,7 +136,13 @@ module.exports = function(grunt) {
               pattern: '$brand-primary: #619144 !default;',
               replacement: '$brand-primary: #619144;',
               order: 4
-            }
+            },
+			// Wrap calcs in {}
+            {
+              pattern: /calc\((\$[^ ]+)/g,
+              replacement: 'calc(#{$1}',
+              order: 5
+            },
           ]
         }
       }

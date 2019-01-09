@@ -130,22 +130,22 @@
 
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['primary']) && !empty($authors['primary'])): ?>
-        <tr>
-          <th><?=$this->transEsc('Main Author')?>: </th>
+      <tr>
+        <th><?=$this->transEsc('Main Author')?>: </th>
           <td property="author">
               <? $i = 0; foreach($authors['primary'] as $author=>$value): ?>
                   <?=($i++ == 0)?'':', '?>
                 <a href="<?=$this->record($this->driver)->getLink('author',$author)?>">
                     <?=$this->escapeHtml($author)?>
-                    <? if (!empty($value['role'])): ?>
-                        <? foreach ($value['role'] as $role): ?>
-                        , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
-                        <? endforeach ?>
-                    <? endif ?>
+                      <? if (!empty($value['role'])): ?>
+                          <? foreach ($value['role'] as $role): ?>
+                              , [<?=$this->transEsc('CreatorRoles::' . $role)?>]
+                          <? endforeach ?>
+                      <? endif ?>
                 </a>
               <? endforeach; ?>
           </td>
-        </tr>
+      </tr>
       <? endif; ?>
 
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>

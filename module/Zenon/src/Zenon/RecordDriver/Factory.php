@@ -70,11 +70,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return SolrMarc
+     * @return SolrAuthMarc
      */
     public static function getSolrAuth(ServiceManager $sm)
     {        
-        return new SolrAuth(
+        return new SolrAuthMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')

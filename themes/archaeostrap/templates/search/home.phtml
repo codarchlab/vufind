@@ -181,7 +181,7 @@
       $additionalParameters = '&hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote';
 
       for ($i = 0; $i > -12; $i--){
-          $dt = $this->datetime()->monthShifter($start, $i);
+          $dt = $this->dateTime()->monthShifter($start, $i);
           $queryMonth = $dt->format('my');
 
           $generalQueries = [];

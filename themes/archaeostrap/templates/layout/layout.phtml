@@ -79,9 +79,9 @@
       }
 
       // Session keep-alive
-      if ($this->KeepAlive()) {
+      if ($this->keepAlive()) {
           $this->headScript()->appendScript('var keepAliveInterval = '
-            . $this->KeepAlive());
+            . $this->keepAlive());
           $this->headScript()->appendFile("keep_alive.js");
       }
     ?>
@@ -111,7 +111,7 @@ JS;
       }
     ?>
     <header class="hidden-print">
-      <div class="navbar navbar-default navbar-fixed-top">
+      <div class="navbar navbar-default top:0px">
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
@@ -144,17 +144,19 @@ JS;
         <? endif; ?>
       </div>
     </header>
+
     <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
       <div class="container">
         <?=$this->layout()->content ?>
       </div>
     </div>
-    <footer class="hidden-print">
+
+    <div class="hidden-print">
       <div class="container-fluid">
         <?=$this->render('footer.phtml')?>
         <?=$this->layout()->poweredBy ?>
       </div>
-    </footer>
+    </div>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog">

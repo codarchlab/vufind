@@ -2,7 +2,7 @@
 /**
  * Facet-driven channel provider.
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,8 +26,11 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\ChannelProvider;
+
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-use VuFind\Search\Base\Params, VuFind\Search\Base\Results;
+use VuFind\Search\Base\Params;
+use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\Mvc\Controller\Plugin\Url;
 
@@ -41,7 +44,9 @@ use Zend\Mvc\Controller\Plugin\Url;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Facets extends AbstractChannelProvider
+   implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
     /**
      * Facet fields to use (field name => description).
      *
@@ -100,14 +105,11 @@ class Facets extends AbstractChannelProvider
      */
     public function setOptions(array $options)
     {
-        $this->fields = isset($options['fields'])
-            ? $options['fields']
-            : ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
-        $this->maxFieldsToSuggest = isset($options['maxFieldsToSuggest'])
-            ? $options['maxFieldsToSuggest'] : 2;
+        $this->fields = $options['fields']
+            ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
+        $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
         $this->maxValuesToSuggestPerField
-            = isset($options['maxValuesToSuggestPerField'])
-            ? $options['maxValuesToSuggestPerField'] : 2;
+            = $options['maxValuesToSuggestPerField'] ?? 2;
     }
 
     /**
@@ -250,7 +252,7 @@ class Facets extends AbstractChannelProvider
             return $retVal;
         }
 
-        $newResults = clone($results);
+        $newResults = clone $results;
         $params = $newResults->getParams();
 
         // Determine the filter for the current channel, and add it:
@@ -311,7 +313,7 @@ class Facets extends AbstractChannelProvider
         return $this->buildChannel(
             $results,
             "$field:{$value['value']}",
-            "{$this->fields[$field]}: {$value['displayText']}",
+            $this->translate($this->fields[$field]) . ": {$value['displayText']}",
             $tokenOnly
         );
     }

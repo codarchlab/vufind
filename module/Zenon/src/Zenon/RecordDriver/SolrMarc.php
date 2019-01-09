@@ -51,13 +51,11 @@ class SolrMarc extends VufindSolrMarc
      * @var \Zend\Config\Config
      */
     protected $zenonConfig;
-
-    public function __construct($mainConfig = null, $recordConfig = null,
-                                $searchSettings = null, $zenonConfig = null
-    ) {
+    public function attachZenonConfig($zenonConfig)
+    {
         $this->zenonConfig = $zenonConfig;
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
+
     /**
      * Get the title of the record.
      * Overridden to adapt GBV solr schema divergency and to remove trailing slashes.

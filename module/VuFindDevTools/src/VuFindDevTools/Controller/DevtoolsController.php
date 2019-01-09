@@ -2,7 +2,7 @@
 /**
  * Development Tools Controller
  *
- * PHP Version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
  * @package  Controller
@@ -27,6 +27,7 @@
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools\Controller;
+
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFindDevTools\LanguageHelper;
 
@@ -77,7 +78,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         }
         if (isset($view->min) && $view->min) {
             $view->results = $view->min->deminify(
-                $this->serviceLocator->get('VuFind\SearchResultsPluginManager')
+                $this->serviceLocator->get('VuFind\Search\Results\PluginManager')
             );
         }
         if (isset($view->results) && $view->results) {
