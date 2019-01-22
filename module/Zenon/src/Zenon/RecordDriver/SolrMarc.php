@@ -363,7 +363,7 @@ class SolrMarc extends VufindSolrMarc
     public function getGazetteerLinks()
     {
         $result = array();
-        $locationFields = $this->marcRecord->getFields('651');
+        $locationFields = $this->getMarcRecord()->getFields('651');
 
         foreach($locationFields as $locationField) {
             $subfields = $this->getSubfieldArray($locationField, ['9','a'], false);
