@@ -23,7 +23,7 @@ fi
 BIBLIO_UPDATE_LOG="$VUFIND_HOME/local/harvest/log/`date +\%Y-\%m-\%d`.log"
 "$VUFIND_HOME/local/harvest/update-koha.sh" &> "$BIBLIO_UPDATE_LOG"
 
-RECIPIENT=simon.hohl@dainst.org
+RECIPIENT=zenondai@dainst.org
 
 if [[ -z ${MACHINE_NAME:+x} ]] ;
 then
