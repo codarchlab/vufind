@@ -417,25 +417,28 @@ class SolrMarc extends VufindSolrMarc
 
         $result = array();
 
-        $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
+        $content_serials = file_get_contents('./local/iDAI.world/publications_serials_mapping.json');
 
-        if($content != null){
+        if($content_serials != null){
             $controlNumber = $this->getControlNumber();
             $reader = new configJson();
-            $data = $reader->fromString($content);
+            $data = $reader->fromString($content_serials);
 
             if (array_key_exists($controlNumber, $data))
                 array_push($result, $data[$controlNumber]);
         }
 
-        $content_static = file_get_contents('./local/iDAI.world/publications_mapping_static.json');
-        if($content_static != null){
-            $controlNumber = $this->getControlNumber();
+        $content_books = file_get_contents('./local/iDAI.world/publications_books_mapping.json');
+        if($content_books != null){
             $reader = new configJson();
-            $data = $reader->fromString($content_static);
+            $data = $reader->fromString($content_books);
 
-            if (array_key_exists($controlNumber, $data))
-                array_push($result, $data[$controlNumber]);
+            if(isset($data['publications'])){
+                $controlNumber = $this->getControlNumber();
+
+                if (array_key_exists($controlNumber, $data['publications']))
+                    array_push($result, $data['publications'][$controlNumber]);
+            }
         }
 
         return $result;
