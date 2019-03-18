@@ -34,7 +34,8 @@ solr/biblio/conf/_rest_managed.json
 
 solr/logs
 
-local/iDAI.world/publications_mapping.json
+local/iDAI.world/publications_books_mapping.json
+local/iDAI.world/publications_serials_mapping.json
 
 .idea
 .DS_Store

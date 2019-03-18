@@ -171,9 +171,9 @@ class SolrMarc extends VufindSolrMarc
             if (!empty($searchterm2)) $entry['searchterm2'] = $searchterm2[0];
 
             // yes, ugly.
-            $belgianLocationLabel = $this->getSubfieldArray($currentField, ['r']);
-            if(!empty($belgianLocationLabel))
-                $entry['belgianLocationLabel'] = $belgianLocationLabel[0];
+            $specialLabel = $this->getSubfieldArray($currentField, ['r']);
+            if(!empty($specialLabel))
+                $entry['specialLabel'] = $specialLabel[0];
 
             // TODO: multi language support, until then only show german entries
             if ($entry['language'] == 'ger') $result[] = $entry;
@@ -379,27 +379,17 @@ class SolrMarc extends VufindSolrMarc
     	foreach ($thsEntries as $thsEntry) {
             $notation = strtolower($thsEntry['notation']);
             $query = $this->createGazetteerQueryString($thsEntry);
-            if(strrpos($notation, 'xtoplandbelgort', -strlen($notation)) !== false) {
-                $result[] = array(
-                    'label' => $thsEntry['belgianLocationLabel'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
-                );
-            }
-            if (strrpos($notation, 'ztopog', -strlen($notation)) !== false
-                || strrpos($notation, 'zeuropsüdeuitali', -strlen($notation)) !== false
-                || strrpos($notation, 'gazetteer', -strlen($notation)) !== false
-                || strrpos($notation, 'xtoprairomkircheinz', -strlen($notation)) !== false
-                || strrpos($notation, 'xtoplandit', -strlen($notation)) !== false) {
-                $result[] = array(
-                    'label' => $thsEntry['label'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation']
-                );
-            }
+	    $label = array_key_exists('specialLabel', $thsEntry) ? $thsEntry['specialLabel'] : $thsEntry['label'];
 
-            if (strrpos($thsEntry['notation'], 'xtop', -strlen($thsEntry['notation'])) !== false) {
+            if (strrpos($notation, 'gazetteer', -strlen($notation)) !== false
+		|| strrpos($notation, 'xtoplandbelgort', -strlen($notation)) !== false
+                || strrpos($notation, 'xtoplandit', -strlen($notation)) !== false
+                || strrpos($notation, 'xtoprairomkircheinz', -strlen($notation)) !== false
+		|| strrpos($notation, 'zeuropsüdeuitali', -strlen($notation)) !== false
+		|| strrpos($notation, 'ztopog', -strlen($notation)) !== false) {
                 $result[] = array(
-                    'label' => $thsEntry['label'],
-                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=" . $thsEntry['notation'] . ";" . $thsEntry['searchterm']
+                    'label' => $label,
+                    'uri' => "http://gazetteer.dainst.org/app/#!/search?q=".$query
                 );
             }
     	}
@@ -425,25 +415,28 @@ class SolrMarc extends VufindSolrMarc
 
         $result = array();
 
-        $content = file_get_contents('./local/iDAI.world/publications_mapping.json');
+        $content_serials = file_get_contents('./local/iDAI.world/publications_serials_mapping.json');
 
-        if($content != null){
+        if($content_serials != null){
             $controlNumber = $this->getControlNumber();
             $reader = new configJson();
-            $data = $reader->fromString($content);
+            $data = $reader->fromString($content_serials);
 
             if (array_key_exists($controlNumber, $data))
                 array_push($result, $data[$controlNumber]);
         }
 
-        $content_static = file_get_contents('./local/iDAI.world/publications_mapping_static.json');
-        if($content_static != null){
-            $controlNumber = $this->getControlNumber();
+        $content_books = file_get_contents('./local/iDAI.world/publications_books_mapping.json');
+        if($content_books != null){
             $reader = new configJson();
-            $data = $reader->fromString($content_static);
+            $data = $reader->fromString($content_books);
 
-            if (array_key_exists($controlNumber, $data))
-                array_push($result, $data[$controlNumber]);
+            if(isset($data['publications'])){
+                $controlNumber = $this->getControlNumber();
+
+                if (array_key_exists($controlNumber, $data['publications']))
+                    array_push($result, $data['publications'][$controlNumber]);
+            }
         }
 
         return $result;
