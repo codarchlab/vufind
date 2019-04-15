@@ -33,7 +33,11 @@ conf['logs'].each do |log|
 			body += l
 		end
 		result = "ERROR"
-	else
+  elsif ptn.include? "import_" and !File.foreach(last_log).grep(/Done with all indexing, finishing writing records to solr/).any?
+		body += "Error: Last logfile #{last_log} contains errors:\n\n"
+    body += "Solr Indexing did not finish."
+    result = "ERROR"
+  else
 		body += "OK: Last logfile #{last_log} is not older than #{log['max_age']} days and contains no errors\n"
 	end
 	body += "\n\n--------------------------------\n\n"
