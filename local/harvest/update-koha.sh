@@ -25,24 +25,8 @@ today=$(date +"%Y-%m-%d")
 if [[ -z "$KOHA_BASE_URL" ]]
 then
   KOHA_BIBLIO_URL="https://kohadev.dainst.org/download/exports/$today/bibliographic_data.xml"
-  KOHA_AUTHORITY_URL="https://kohadev.dainst.org/download/exports/$today/authority_data.xml"
-
 else
   KOHA_BIBLIO_URL="$KOHA_BASE_URL/$today/bibliographic_data.xml"
-  KOHA_AUTHORITY_URL="$KOHA_BASE_URL/$today/authority_data.xml"
-fi
-
-echo "Loading updated authority data from $KOHA_AUTHORITY_URL:"
-wget "$KOHA_AUTHORITY_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/" --no-verbose
-
-if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog/authority_data.xml" ]]
-then
-    echo "Running VuFind's batch import scripts."
-    "$VUFIND_HOME"/harvest/batch-import-marc-auth.sh dai-katalog | tee $VUFIND_HOME/local/harvest/dai-katalog-auth/log/import_$today.log
-    echo "Done."
-else
-    echo "$VUFIND_HOME/local/harvest/dai-katalog/authority_data.xml is an empty file, nothing is getting updated."
-    rm $VUFIND_HOME/local/harvest/dai-katalog/authorty_data.xml
 fi
 
 echo "Loading updated bibliographic data from $KOHA_BIBLIO_URL:"
