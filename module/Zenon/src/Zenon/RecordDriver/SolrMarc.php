@@ -530,12 +530,17 @@ class SolrMarc extends VufindSolrMarc
                 if ((strpos($subfieldwarray[0], 'ZDB') != false) or ((strpos($subfieldwarray[0], 'EZB') != false))) {
                     preg_match('(\d{4,}-\d*)', $subfieldwarray[0], $matches);
                     if (count($matches) > 0) {
-                        if (count($subfieldiarray) > 0 and (count($subfieldiarray) > 0)) {
-                            $label = 't' . trim($subfieldtarray[0]) . ' ' . 'i' . trim($subfieldiarray[0]);
+                        if (count($subfieldiarray) > 0 and (count($subfieldtarray) > 0)) {
+                            if ((strpos($subfieldiarray[0], '(') == false) and (strpos($subfieldiarray[0], ')') == false)){
+                            $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]).')';}
+                            else if (strpos($subfieldiarray[0], '(') == false){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]);}
+                            else if (strpos($subfieldiarray[0], ')') == false){
+                                $label = trim($subfieldtarray[0]) .' '.trim($subfieldiarray[0]).')';}
                         } else if (count($subfieldiarray) == 0 and (count($subfieldtarray) > 0)) {
-                            $label = 't' . trim($subfieldtarray[0]);
+                            $label = trim($subfieldtarray[0]);
                         } else if (count($subfieldtarray) == 0 and (count($subfieldiarray) > 0)) {
-                            $label = 'i' . trim($subfieldtarray[0]);
+                            $label = trim($subfieldtarray[0]);
                         } else {
                             $label = 'Zeitschriftendatenbank';
                         }
@@ -548,8 +553,13 @@ class SolrMarc extends VufindSolrMarc
                     preg_match('(A*T*R*\d{9})', $subfieldwarray[0], $matches);
                     print($matches[0]);
                     if (count($matches) > 0) {
-                        if (count($subfieldiarray) > 0 and (count($subfieldiarray) > 0)) {
-                            $label = trim($subfieldtarray[0]) . ' ' . trim($subfieldiarray[0]);
+                        if (count($subfieldiarray) > 0 and (count($subfieldtarray) > 0)) {
+                            if ((strpos($subfieldiarray[0], '(') == false) and (strpos($subfieldiarray[0], ')') == false)){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]).')';}
+                            else if (strpos($subfieldiarray[0], '(') == false){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]);}
+                            else if (strpos($subfieldiarray[0], ')') == false){
+                                $label = trim($subfieldtarray[0]) .' '.trim($subfieldiarray[0]).')';}
                         } else if (count($subfieldiarray) == 0 and (count($subfieldtarray) > 0)) {
                             $label = trim($subfieldtarray[0]);
                         } else if (count($subfieldtarray) == 0 and (count($subfieldiarray) > 0)) {
