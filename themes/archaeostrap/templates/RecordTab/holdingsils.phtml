@@ -66,7 +66,8 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
             <?= $locationText ?>
         <? endif; ?>
     </a>
-    <? usort($holding['items'], function($a, $b) { return $b['summary'] - $a['summary']; } ); ?>
+
+    <? usort($holding['items'], function($a, $b) { return strcmp($a['summary'], $b['summary']); } ); ?>
     <div class="collapse" id="<?= $toggleTargetId; ?>">
         <table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
             <tr>
