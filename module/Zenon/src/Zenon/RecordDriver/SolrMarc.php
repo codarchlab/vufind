@@ -509,13 +509,71 @@ class SolrMarc extends VufindSolrMarc
         $fields = $this->getMarcRecord()->getFields('530');
 
         foreach ($fields as $currentField) {
-            $field = $this->getSubfieldArray($currentField, ['a','u'], false);
-            $result[] = array(
-              'label' => $field[0],
-              'uri' => $field[1]
-            );
+            $subfieldaarray = $this->getSubfieldArray($currentField, ['a'], false);
+            $subfielduarray = $this->getSubfieldArray($currentField, ['u'], false);
+            $field = $this->getSubfieldArray($currentField, ['a', 'u'], false);
+            if ((count($subfieldaarray) > 0) and (count($subfielduarray) > 0)) {
+                $result[] = array(
+                    'label' => $subfieldaarray[0],
+                    'uri' => $subfielduarray[1]
+                );
+            }
 
         }
+        $fields = $this->getMarcRecord()->getFields('776');
+
+        foreach ($fields as $currentField) {
+            $subfieldwarray = $this->getSubfieldArray($currentField, ['w'], false);
+            $subfieldiarray = $this->getSubfieldArray($currentField, ['i'], false);
+            $subfieldtarray = $this->getSubfieldArray($currentField, ['t'], false);
+            if (count($subfieldwarray) > 0) {
+                if ((strpos($subfieldwarray[0], 'ZDB') != false) or ((strpos($subfieldwarray[0], 'EZB') != false))) {
+                    preg_match('(\d{4,}-\d*)', $subfieldwarray[0], $matches);
+                    if (count($matches) > 0) {
+                        if (count($subfieldiarray) > 0 and (count($subfieldtarray) > 0)) {
+                            if ((strpos($subfieldiarray[0], '(') == false) and (strpos($subfieldiarray[0], ')') == false)){
+                            $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]).')';}
+                            else if (strpos($subfieldiarray[0], '(') == false){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]);}
+                            else if (strpos($subfieldiarray[0], ')') == false){
+                                $label = trim($subfieldtarray[0]) .' '.trim($subfieldiarray[0]).')';}
+                        } else if (count($subfieldiarray) == 0 and (count($subfieldtarray) > 0)) {
+                            $label = trim($subfieldtarray[0]);
+                        } else if (count($subfieldtarray) == 0 and (count($subfieldiarray) > 0)) {
+                            $label = trim($subfieldtarray[0]);
+                        } else {
+                            $label = 'Zeitschriftendatenbank';
+                        }
+                        $result[] = array(
+                            'label' => $label,
+                            'uri' => 'https://ld.zdb-services.de/resource/' . $matches[0]
+                        );
+                    }
+                } else if (strpos($subfieldwarray[0], 'DE-2553') != false) {
+                    preg_match('(A*T*R*\d{9})', $subfieldwarray[0], $matches);
+                    if (count($matches) > 0) {
+                        if (count($subfieldiarray) > 0 and (count($subfieldtarray) > 0)) {
+                            if ((strpos($subfieldiarray[0], '(') == false) and (strpos($subfieldiarray[0], ')') == false)){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]).')';}
+                            else if (strpos($subfieldiarray[0], '(') == false){
+                                $label = trim($subfieldtarray[0]) .' ('.trim($subfieldiarray[0]);}
+                            else if (strpos($subfieldiarray[0], ')') == false){
+                                $label = trim($subfieldtarray[0]) .' '.trim($subfieldiarray[0]).')';}
+                        } else if (count($subfieldiarray) == 0 and (count($subfieldtarray) > 0)) {
+                            $label = trim($subfieldtarray[0]);
+                        } else if (count($subfieldtarray) == 0 and (count($subfieldiarray) > 0)) {
+                            $label = trim($subfieldtarray[0]);
+                        } else {
+                            $label = 'Zenon-Datensatz';
+                        }
+                        $result[] = array(
+                            'label' => $label,
+                            'uri' => 'https://zenon.dainst.org/Record/' . $matches[0]);
+                    }
+                }
+            }
+        }
+
 
         return $result;
     }

@@ -449,12 +449,12 @@
       <? $additionalPhysicalFormNotes = $this->driver->getAdditionalPhysicalFormAvailableNote(); ?>
       <? if(!empty($additionalPhysicalFormNotes)): ?>
         <tr>
-	 <th><?=$this->transEsc('Physical Form Note');?>: </th>
-         <td>
-           <? foreach ($additionalPhysicalFormNotes as $note): ?>
-             <a href="<?= $note['uri']; ?>"><?= $note['label'];?>
-           <? endforeach; ?>
-         </td>
+         <th><?=$this->transEsc('Physical Form Note');?>: </th>
+             <td>
+               <? foreach ($additionalPhysicalFormNotes as $note): ?>
+                 <a href="<?= $note['uri']; ?>"><?= $note['label'];?>
+               <? endforeach; ?>
+             </td>
         </tr>
       <? endif; ?>
 
