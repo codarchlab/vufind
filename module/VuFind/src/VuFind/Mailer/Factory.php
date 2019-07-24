@@ -62,7 +62,7 @@ class Factory implements FactoryInterface
 
         // Create mail transport:
         $settings = [
-            'host' => $config->Mail->host, 'port' => $config->Mail->port
+            'host' => $config->Mail->host, 'port' => $config->Mail->port, $config->Mail->name
         ];
         if (isset($config->Mail->username) && isset($config->Mail->password)) {
             $settings['connection_class'] = 'login';
