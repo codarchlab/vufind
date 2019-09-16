@@ -108,7 +108,6 @@ containerVolume:
   type: string
 corporateAuthors:
   vufind.method: getCorporateAuthors
-  vufind.default: true
   description: Main corporate authors
   type: array
   items:
