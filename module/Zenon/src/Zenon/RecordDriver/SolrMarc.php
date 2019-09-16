@@ -579,6 +579,14 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Return the ID of this record's parent
+     * @return string
+     */
+    public function getHierarchyParentId() {
+        return empty($this->fields['hierarchy_parent_id']) ? '' : $this->fields['hierarchy_parent_id'][0];
+    }
+
+    /**
      * Try parsing the page range for an artical from the physical description filed (300a).
      *
      * @return string

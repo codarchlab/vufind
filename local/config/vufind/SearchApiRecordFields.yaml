@@ -161,20 +161,21 @@ hierarchicalPlaceNames:
   type: array
   items:
     type: string
-hierarchyParentId:
-  vufind.method: getHierarchyParentId
-  vufind.default: true
-  description: Parent record IDs for hierarchical records
-  type: array
-  items:
-    type: string
-hierarchyParentTitle:
-  vufind.method: getHierarchyParentTitle
-  vufind.default: true
-  description: Parent record titles for hierarchical records
-  type: array
-  items:
-    type: string
+## See below for customized variant.
+#hierarchyParentId:
+#  vufind.method: getHierarchyParentId
+#  vufind.default: true
+#  description: Parent record IDs for hierarchical records
+#  type: array
+#  items:
+#    type: string
+#hierarchyParentTitle:
+#  vufind.method: getHierarchyParentTitle
+#  vufind.default: true
+#  description: Parent record titles for hierarchical records
+#  type: array
+#  items:
+#    type: string
 hierarchyTopId:
   vufind.method: getHierarchyTopId
   description: Hierarchy top record IDs for hierarchical records
@@ -416,3 +417,8 @@ additionalInformation:
   description: Get additional Information (MARC fields 540, 546 & 561)
   items:
     type: string
+parentId: #(hierarchyParentId)
+  vufind.method: getHierarchyParentId
+  vufind.default: true
+  description: Parent record ID for hierarchical records
+  type: string
