@@ -422,3 +422,8 @@ parentId: #(hierarchyParentId)
   vufind.default: true
   description: Parent record ID for hierarchical records
   type: string
+thesaurus:
+  vufind.method: getThsEntries
+  vufind.default: true
+  description: DAI thesaurus fields
+  type: string
