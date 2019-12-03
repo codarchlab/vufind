@@ -323,8 +323,8 @@
               <td>
                 <? foreach($publicationsLinks as $publicationsLink): ?>
                 <div>
-                  <a href="<?=$publicationsLink?>" target="_blank"><?=$publicationsLink?>
-                    <small><i class="fa fa-external-link"></i></small>
+                  <a href="<?=$publicationsLink?>" target="_blank">
+                      <small><i class="fa fa-external-link" aria-hidden="true"></small></i> <?= $this->transEsc('Get full text') ?> (iDAI.publications)
                   </a>
                 </div>
                 <? endforeach; ?>
@@ -449,12 +449,12 @@
       <? $additionalPhysicalFormNotes = $this->driver->getAdditionalPhysicalFormAvailableNote(); ?>
       <? if(!empty($additionalPhysicalFormNotes)): ?>
         <tr>
-	 <th><?=$this->transEsc('Physical Form Note');?>: </th>
-         <td>
-           <? foreach ($additionalPhysicalFormNotes as $note): ?>
-             <a href="<?= $note['uri']; ?>"><?= $note['label'];?>
-           <? endforeach; ?>
-         </td>
+         <th><?=$this->transEsc('Physical Form Note');?>: </th>
+             <td>
+               <? foreach ($additionalPhysicalFormNotes as $note): ?>
+                 <a href="<?= $note['uri']; ?>"><?= $note['label'];?>
+               <? endforeach; ?>
+             </td>
         </tr>
       <? endif; ?>
 

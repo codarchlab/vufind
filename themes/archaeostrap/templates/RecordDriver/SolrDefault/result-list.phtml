@@ -184,13 +184,14 @@ if ($coverDetails['cover']):
                 <? endif; ?>
 
                 <!-- Custom Zenon Code -->
-                <? $publicationsLink = $this->driver->getPublicationsLink(); ?>
-                <? if($publicationsLink): ?>
-
-                    <a href="<?= $publicationsLink ?>" class="fulltext" target="new">
-                        <i class="fa fa-external-link" aria-hidden="true"></i> <?= $this->transEsc('Get full text') ?> (iDAI.publications)
-                    </a>
-                    <br/>
+                <? $publicationsLinks = $this->driver->getPublicationsLink(); ?>
+                <? if(!empty($publicationsLinks)): ?>
+                    <? foreach($publicationsLinks as $publicationsLink): ?>
+                        <a href="<?= $publicationsLink ?>" class="fulltext" target="_blank">
+                            <i class="fa fa-external-link" aria-hidden="true"></i> <?= $this->transEsc('Get full text') ?> (iDAI.publications)
+                        </a>
+                        <br/>
+                    <? endforeach; ?>
                 <? endif; ?>
                 <!-- ^--- -->
 
