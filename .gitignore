@@ -52,3 +52,4 @@ lessphp_*.list
 
 # DAI customized: We have a separate repository for configurations, those should be added using symbolic links.
 local/httpd-vufind.conf
+public/test.php
