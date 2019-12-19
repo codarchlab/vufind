@@ -28,7 +28,7 @@
 namespace Zenon\RecordDriver;
 
 use Interop\Container\ContainerInterface;
-
+use VuFindSearch\Service as SearchService;
 /**
  * Factory for SolrDefault record drivers.
  *
@@ -58,6 +58,7 @@ class SolrDefaultFactory extends \VuFind\RecordDriver\SolrDefaultFactory
         array $options = null
     ) {
         $driver = parent::__invoke($container, $requestedName, $options);
+        $driver->attachSearchService($container->get('VuFindSearch\Service'));
         $driver->attachZenonConfig($container->get('VuFind\Config\PluginManager')->get('zenon-config'));
         return $driver;
     }

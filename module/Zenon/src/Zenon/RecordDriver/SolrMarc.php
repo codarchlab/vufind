@@ -366,22 +366,20 @@ class SolrMarc extends VufindSolrMarc
         $locationFields = $this->getMarcRecord()->getFields('651');
 
         foreach($locationFields as $locationField) {
-            $subfields = $this->getSubfieldArray($locationField, ['9','a'], false);
+            $authorityID = $locationField->getSubfield('9')->getData();
+            $label = $locationField->getSubfield('a')->getData();
 
-            if($subfields[1]) {
-                $params = $this->authoritySearch->getParams();
-                $params->setOverrideQuery("id:$subfields[0]"); // 'id' in subfield 9 is Koha's internal authority ID
+            if(!empty($authorityID)) {
+                $authoritySearchResults = $this->searchService->retrieve('SolrAuth', $authorityID);
 
-                $authoritySearchResults = $this->authoritySearch->getResults();
-                if(count($authoritySearchResults) != 1) continue;
-                if(!array_key_exists('iDAI_gazetteer_id', $authoritySearchResults[0]->getJSON())) continue;
+                if($authoritySearchResults->count() != 1) continue;
+                $authorityRecord = $authoritySearchResults->first()->getRawData();
+                $gazId = $authorityRecord['iDAI_gazetteer_id'];
 
-                $gazId = $authoritySearchResults[0]->getJSON()['iDAI_gazetteer_id'];
-
-                if($gazId == null) continue;
+                if(empty($gazId)) continue;
 
                 $result[] = array(
-                    'label' => $subfields[1],
+                    'label' => $label,
                     'uri' => 'https://gazetteer.dainst.org/app/#!/show/' . $gazId
                 );
             }
