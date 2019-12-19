@@ -16,6 +16,6 @@ fi
 
 for filename in $1* #.gz
 do 
-	echo "importing ${filename}"
-	bash $VUFIND_HOME/import-marc.sh $VUFIND_HOME/local/import/mrc/$(basename $filename)
+    echo "importing ${filename}"
+    bash $VUFIND_HOME/import-marc.sh $filename
 done
