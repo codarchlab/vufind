@@ -82,7 +82,7 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                     <tr>
                         <td><?=$this->transEsc($row['callnumber'])?></td>
                         <td><?=$this->transEsc($row['summary'])?></td>
-                        <td><?=$this->transEsc($row['status'])?></td>
+                        <td><?=$this->transEsc('holdings::item_status_' . $row['status'])?></td>
                         <td><?=$this->transEsc($row['notes'])?></td>
                     </tr>
                 <? endif; ?>
