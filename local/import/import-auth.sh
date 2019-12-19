@@ -17,5 +17,5 @@ fi
 for filename in $1*
 do
     echo "importing ${filename}"
-	bash $VUFIND_HOME/import-marc-auth.sh $filename
+    bash $VUFIND_HOME/import-marc-auth.sh $filename
 done
