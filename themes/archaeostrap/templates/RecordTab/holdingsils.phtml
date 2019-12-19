@@ -59,7 +59,7 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
 <? foreach ($holdings['holdings'] as $holding): ?>
     <? $toggleTargetId = 'collapse' . str_replace([' ', '/'],'',$holding['location']); ?>
     <a  class="btn btn-zenon-default btn-block" role="button" data-toggle="collapse" href="#<?= $toggleTargetId; ?>" aria-expanded="false" aria-controls="collapse-group">
-        <? $locationText = $this->transEsc('location_' . $holding['location'], [], $holding['location']); ?>
+        <? $locationText = $this->transEsc($holding['location']); ?>
         <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
             <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
         <? else: ?>
