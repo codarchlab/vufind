@@ -1,6 +1,7 @@
 <div class="form-group">
   <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
   <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+  <small id="email_info" class="form-text text-muted"><b>DAI Rom:</b> Achtung bei Magazinbestellungen/Attenzione agli ordini dal magazzino: magroma@dainst.de</small>
   <?php if ($this->maxRecipients != 1): ?>
     <br />
     <?=$this->transEsc('email_multiple_recipients_note')?>
@@ -24,6 +25,7 @@
 <div class="form-group">
   <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
   <textarea id="email_message" class="form-control" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
+  <small id="message_info" class="form-text text-muted"><b>DAI Rom:</b> Hier bitte Signatur und Name des Lesers eintragen./Inserisce qui la collocazione e il nome del lettore.</small>
 </div>
 <?php if ($this->disableFrom && $this->userEmailInFrom): ?>
   <div class="form-group">
