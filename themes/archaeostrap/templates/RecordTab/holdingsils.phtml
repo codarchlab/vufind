@@ -74,8 +74,8 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
         <? else: ?>
             <?=$this->escapeHtml($hostItem['label'])?>
         <? endif; ?>
-    <? endif; ?>
 </div>
+<? endif; ?>
 
 <? foreach ($holdings['holdings'] as $holding): ?>
     <? $toggleTargetId = 'collapse' . str_replace([' ', '/'],'',$holding['location']); ?>
