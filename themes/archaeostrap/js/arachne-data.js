@@ -32,7 +32,7 @@ xmlhttp.onreadystatechange = function() {
         showCurrentBucket();
       }
       else {
-        container.style.visibility = 'hidden';
+        container.parentNode.removeChild(container);
       }
     }
 };
