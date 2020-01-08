@@ -56,6 +56,27 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
         <? endif; ?>
         <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
+
+<? $hostItem = $this->driver->tryMethod('getLinkToSerialParentRecord'); ?>
+<? if($hostItem): ?>
+<div style="margin-top:5px;margin-bottom:5px">
+    <b>
+        <? if (empty($holdings['holdings'])): ?>
+            <?=$this->transEsc("holdings::See serial parent record")?>: &nbsp;
+        <? else: ?>
+            <?=$this->transEsc("holdings::See also serial parent record")?>: &nbsp;
+        <? endif; ?>
+   </b>
+        <? if($hostItem['id']): ?>
+            <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
+                <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
+            </a>
+        <? else: ?>
+            <?=$this->escapeHtml($hostItem['label'])?>
+        <? endif; ?>
+    <? endif; ?>
+</div>
+
 <? foreach ($holdings['holdings'] as $holding): ?>
     <? $toggleTargetId = 'collapse' . str_replace([' ', '/'],'',$holding['location']); ?>
     <a  class="btn btn-zenon-default btn-block" role="button" data-toggle="collapse" href="#<?= $toggleTargetId; ?>" aria-expanded="false" aria-controls="collapse-group">
@@ -90,29 +111,6 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
         </table>
     </div>
 <? endforeach; ?>
-
-<? if(empty($holdings['holdings'])): ?>
-  <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
-    <? $hostItems = $this->driver->tryMethod('getHostItemInformation'); ?>
-      <? if(!empty($hostItems)): ?>
-        <tr>
-            <th><?=$this->transEsc('Included in')?>: </th>
-            <td>
-              <? foreach ($hostItems as $hostItem): ?>
-                  <? if($hostItem['id']): ?>
-                  <a title="<?=$this->escapeHtml($hostItem['label'])?>"
-                     href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
-                          <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
-                      </a>
-                  <? else: ?>
-                      <?=$this->escapeHtml($hostItem['label'])?>
-                  <? endif; ?>
-              <? endforeach; ?>
-            </td>
-          </tr>
-      <? endif; ?>
-  </table>
-<? endif; ?>
 
 <? $history = $this->driver->getRealTimeHistory(); ?>
 <? if (is_array($history) && !empty($history)): ?>
