@@ -85,13 +85,10 @@
 </div>
 <? endif; ?>
 -->
+
+<? $recordTotal = $this->results->getResultTotal() ?>
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
-      <? foreach ($this->results->getRecommendations('top') as $current): ?>
-        <?=$this->recommend($current)?>
-      <? endforeach; ?>
-    <? endif; ?>
     <?=$this->flashmessages()?>
     <div class="hidden-print search-controls clearfix">
       <div class="pull-left">
@@ -124,10 +121,12 @@
       <? if (isset($this->parseError)): ?>
         <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <? endif; ?>
-      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
-        <?=$this->recommend($current)?>
-      <? endforeach; ?>
-      <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+      <div class="no-result-recommend bg-info">
+        <? foreach (($top = $this->results->getRecommendations('noresults')) as $current): ?>
+          <?=$this->recommend($current)?>
+        <? endforeach; ?>
+      </div>
+      <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <? if (!in_array($current, $top)): ?>
           <?=$this->recommend($current)?>
         <? endif; ?>
@@ -139,6 +138,12 @@
       <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => isset($this->paginationOptions) ? $this->paginationOptions : []])?>
+      
+      <p> <!-- We moved the top recommendations to the bottom..." -->
+        <? foreach ($this->results->getRecommendations('top') as $current): ?>
+          <?=$this->recommend($current)?>
+        <? endforeach; ?>
+      </p>
 
       <div class="searchtools hidden-print">
         <strong><?=$this->transEsc('Search Tools')?>:</strong>

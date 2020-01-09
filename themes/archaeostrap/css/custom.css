@@ -168,3 +168,8 @@ mark {
 	font-size: 16px;
 	font-weight: bold;
 }
+
+.no-result-recommend .authoritybox {
+	font-size: x-large;
+	padding: 1em;
+}
