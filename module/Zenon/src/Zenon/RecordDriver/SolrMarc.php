@@ -30,7 +30,6 @@ use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
 use Zend\Config\Reader\Json as configJson;
 
-
 /**
  * Custom record handling for Zenon MARC records.
  *
@@ -389,6 +388,9 @@ class SolrMarc extends VufindSolrMarc
         $result = array();
         $locationFields = $this->getMarcRecord()->getFields('651');
 
+        echo "<pre>";
+        var_dump($this->getTranslator()->getLocale());
+        echo "</pre>";
         foreach($locationFields as $locationField) {
             if(!$locationField->getSubfield('9')) continue;
 
@@ -400,6 +402,18 @@ class SolrMarc extends VufindSolrMarc
             if($authoritySearchResults->count() == 0) continue;
             $authorityRecord = $authoritySearchResults->first()->getRawData();
             $gazId = $authorityRecord['iDAI_gazetteer_id'];
+            $useFor = $authorityRecord['heading'];
+
+
+            $marc = new \File_MARC($authorityRecord['fullrecord'], \File_MARC::SOURCE_STRING);
+            $variantNames = $marc->next()->getFields('451');
+
+            echo "<pre>";
+            foreach ($variantNames as $name){
+                var_dump($name->getSubfield('a'));
+                var_dump($name->getSubfield('l'));
+            }
+            echo "</pre>";
 
             if(empty($gazId)) continue;
 
