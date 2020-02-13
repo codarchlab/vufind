@@ -277,21 +277,38 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getHostItemInformation()
     {
-        $result = [];
+        $result =  $this->createLinkingEntries($this->getMarcRecord()->getFields('773'));
+        // There should only be one host item.
+        if(count($result) > 0)
+        {
+            return $result[0];
+        }
+    }
 
-        $fields =  $this->getMarcRecord()->getFields('773');
+    /**
+     * Get the host item information (MARC 21 field 787).
+     *
+     * @return array
+     */
+    public function getOtherRelationships(){
+        return $this->createLinkingEntries($this->getMarcRecord()->getFields('787'));
+    }
+
+    private function createLinkingEntries($fields)
+    {
+        $result = [];
         foreach($fields as $currentField) {
             $recordControlNumber = $currentField->getSubfield('w');
             if($recordControlNumber) {
                 $data = $this->getHostItemLinkData($currentField);
-                if($data) 
-                    $result = $data;
+                if($data)
+                    $result[] = $data;
             }
             else {
                 $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n', 'x'], false);
-                
+
                 if(sizeOf($textEntry) > 0)
-                    $result = array('id' => null, 'label' => join(', ', $textEntry));
+                    $result[] = array('id' => null, 'label' => join(', ', $textEntry));
             }
         }
         return $result;

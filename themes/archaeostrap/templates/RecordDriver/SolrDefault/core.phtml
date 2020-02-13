@@ -375,6 +375,25 @@
         </tr>
       <? endif; ?>
 
+        <? $otherRelationShips = $this->driver->getOtherRelationships(); ?>
+        <? if(!empty($otherRelationShips)): ?>
+            <tr>
+                <th><?=$this->transEsc('Other relationships')?>: </th>
+                <? foreach ($otherRelationShips as $relationShip): ?>
+                <td>
+                    <? if($relationShip['id']): ?>
+                        <a title="<?=$this->escapeHtml($relationShip['label'])?>"
+                           href="<?=$this->url('record', array('id' => $relationShip['id']))?>">
+                            <i class="fa fa-book"></i> <?=$this->escapeHtml($relationShip['label'])?>
+                        </a>
+                    <? else: ?>
+                        <?=$this->escapeHtml($relationShip['label'])?>
+                    <? endif; ?>
+                </td>
+                <? endforeach; ?>
+            </tr>
+        <? endif; ?>
+
       <? $chreLink = $this->driver->getCHRELink(); ?>
       <? if(!empty($chreLink)): ?>
         <tr>
