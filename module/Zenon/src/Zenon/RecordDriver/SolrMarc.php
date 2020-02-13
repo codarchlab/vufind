@@ -406,6 +406,8 @@ class SolrMarc extends VufindSolrMarc
         $result = array();
         $locationFields = $this->getMarcRecord()->getFields('651');
 
+        $encounteredGazIds = [];
+
         foreach($locationFields as $locationField) {
             if(!$locationField->getSubfield('9')) continue;
 
@@ -419,11 +421,14 @@ class SolrMarc extends VufindSolrMarc
             $gazId = $authorityRecord['iDAI_gazetteer_id'];
 
             if(empty($gazId)) continue;
+            if(in_array($gazId, $encounteredGazIds)) continue;
 
             $result[] = array(
                 'label' => $label,
                 'uri' => 'https://gazetteer.dainst.org/app/#!/show/' . $gazId
             );
+
+            $encounteredGazIds[] = $gazId;
         }
         return $result;
     }
