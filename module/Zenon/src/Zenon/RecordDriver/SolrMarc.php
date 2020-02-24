@@ -28,7 +28,6 @@
 namespace Zenon\RecordDriver;
 use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
-use Zend\Config\Reader\Json as configJson;
 
 
 /**
@@ -414,28 +413,33 @@ class SolrMarc extends VufindSolrMarc
     public function getPublicationsLink() {
 
         $result = array();
-
-        $content_serials = file_get_contents('./local/iDAI.world/publications_serials_mapping.json');
-
+        
+        $serials_path = './local/iDAI.world/publications_serials_mapping.json';
+        $content_serials = file_get_contents($serials_path);
+        
         if($content_serials != null){
             $controlNumber = $this->getControlNumber();
-            $reader = new configJson();
-            $data = $reader->fromString($content_serials);
+            $data = json_decode($content_serials, true, 512);
 
-            if (array_key_exists($controlNumber, $data))
+            if(is_null($data))
+                trigger_error("$serials_path malformed", E_USER_WARNING);
+            else if (array_key_exists($controlNumber, $data))
                 array_push($result, $data[$controlNumber]);
         }
-
-        $content_books = file_get_contents('./local/iDAI.world/publications_books_mapping.json');
+    
+        $books_path = './local/iDAI.world/publications_books_mapping.json';
+        $content_books = file_get_contents($books_path);
         if($content_books != null){
-            $reader = new configJson();
-            $data = $reader->fromString($content_books);
+            $data = json_decode($content_books, true, 512);
 
-            if(isset($data['publications'])){
+            if(is_null($data))
+                trigger_error("$books_path malformed", E_USER_WARNING);
+            else if(isset($data['publications'])){
                 $controlNumber = $this->getControlNumber();
-
                 if (array_key_exists($controlNumber, $data['publications']))
                     array_push($result, $data['publications'][$controlNumber]);
+            } else {
+                trigger_error("Missing field key publications in $books_path", E_USER_WARNING);
             }
         }
 
