@@ -9,9 +9,9 @@ use VuFind\View\Helper\Root\ResultFeed as ParentResultFeed;
 
 class ResultFeed extends ParentResultFeed
 {
-    protected function registerExtensions()
+    public function registerExtensions(ServiceManager $sm)
     {
-        $manager = new \Zend\Feed\Writer\ExtensionPluginManager();
+        $manager = new \Zend\Feed\Writer\ExtensionPluginManager($sm);
         $manager->setInvokableClass(
             'dublincorerendererentry',
             'Zenon\Feed\Writer\Extension\DublinCore\Renderer\Entry'
