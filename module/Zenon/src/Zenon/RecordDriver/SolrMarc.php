@@ -417,7 +417,7 @@ class SolrMarc extends VufindSolrMarc
         $content_serials = file_get_contents($serials_path);
         
         if($content_serials != null){
-            $data = json_decode($content_serials);
+            $data = json_decode($content_serials, true);
             if(is_null($data))
                 trigger_error("$serials_path malformed", E_USER_WARNING);
             else if (isset($data['publications'])) {
@@ -433,7 +433,7 @@ class SolrMarc extends VufindSolrMarc
         $content_books = file_get_contents($books_path);
 
         if($content_books != null){
-            $data = json_decode($content_books);
+            $data = json_decode($content_books, true);
 
             if(is_null($data))
                 trigger_error("$books_path malformed", E_USER_WARNING);
