@@ -9,22 +9,24 @@ use VuFind\View\Helper\Root\ResultFeed as ParentResultFeed;
 
 class ResultFeed extends ParentResultFeed
 {
-    public function registerExtensions(ServiceManager $sm)
+    public function registerExtensions(\Zend\ServiceManager\ServiceManager $sm)
     {
         $manager = new \Zend\Feed\Writer\ExtensionPluginManager($sm);
         $manager->setInvokableClass(
-            'dublincorerendererentry',
+            'DublinCore\Renderer\Entry',
             'Zenon\Feed\Writer\Extension\DublinCore\Renderer\Entry'
         );
         $manager->setInvokableClass(
-            'dublincoreentry', 'Zenon\Feed\Writer\Extension\DublinCore\Entry'
+            'DublinCore\Entry',
+            'Zenon\Feed\Writer\Extension\DublinCore\Entry'
         );
         $manager->setInvokableClass(
-            'opensearchrendererfeed',
+            'OpenSearch\Renderer\Feed',
             'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
         );
         $manager->setInvokableClass(
-            'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+            'OpenSearch\Feed',
+            'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
         );
         FeedWriter::setExtensionManager($manager);
         FeedWriter::registerExtension('OpenSearch');
@@ -39,7 +41,7 @@ class ResultFeed extends ParentResultFeed
             empty($title) ? $this->translate('Title not available') : $title
         );
         $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLink = $this->getView()->plugin('recordlink');
+        $recordLink = $this->getView()->plugin('recordLink');
         try {
             $url = $serverUrl($recordLink->getUrl($record));
         } catch (\Zend\Mvc\Router\Exception\RuntimeException $e) {

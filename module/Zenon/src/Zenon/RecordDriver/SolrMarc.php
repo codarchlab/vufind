@@ -234,8 +234,7 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the host item information (MARC 21 field 773), also retrieves custom, and deprecated HostItemInformation
-     * in field 995 (ZENON data).
+     * Get the host item information (MARC 21 field 773), also retrieves custom.
      *
      * @return array
      */
@@ -453,19 +452,24 @@ class SolrMarc extends VufindSolrMarc
         $content_serials = file_get_contents($serials_path);
         
         if($content_serials != null){
-            $controlNumber = $this->getControlNumber();
-            $data = json_decode($content_serials, true, 512);
 
+            $data = json_decode($content_serials);
             if(is_null($data))
                 trigger_error("$serials_path malformed", E_USER_WARNING);
-            else if (array_key_exists($controlNumber, $data))
-                array_push($result, $data[$controlNumber]);
+            else if (isset($data['publications'])) {
+                $controlNumber = $this->getControlNumber();
+                if (array_key_exists($controlNumber, $data['publications']))
+                    array_push($result, $data['publications'][$controlNumber]);
+            } else {
+                trigger_error("Missing field key publications in $serials_path", E_USER_WARNING);
+            }
         }
     
         $books_path = './local/iDAI.world/publications_books_mapping.json';
         $content_books = file_get_contents($books_path);
+
         if($content_books != null){
-            $data = json_decode($content_books, true, 512);
+            $data = json_decode($content_books);
 
             if(is_null($data))
                 trigger_error("$books_path malformed", E_USER_WARNING);
