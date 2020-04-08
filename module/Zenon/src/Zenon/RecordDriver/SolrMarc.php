@@ -326,6 +326,40 @@ class SolrMarc extends VufindSolrMarc
         return $results;
     }
 
+    public function getPrimaryAuthorsNames()
+    {
+        /**
+         * Get the main authors' names of the record.
+         *
+         * @return array
+         */
+        $primary = $this->getFirstFieldValue('100', ['a']);
+        return empty($primary) ? [] : [$primary];
+    }
+
+    public function getSecondaryAuthorsNames()
+    {
+        /**
+         * Get the secondary authors' names of the record.
+         *
+         * @return array
+         */
+        $secondary = $this->getFirstFieldValue('700', ['a']);
+        return empty($secondary) ? [] : [$secondary];
+    }
+
+    public function getCorporateAuthorsNames()
+    {
+        /**
+         * Get the corporate authors' names of the record.
+         *
+         * @return array
+         */
+        $corporate = $this->getFirstFieldValue('110', ['a']);
+        return empty($corporate) ? [] : [$corporate];
+    }
+
+
 
     /**
      * Get parallel records for the record (different editions etc.)
