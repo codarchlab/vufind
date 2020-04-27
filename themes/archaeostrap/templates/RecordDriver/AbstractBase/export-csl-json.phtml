@@ -20,6 +20,7 @@
     $pubDates = $this->driver->tryMethod('getPublicationDates');
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
     $pubNames = $this->driver->tryMethod('getPublishers');
+    $pages = $this->driver->tryMethod('getPageRangeFromPhysicalDescription');
 
     $result = array('id' => $zenonId);
     if($format){
@@ -34,6 +35,10 @@
     if($pubPlaces){
       $result['publisher-place'] = rtrim(implode('/', $pubPlaces), ',');
     }
+    if($pages){
+        $result['pages'] = $pages;
+    }
+
     if(!empty($authors)){
       $authorList = [];
       foreach($authors as $key => $value){
