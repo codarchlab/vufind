@@ -60,4 +60,4 @@
       $result['issued'] = ["raw" => implode('/', $pubDates)];
     }
 
-    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
