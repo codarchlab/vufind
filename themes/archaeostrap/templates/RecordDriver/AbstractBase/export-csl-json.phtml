@@ -21,6 +21,7 @@
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
     $pubNames = $this->driver->tryMethod('getPublishers');
     $pages = $this->driver->tryMethod('getPageRangeFromPhysicalDescription');
+    $containers = $this->driver->tryMethod('getHostItemInformation');
 
     $result = array('id' => $zenonId);
     if($format){
@@ -37,6 +38,9 @@
     }
     if($pages){
         $result['pages'] = $pages;
+    }
+    if(!empty($containers)){
+        $result['container-title'] = $containers[0]['label'];
     }
 
     if(!empty($authors)){

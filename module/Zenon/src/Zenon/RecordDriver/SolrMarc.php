@@ -234,7 +234,7 @@ class SolrMarc extends VufindSolrMarc
 
     /**
      * Get the host item information (MARC 21 field 773), also retrieves custom.
-     *
+     * # TODO: Why do we return an array?
      * @return array
      */
     public function getHostItemInformation()
