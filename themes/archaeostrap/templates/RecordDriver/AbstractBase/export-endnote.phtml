@@ -1,10 +1,10 @@
 <?
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
 $formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
+$format = '';
 if (is_array($formats) && !empty($formats)) {
-    foreach ($formats as $format) {
-        echo "%0 $format\n";
-    }
+    $format = $formats[0];
+    echo "%0 $format\n";
 } else {
     // Assume book if no format found (otherwise data may be considered invalid):
     echo "%0 Book\n";
@@ -59,14 +59,14 @@ $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
         if(is_array($current)){
-            echo '%B ' . $current['name'];
+            echo '%S ' . $current['name'];
             if (array_key_exists('number', $current)) {
                 echo " " . $current['number'];
             }
             echo "\n";
         }
         else{
-            echo '%B ' . $current . "\n";
+            echo '%S ' . $current . "\n";
         }
     }
 }
@@ -88,9 +88,14 @@ if (is_array($issns)) {
 $title = rtrim($this->driver->getTitle(), " /");
 echo "%T $title\n";
 $page = null;
-$journalTitle = $this->driver->tryMethod('getContainerTitle');
-if (!empty($journalTitle)) {
-    echo "%J $journalTitle\n";
+$containerTitle = $this->driver->tryMethod('getContainerTitle');
+if (!empty($containerTitle)) {
+    // see format_map.properties
+    if (strpos($format, 'Book Chapter') === false) {
+        echo "%J $containerTitle\n";
+    } else {
+        echo "%B $containerTitle\n";
+    }
     $volume = $this->driver->tryMethod('getContainerVolume');
     if (!empty($volume)) {
         echo "%V $volume\n";
