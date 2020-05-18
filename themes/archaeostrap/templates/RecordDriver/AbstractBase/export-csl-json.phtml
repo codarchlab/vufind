@@ -20,6 +20,8 @@
     $pubDates = $this->driver->tryMethod('getPublicationDates');
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
     $pubNames = $this->driver->tryMethod('getPublishers');
+    $pages = $this->driver->tryMethod('getPageRangeFromPhysicalDescription');
+    $containers = $this->driver->tryMethod('getHostItemInformation');
 
     $result = array('id' => $zenonId);
     if($format){
@@ -34,6 +36,13 @@
     if($pubPlaces){
       $result['publisher-place'] = rtrim(implode('/', $pubPlaces), ',');
     }
+    if($pages){
+        $result['pages'] = $pages;
+    }
+    if(!empty($containers)){
+        $result['container-title'] = $containers[0]['label'];
+    }
+
     if(!empty($authors)){
       $authorList = [];
       foreach($authors as $key => $value){
@@ -51,4 +60,4 @@
       $result['issued'] = ["raw" => implode('/', $pubDates)];
     }
 
-    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

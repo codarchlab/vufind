@@ -28,7 +28,6 @@
 namespace Zenon\RecordDriver;
 use VuFind\RecordDriver\SolrMarc as VufindSolrMarc;
 use VuFindCode\ISBN;
-use Zend\Config\Reader\Json as configJson;
 
 
 /**
@@ -235,9 +234,8 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the host item information (MARC 21 field 773), also retrieves custom, and deprecated HostItemInformation
-     * in field 995 (ZENON data).
-     *
+     * Get the host item information (MARC 21 field 773), also retrieves custom.
+     * # TODO: Why do we return an array?
      * @return array
      */
     public function getLinkToSerialParentRecord(){
@@ -370,6 +368,40 @@ class SolrMarc extends VufindSolrMarc
         return $results;
     }
 
+    public function getPrimaryAuthorsNames()
+    {
+        /**
+         * Get the main authors' names of the record.
+         *
+         * @return array
+         */
+        $primary = $this->getFirstFieldValue('100', ['a']);
+        return empty($primary) ? [] : [$primary];
+    }
+
+    public function getSecondaryAuthorsNames()
+    {
+        /**
+         * Get the secondary authors' names of the record.
+         *
+         * @return array
+         */
+        $secondary = $this->getFirstFieldValue('700', ['a']);
+        return empty($secondary) ? [] : [$secondary];
+    }
+
+    public function getCorporateAuthorsNames()
+    {
+        /**
+         * Get the corporate authors' names of the record.
+         *
+         * @return array
+         */
+        $corporate = $this->getFirstFieldValue('110', ['a']);
+        return empty($corporate) ? [] : [$corporate];
+    }
+
+
 
     /**
      * Get parallel records for the record (different editions etc.)
@@ -449,28 +481,37 @@ class SolrMarc extends VufindSolrMarc
     public function getPublicationsLink() {
 
         $result = array();
-
-        $content_serials = file_get_contents('./local/iDAI.world/publications_serials_mapping.json');
-
+        
+        $serials_path = './local/iDAI.world/publications_serials_mapping.json';
+        $content_serials = file_get_contents($serials_path);
+        
         if($content_serials != null){
-            $controlNumber = $this->getControlNumber();
-            $reader = new configJson();
-            $data = $reader->fromString($content_serials);
-
-            if (array_key_exists($controlNumber, $data))
-                array_push($result, $data[$controlNumber]);
-        }
-
-        $content_books = file_get_contents('./local/iDAI.world/publications_books_mapping.json');
-        if($content_books != null){
-            $reader = new configJson();
-            $data = $reader->fromString($content_books);
-
-            if(isset($data['publications'])){
+            $data = json_decode($content_serials, true);
+            if(is_null($data))
+                trigger_error("$serials_path malformed", E_USER_WARNING);
+            else if (isset($data['publications'])) {
                 $controlNumber = $this->getControlNumber();
-
                 if (array_key_exists($controlNumber, $data['publications']))
                     array_push($result, $data['publications'][$controlNumber]);
+            } else {
+                trigger_error("Missing field key publications in $serials_path", E_USER_WARNING);
+            }
+        }
+    
+        $books_path = './local/iDAI.world/publications_books_mapping.json';
+        $content_books = file_get_contents($books_path);
+
+        if($content_books != null){
+            $data = json_decode($content_books, true);
+
+            if(is_null($data))
+                trigger_error("$books_path malformed", E_USER_WARNING);
+            else if(isset($data['publications'])){
+                $controlNumber = $this->getControlNumber();
+                if (array_key_exists($controlNumber, $data['publications']))
+                    array_push($result, $data['publications'][$controlNumber]);
+            } else {
+                trigger_error("Missing field key publications in $books_path", E_USER_WARNING);
             }
         }
 
