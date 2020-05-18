@@ -1,4 +1,8 @@
 <?
+    function trimSpecialCharacters($place) {
+        return  preg_replace('/\W*$/', '', $place);
+    }
+
     $marc = $this->driver->tryMethod('getMarcRecord');
     if (is_object($marc)) {
         $marcPhdField = $marc->getField('502');
@@ -34,7 +38,7 @@
       $result['publisher'] = rtrim(implode('/', $pubNames), ',');
     }
     if($pubPlaces){
-      $result['publisher-place'] = rtrim(implode('/', $pubPlaces), ',');
+        $result['publisher-place'] = implode('/', array_map('trimSpecialCharacters', $pubPlaces));
     }
     if($pages){
         $result['pages'] = $pages;
