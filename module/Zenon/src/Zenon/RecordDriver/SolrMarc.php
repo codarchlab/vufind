@@ -628,7 +628,7 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Try parsing the page range for an artical from the physical description filed (300a).
+     * Try parsing the page range for an article from the physical description filed (300a).
      *
      * @return string
      */
@@ -636,12 +636,11 @@ class SolrMarc extends VufindSolrMarc
 
         $value = $this->getFieldArray('300',['a']);
         if(!empty($value)){
-            preg_match('/((\d+-\d+)|(\d+))/', $value[0], $matches);
+            preg_match('/((\d+–\d+)|(\d+-\d+))/', $value[0], $matches);
             if(!empty($matches)){
                 return $matches[1];
-            } else {
-                return '';
             }
+            return '';
         } else {
             return '';
         }
