@@ -235,7 +235,7 @@ class SolrMarc extends VufindSolrMarc
 
     /**
      * Get the host item information (MARC 21 field 773), also retrieves custom.
-     *
+     * # TODO: Why do we return an array?
      * @return array
      */
     public function getLinkToSerialParentRecord(){
@@ -367,6 +367,40 @@ class SolrMarc extends VufindSolrMarc
 
         return $results;
     }
+
+    public function getPrimaryAuthorsNames()
+    {
+        /**
+         * Get the main authors' names of the record.
+         *
+         * @return array
+         */
+        $primary = $this->getFirstFieldValue('100', ['a']);
+        return empty($primary) ? [] : [$primary];
+    }
+
+    public function getSecondaryAuthorsNames()
+    {
+        /**
+         * Get the secondary authors' names of the record.
+         *
+         * @return array
+         */
+        $secondary = $this->getFirstFieldValue('700', ['a']);
+        return empty($secondary) ? [] : [$secondary];
+    }
+
+    public function getCorporateAuthorsNames()
+    {
+        /**
+         * Get the corporate authors' names of the record.
+         *
+         * @return array
+         */
+        $corporate = $this->getFirstFieldValue('110', ['a']);
+        return empty($corporate) ? [] : [$corporate];
+    }
+
 
 
     /**
@@ -629,7 +663,7 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Try parsing the page range for an artical from the physical description filed (300a).
+     * Try parsing the page range for an article from the physical description filed (300a).
      *
      * @return string
      */
@@ -637,12 +671,11 @@ class SolrMarc extends VufindSolrMarc
 
         $value = $this->getFieldArray('300',['a']);
         if(!empty($value)){
-            preg_match('/((\d+-\d+)|(\d+))/', $value[0], $matches);
+            preg_match('/((\d+–\d+)|(\d+-\d+))/', $value[0], $matches);
             if(!empty($matches)){
                 return $matches[1];
-            } else {
-                return '';
             }
+            return '';
         } else {
             return '';
         }

@@ -22,6 +22,32 @@ authors:
   type: array
   items:
     $ref: '#/definitions/Authors'
+
+primaryAuthorsNames:
+  vufind.method: getPrimaryAuthorsNames
+  description: Primary authors' names
+  vufind.default: true
+  type: array
+  items:
+    type: string
+
+secondaryAuthorsNames:
+  vufind.method: getSecondaryAuthorsNames
+  description: Secondary authors' names
+  vufind.default: true
+  type: array
+  items:
+    type: string
+
+corporateAuthorsNames:
+  vufind.method: getCorporateAuthorsNames
+  description: Corporate authors' names
+  vufind.default: true
+  type: array
+  items:
+    type: string
+
+
 awards:
   vufind.method: getAwards
   description: Award notes
@@ -337,6 +363,7 @@ series:
     type: string
 shortTitle:
   vufind.method: getShortTitle
+  vufind.default: true
   description: Short title (title excluding any subtitle)
   type: string
 subjects:
@@ -357,6 +384,7 @@ subjectsExtended:
     $ref: '#/definitions/Subject'
 subTitle:
   vufind.method: getSubTitle
+  vufind.default: true
   description: Subtitle
   type: string
 summary:
