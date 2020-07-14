@@ -41,3 +41,23 @@ else
     echo "$VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml is an empty file, nothing is getting updated."
     rm $VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml
 fi
+
+if [[ -z "$KOHA_BASE_URL" ]]
+then
+  KOHA_AUTH_URL="https://kohadev.dainst.org/download/exports/$today/authority_data.mrc"
+else
+  KOHA_AUTH_URL="$KOHA_BASE_URL/$today/authority_data.mrc"
+fi
+
+echo "Loading updated authority data from KOHA_AUTH_URL:"
+wget "$KOHA_AUTH_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog-auth/" --no-verbose
+
+if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc" ]]
+then
+    echo "Running VuFind's batch import scripts."
+    "$VUFIND_HOME"/harvest/batch-import-marc-auth.sh dai-katalog-auth | tee $VUFIND_HOME/local/harvest/dai-katalog-auth/log/import_$today.log
+    echo "Done."
+else
+    echo "$VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc is an empty file, nothing is getting updated."
+    rm $VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc
+fi
