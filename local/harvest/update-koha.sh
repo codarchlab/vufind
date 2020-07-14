@@ -50,12 +50,14 @@ else
 fi
 
 echo "Loading updated authority data from KOHA_AUTH_URL:"
+
+mkdir -p $VUFIND_HOME/local/harvest/dai-katalog-auth/log
 wget "$KOHA_AUTH_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog-auth/" --no-verbose
 
 if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc" ]]
 then
     echo "Running VuFind's batch import scripts."
-    "$VUFIND_HOME"/harvest/batch-import-marc-auth.sh dai-katalog-auth | tee $VUFIND_HOME/local/harvest/dai-katalog-auth/log/import_$today.log
+    "$VUFIND_HOME"/harvest/batch-import-marc-auth.sh dai-katalog-auth marc_auth.properties | tee $VUFIND_HOME/local/harvest/dai-katalog-auth/log/import_$today.log
     echo "Done."
 else
     echo "$VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc is an empty file, nothing is getting updated."
