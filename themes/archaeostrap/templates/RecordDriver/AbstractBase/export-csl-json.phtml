@@ -1,4 +1,8 @@
 <?
+    function trimSpecialCharacters($place) {
+        return  preg_replace('/\W*$/', '', $place);
+    }
+
     $marc = $this->driver->tryMethod('getMarcRecord');
     if (is_object($marc)) {
         $marcPhdField = $marc->getField('502');
@@ -20,6 +24,8 @@
     $pubDates = $this->driver->tryMethod('getPublicationDates');
     $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
     $pubNames = $this->driver->tryMethod('getPublishers');
+    $pages = $this->driver->tryMethod('getPageRangeFromPhysicalDescription');
+    $containers = $this->driver->tryMethod('getHostItemInformation');
 
     $result = array('id' => $zenonId);
     if($format){
@@ -32,8 +38,15 @@
       $result['publisher'] = rtrim(implode('/', $pubNames), ',');
     }
     if($pubPlaces){
-      $result['publisher-place'] = rtrim(implode('/', $pubPlaces), ',');
+        $result['publisher-place'] = implode('/', array_map('trimSpecialCharacters', $pubPlaces));
     }
+    if($pages){
+        $result['pages'] = $pages;
+    }
+    if(!empty($containers)){
+        $result['container-title'] = $containers[0]['label'];
+    }
+
     if(!empty($authors)){
       $authorList = [];
       foreach($authors as $key => $value){
@@ -51,4 +64,4 @@
       $result['issued'] = ["raw" => implode('/', $pubDates)];
     }
 
-    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

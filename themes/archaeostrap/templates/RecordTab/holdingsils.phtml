@@ -58,22 +58,18 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
 <? endif; ?>
 
 <? $hostItem = $this->driver->tryMethod('getLinkToSerialParentRecord'); ?>
-<? if($hostItem): ?>
-<div style="margin-top:5px;margin-bottom:5px">
+<? if($hostItem && $hostItem['id']): ?>
+<div  class="alert alert-danger" style="padding:15px" role="alert">
     <b>
         <? if (empty($holdings['holdings'])): ?>
-            <?=$this->transEsc("holdings::See parent record")?>: &nbsp;
+            <?=$this->translate("holdings::See parent record")?>: &nbsp;
         <? else: ?>
-            <?=$this->transEsc("holdings::See also parent record")?>: &nbsp;
+            <?=$this->translate("holdings::See also parent record")?>: &nbsp;
         <? endif; ?>
-   </b>
-        <? if($hostItem['id']): ?>
-            <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
-                <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
-            </a>
-        <? else: ?>
-            <?=$this->escapeHtml($hostItem['label'])?>
-        <? endif; ?>
+    </b>
+    <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
+        <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
+    </a>
 </div>
 <? endif; ?>
 
