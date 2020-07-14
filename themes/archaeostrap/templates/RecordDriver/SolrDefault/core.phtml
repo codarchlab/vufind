@@ -316,6 +316,19 @@
         </tr>
       <? endif; ?>
 
+    <?/* display links to thesauri */?>
+    <? $thsLinks = $this->driver->getThesauriLinks(); ?>
+    <? if(!empty($thsLinks)): ?>
+        <tr>
+            <th>iDAI.thesauri: </th>
+            <td>
+                <? foreach ($thsLinks as $thsLink): ?>
+                    <a title="<?=$this->escapeHtml($thsLink['label'])?>" href="<?=$thsLink['uri']?>" target="_blank"><i class="fa fa-map-marker"></i> <?=$this->escapeHtml($thsLink['label'])?> <small><i class="fa fa-external-link"></i></small></a><br />
+                <? endforeach; ?>
+            </td>
+        </tr>
+    <? endif; ?>
+
       <? $publicationsLinks = $this->driver->getPublicationsLink(); ?>
       <? if(!empty($publicationsLinks)): ?>
           <tr>

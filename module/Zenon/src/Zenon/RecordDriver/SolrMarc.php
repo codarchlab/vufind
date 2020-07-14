@@ -450,7 +450,7 @@ class SolrMarc extends VufindSolrMarc
 
             if($authoritySearchResults->count() == 0) continue;
             $authorityRecord = $authoritySearchResults->first()->getRawData();
-            $gazId = $authorityRecord['iDAI_gazetteer_id'];
+            $gazId = $authorityRecord['iDAI_world_id'];
 
             if(empty($gazId)) continue;
             if(in_array($gazId, $encounteredGazIds)) continue;
@@ -461,6 +461,42 @@ class SolrMarc extends VufindSolrMarc
             );
 
             $encounteredGazIds[] = $gazId;
+        }
+        return $result;
+    }
+
+    /**
+     * Get links to iDAI.thesauri
+     *
+     * @return array
+     */
+    public function getThesauriLinks()
+    {
+        $result = array();
+        $topicFields = $this->getMarcRecord()->getFields('650');
+
+        $encounteredThesauriIds = [];
+        foreach($topicFields as $topicField) {
+            if(!$topicField->getSubfield('9')) continue;
+
+            $authorityID = $topicField->getSubfield('9')->getData();
+            $label = $topicField->getSubfield('a')->getData();
+
+            $authoritySearchResults = $this->searchService->retrieve('SolrAuth', $authorityID);
+
+            if($authoritySearchResults->count() == 0) continue;
+            $authorityRecord = $authoritySearchResults->first()->getRawData();
+            $thesauriId = $authorityRecord['iDAI_world_id'];
+
+            if(empty($thesauriId)) continue;
+            if(in_array($thesauriId, $encounteredThesauriIds)) continue;
+
+            $result[] = array(
+                'label' => $label,
+                'uri' => 'http://thesauri.dainst.org/' . $thesauriId
+            );
+
+            $encounteredGazIds[] = $thesauriId;
         }
         return $result;
     }

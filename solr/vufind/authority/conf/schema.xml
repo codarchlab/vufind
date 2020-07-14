@@ -44,7 +44,7 @@
     <field name="scope_note" type="string" indexed="false" stored="true" multiValued="true"/>
 
     <!-- Additional, Zenon specific -->
-    <field name="iDAI_gazetteer_id" type="string" indexed="true" stored="true"/>
+    <field name="iDAI_world_id" type="string" indexed="true" stored="true"/>
 
     <!-- Keyword Fields for Searching -->
     <field name="heading_keywords" type="text" indexed="true" stored="false"/>
