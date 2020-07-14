@@ -450,7 +450,7 @@ class SolrMarc extends VufindSolrMarc
 
             if($authoritySearchResults->count() == 0) continue;
             $authorityRecord = $authoritySearchResults->first()->getRawData();
-            $gazId = $authorityRecord['iDAI_world_id'];
+            $gazId = $authorityRecord['iDAI_gazetteer_id'];
 
             if(empty($gazId)) continue;
             if(in_array($gazId, $encounteredGazIds)) continue;
@@ -486,7 +486,7 @@ class SolrMarc extends VufindSolrMarc
 
             if($authoritySearchResults->count() == 0) continue;
             $authorityRecord = $authoritySearchResults->first()->getRawData();
-            $thesauriId = $authorityRecord['iDAI_world_id'];
+            $thesauriId = $authorityRecord['iDAI_thesauri_id'];
 
             if(empty($thesauriId)) continue;
             if(in_array($thesauriId, $encounteredThesauriIds)) continue;
