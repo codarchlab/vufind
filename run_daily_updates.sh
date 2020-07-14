@@ -20,8 +20,8 @@ then
     VUFIND_LOCAL_DIR=/usr/local/vufind/local
 fi
 
-BIBLIO_UPDATE_LOG="$VUFIND_HOME/local/harvest/log/`date +\%Y-\%m-\%d`.log"
-"$VUFIND_HOME/local/harvest/update-koha.sh" &> "$BIBLIO_UPDATE_LOG"
+MARC_UPDATE_LOG="$VUFIND_HOME/local/harvest/log/`date +\%Y-\%m-\%d`.log"
+"$VUFIND_HOME/local/harvest/update-koha.sh" &> "$MARC_UPDATE_LOG"
 
 RECIPIENT=zenondai@dainst.org
 
@@ -30,11 +30,11 @@ then
     MACHINE_NAME="Unnamed machine"
 fi
 
-if grep --ignore-case -q error "$BIBLIO_UPDATE_LOG";
+if grep --ignore-case -q error "$MARC_UPDATE_LOG";
 then
-    cat "$BIBLIO_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) bibliography update -- ERROR" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
+    cat "$MARC_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) marc update -- ERROR" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
 else
-    cat "$BIBLIO_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) bibliography update -- SUCCESS" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
+    cat "$MARC_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) marc update -- SUCCESS" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
 fi
 
 
