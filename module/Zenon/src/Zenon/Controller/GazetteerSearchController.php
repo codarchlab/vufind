@@ -29,6 +29,7 @@ namespace Zenon\Controller;
 use http\QueryString;
 use VuFind\Controller\SearchController as VuFindSearchController;
 
+use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFindSearch\Query\Query;
 use Zend\ServiceManager\ServiceLocatorInterface;
 /**
@@ -58,24 +59,35 @@ class GazetteerSearchController extends VuFindSearchController
 
     public function homeAction()
     {
-        $gazId = null;
-        if (array_key_exists("id",$this->getRequest()->getQuery()->toArray())) {
-            // TODO: Need to sanitize query?
-            $gazId = $this->getRequest()->getQuery()->toArray()['id'];
-        }
-        else {
-            echo "TODO: Errorcode 400, id parameter does not exist!";
+        $gazId =  $this->params()->fromQuery('id');
+        if(is_null($gazId)) {
+            throw new \VuFind\Exception\BadRequest(
+                'No iDAI.gazetteer "id" provided.'
+            );
         }
 
-        $query = new Query('iDAI_gazetteer_id:' . $gazId);
-        // $authoritySearchResults = $this->authoritySearch->search('SolrAuth', $query)->getRecords();
+        $query = new Query('iDAI_gazetteer_id:' . $this->escapeForSolr($gazId));
         $authoritySearchResults = $this->authoritySearch->search('SolrAuth', $query)->first();
         if (is_null($authoritySearchResults)) {
-            return "TODO: Errorcode 404, gazetteer ID not found.";
+            throw new RecordMissingException(
+                'Thesauri ID:' . $gazId . ' does not exist.'
+            );
         }
         $authorityId = $authoritySearchResults->getRawData()['id'];
 
-        $queryString = "authority_id_str_mv:" . $authorityId;
+        $queryString = urlencode("authority_id_str_mv:" . $authorityId);
         return $this->redirect()->toUrl('/Search/Results?filter[]=~' . $queryString);
+    }
+
+    /**
+     * Escape a string for inclusion in a Solr query.
+     *
+     * @param string $str String to escape
+     *
+     * @return string
+     */
+    protected function escapeForSolr($str)
+    {
+        return '"' . addcslashes($str, '"') . '"';
     }
 }

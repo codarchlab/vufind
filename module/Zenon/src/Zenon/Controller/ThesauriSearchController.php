@@ -26,12 +26,13 @@
  * @link     https://vufind.org Main Site
  */
 namespace Zenon\Controller;
-use VuFind\Controller\SearchController as VuFindSearchController;
+use VuFind\Controller\AbstractBase as AbstractBase;
 
+use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFindSearch\Query\Query;
 use Zend\ServiceManager\ServiceLocatorInterface;
 /**
- * Gazetteer Link Controller
+ * Thesauri Link Controller
  *
  * @category VuFind
  * @package  Controller
@@ -39,11 +40,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ThesauriSearchController extends VuFindSearchController
+class ThesauriSearchController extends AbstractBase
 {
     /**
      * Home action
      *
+     * @throws \Exception
      * @return mixed
      */
 
@@ -57,24 +59,35 @@ class ThesauriSearchController extends VuFindSearchController
 
     public function homeAction()
     {
-        $gazId = null;
-        if (array_key_exists("id",$this->getRequest()->getQuery()->toArray())) {
-            // TODO: Need to sanitize query?
-            $gazId = $this->getRequest()->getQuery()->toArray()['id'];
+        $thsId = $this->params()->fromQuery('id');
+        if (is_null($thsId)) {
+            throw new \VuFind\Exception\BadRequest(
+                'No iDAI.thesauri "id" provided.'
+            );
         }
-        else {
-            echo "TODO: Errorcode 400, id parameter does not exist!";
-        }
+        $query = new Query('iDAI_thesauri_id:' . $this->escapeForSolr($thsId));
 
-        $query = new Query('iDAI_thesauri_id:' . $gazId);
-        // $authoritySearchResults = $this->authoritySearch->search('SolrAuth', $query)->getRecords();
         $authoritySearchResults = $this->authoritySearch->search('SolrAuth', $query)->first();
         if (is_null($authoritySearchResults)) {
-            return "TODO: Errorcode 404, thesauri ID not found.";
+            throw new RecordMissingException(
+                'Thesauri ID:' . $thsId . ' does not exist.'
+            );
         }
         $authorityId = $authoritySearchResults->getRawData()['id'];
 
-        $queryString = "authority_id_str_mv:" . $authorityId;
+        $queryString = urlencode("authority_id_str_mv:" . $authorityId);
         return $this->redirect()->toUrl('/Search/Results?filter[]=~' . $queryString);
+    }
+
+    /**
+     * Escape a string for inclusion in a Solr query.
+     *
+     * @param string $str String to escape
+     *
+     * @return string
+     */
+    protected function escapeForSolr($str)
+    {
+        return '"' . addcslashes($str, '"') . '"';
     }
 }
