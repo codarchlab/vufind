@@ -17,19 +17,19 @@ angular.module('zenonThs', [])
       $scope.columns = $scope.columns.slice(0, colNo);
       $scope.active = $scope.active.slice(0, colNo-1);
       $scope.active[colNo-1] = parentEntry;
-      if (parentEntry.children_str_mv) {
+      if (parentEntry.ths_children_str_mv) {
         var column = [];
-        parentEntry.children_str_mv.forEach(function(child, i) {
+        parentEntry.ths_children_str_mv.forEach(function(child, i) {
           column.push({
-            heading: child, id:parentEntry.id + '-' + i, leaf: true,
-            inline: true, qualifier_str: parentEntry.qualifier_str
+            heading: child, id:parentEntry.ths_id_str+ '-' + i, leaf: true,
+            inline: true, ths_qualifier_str: parentEntry.ths_qualifier_str
           });
         });
         $scope.columns[colNo] = column;
         calcOffset(colNo);
       } else {
         $scope.loading++;
-        $http.get('/Thesaurus/Children?id=' + parentEntry.id).success(function(result) {
+        $http.get('/Thesaurus/Children?id=' + parentEntry.ths_id_str).success(function(result) {
           if (result.data.length < 1) {
             parentEntry.leaf = true;
             calcOffset(colNo-1);
@@ -44,9 +44,9 @@ angular.module('zenonThs', [])
 
     $scope.search = function(entry) {
       if(entry.inline) {
-        window.location = "/Search/Results?lookfor=\""+entry.qualifier_str+"\" \""+entry.heading+"\"";
+        window.location = "/Search/Results?lookfor=\""+entry.ths_qualifier_str+"\" \""+entry.ths_heading+"\"";
       } else {
-        window.location = "/Search/Results?lookfor=\""+entry.qualifier_str+"\"&type=Thesaurus";
+        window.location = "/Search/Results?lookfor=\""+entry.ths_qualifier_str+"\"&type=Thesaurus";
       }
     };
 

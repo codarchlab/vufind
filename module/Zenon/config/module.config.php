@@ -7,7 +7,8 @@ $config = [
             'Zenon\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'Zenon\Controller\RecordsController' => 'VuFind\Controller\AbstractBaseFactory',
             'Zenon\Controller\GazetteerSearchController' => 'VuFind\Controller\AbstractBaseFactory',
-            'Zenon\Controller\ThesauriSearchController' => 'VuFind\Controller\AbstractBaseFactory'
+            'Zenon\Controller\ThesauriSearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Zenon\Controller\ThesaurusController' =>  'Zenon\Controller\ThesaurusControllerFactory'
         ],
         'aliases' => [
             'Cart' => 'Zenon\Controller\CartController',
@@ -17,7 +18,9 @@ $config = [
             'Gazetteer' => 'Zenon\Controller\GazetteerSearchController',
             'gazetteer' => 'Zenon\Controller\GazetteerSearchController',
             'Thesauri' => 'Zenon\Controller\ThesauriSearchController',
-            'thesauri' => 'Zenon\Controller\ThesauriSearchController'
+            'thesauri' => 'Zenon\Controller\ThesauriSearchController',
+            'thesaurus' => 'Zenon\Controller\ThesaurusController',
+            'Thesaurus' => 'Zenon\Controller\ThesaurusController',
         ]
     ],
     'service_manager' => [
