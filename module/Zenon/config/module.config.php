@@ -5,13 +5,19 @@ $config = [
 	'controllers' => [
         'factories' => [
             'Zenon\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
-            'Zenon\Controller\RecordsController' => 'VuFind\Controller\AbstractBaseFactory'
+            'Zenon\Controller\RecordsController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Zenon\Controller\GazetteerSearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'Zenon\Controller\ThesauriSearchController' => 'VuFind\Controller\AbstractBaseFactory'
         ],
         'aliases' => [
             'Cart' => 'Zenon\Controller\CartController',
             'cart' => 'Zenon\Controller\CartController',
             'Records' => 'Zenon\Controller\RecordsController',
-            'records' => 'Zenon\Controller\RecordsController'
+            'records' => 'Zenon\Controller\RecordsController',
+            'Gazetteer' => 'Zenon\Controller\GazetteerSearchController',
+            'gazetteer' => 'Zenon\Controller\GazetteerSearchController',
+            'Thesauri' => 'Zenon\Controller\ThesauriSearchController',
+            'thesauri' => 'Zenon\Controller\ThesauriSearchController'
         ]
     ],
     'service_manager' => [
