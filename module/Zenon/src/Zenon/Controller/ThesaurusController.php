@@ -70,7 +70,7 @@ class ThesaurusController extends AjaxController
         if ($id) {
             $params->setOverrideQuery("ths_parent_id_str:$id");
         } else {
-            $params->setOverrideQuery("-ths_parent_id_str:[* TO *]");
+            $params->setOverrideQuery("-ths_parent_id_str:[* TO *] AND ths_id_str:[* TO *]");
         }
         $params->setLimit(10000);
         $params->setSort("ths_heading_str", true);
