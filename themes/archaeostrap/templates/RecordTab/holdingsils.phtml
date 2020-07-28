@@ -88,16 +88,18 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     <div class="collapse" id="<?= $toggleTargetId; ?>">
         <table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
             <tr>
-                <th width="25%"><?=$this->transEsc("Call Number")?></th>
-                <th width="25%"><?= $this->transEsc("holdings::Description") ?></th>
-                <th width="25%"><?= $this->transEsc("holdings::Item Status") ?></th>
-                <th width="25%"><?= $this->transEsc("holdings::Notes") ?></th>
+                <th><?=$this->transEsc("Call Number")?></th>
+                <th><?= $this->transEsc("Located") ?></th>
+                <th><?= $this->transEsc("holdings::Description") ?></th>
+                <th><?= $this->transEsc("holdings::Item Status") ?></th>
+                <th><?= $this->transEsc("holdings::Notes") ?></th>
             </tr>
             <? foreach ($holding['items'] as $row): ?>
 
                 <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
                     <tr>
                         <td><?=$this->transEsc($row['callnumber'])?></td>
+                        <td><?=$this->transEsc('holdings::' . $row['location_detail'])?></td>
                         <td><?=$this->transEsc($row['summary'])?></td>
                         <td><?=$this->transEsc('holdings::item_status_' . $row['status'])?></td>
                         <td><?=$this->transEsc($row['notes'])?></td>
