@@ -101,7 +101,11 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                         <td><?=$this->transEsc($row['callnumber'])?></td>
                         <td><?=$this->transEsc('holdings::' . $row['location_detail'])?></td>
                         <td><?=$this->transEsc($row['summary'])?></td>
-                        <td><?=$this->transEsc('holdings::item_status_' . $row['status'])?></td>
+                        <? if ($row['lost_status'] == '1'): ?>
+                            <td><?=$this->transEsc('holdings::item_status_missed') ?></td>
+                        <? else: ?>
+                            <td><?=$this->transEsc('holdings::item_status_' . $row['status'])?></td>
+                        <? endif; ?>
                         <td><?=$this->transEsc($row['notes'])?></td>
                     </tr>
                 <? endif; ?>
