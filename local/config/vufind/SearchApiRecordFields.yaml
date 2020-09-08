@@ -132,6 +132,11 @@ containerVolume:
   vufind.default: true
   description: Volume of the containing item
   type: string
+partOrSectionInfo:
+  vufind.method: getPartOrSectionInfo
+  vufind.default: true
+  description: Number of part/section of a work
+  type: string
 corporateAuthors:
   vufind.method: getCorporateAuthors
   description: Main corporate authors

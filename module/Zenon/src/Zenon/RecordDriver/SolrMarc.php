@@ -738,6 +738,11 @@ class SolrMarc extends VufindSolrMarc
         return $this->getFieldArray('542',['d']);
     }
 
+    public function getPartOrSectionInfo()
+    {
+        return $this->getFirstFieldValue('245', ['n']);
+    }
+
     private function removeTrailingSlash($s)
     {
         if (strrpos($s, '/') == strlen($s)-1) {
