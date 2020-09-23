@@ -83,6 +83,7 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
         return []
 
     parent_ids = []
+    holding_branches = []
     for id in ids:
         if id in holdings_mapping:
             (parent_ids, holding_branches) = holdings_mapping[id]
@@ -105,7 +106,7 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
     if parent_ids:
         return list(set(holding_branches + accumulate_ancestor_holdings(sys_number_first, parent_ids, current_depths=current_depths+1)))
-    return parent_ids
+    return holding_branches
 
 
 def add_to_holding_mapping(record):
