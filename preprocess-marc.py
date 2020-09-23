@@ -150,16 +150,20 @@ def preprocess_record(record):
 
 def run(file_paths, output_directory):
     global invalid_zenon_ids
-
+    
+    logger.info("Creating holding mappings.")
     for file_path in file_paths:
         with open(file_path, 'rb') as input_file:
+            logger.info(file_path)
             reader = pymarc.parse_xml_to_array(input_file)
 
             for record in reader:
                 add_to_holding_mapping(record)
     
+    logger.info("Preprocessing files.")
     for file_path in file_paths:
         with open(file_path, 'rb') as input_file, open("{0}/{1}".format(output_directory, os.path.basename(file_path)), 'wb') as output_file:
+            logger.info(file_path)
             reader = pymarc.parse_xml_to_array(input_file)
             
             output_file.write(MARCXML_OPENING_ELEMENTS)
