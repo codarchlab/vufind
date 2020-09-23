@@ -124,7 +124,12 @@ def preprocess_record(record):
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
     ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
     ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
-    
+
+    holdings = record.get_fields('952')
+    internal_subfields = ['d', 'e', 'f', 'g', 'w', 'x', 'A', 'C', 'P', 'T', 'U']
+    for holding in holdings:
+	    holding.delete_subfield(internal_subfields)
+
     if ancestor_holding_branches:
         for branch in ancestor_holding_branches:
             record.add_field(
