@@ -75,7 +75,7 @@ def extract_holding_branch_codes(holding_fields):
         holding_branches.append(holding['b'])
     return holding_branches
 
-def accumulate_ancestor_holdings(ids, current_depths = 0):
+def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
     if current_depths > 10:
         logger.error("Unusually deeply nested hierarchy for {0}. Aborting recursion.".format(ids))
@@ -98,12 +98,12 @@ def accumulate_ancestor_holdings(ids, current_depths = 0):
 
                     holdings_mapping[id] = (parent_ids, holding_branches)
             except urllib.error.HTTPError as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}".format(id, e))
+                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
             except Exception as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}".format(id, e))
+                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
 
     if parent_ids:
-        return list(set(holding_branches + accumulate_ancestor_holdings(parent_ids, current_depths=current_depths+1)))
+        return list(set(holding_branches + accumulate_ancestor_holdings(sys_number_first, parent_ids, current_depths=current_depths+1)))
     return parent_ids
 
 
@@ -122,7 +122,7 @@ def add_to_holding_mapping(record):
 def preprocess_record(record):
     sys_number = record['001'].data
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
-    ancestor_holding_branches = accumulate_ancestor_holdings(parent_ids)
+    ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
     ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
     
     if ancestor_holding_branches:
