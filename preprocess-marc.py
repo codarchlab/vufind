@@ -110,6 +110,8 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
 
 def add_to_holding_mapping(record):
+    if not '001' in record:
+	    return
     sys_number = record['001'].data
             
     holdings = record.get_fields('952')
@@ -122,12 +124,16 @@ def add_to_holding_mapping(record):
     holdings_mapping[sys_number] = (parent_ids, holding_branches)
 
 def preprocess_record(record):
+
+    if not '001' in record:
+        logger.error("No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
+        return None
+
     sys_number = record['001'].data
 
     matcher = re.fullmatch(valid_zenon_id, sys_number)
     if not matcher:
-        logger.error("Unusual zenon ID in biblio #{0}. Returning None record.".format(record['999']['c']))
-        return None
+        logger.error("Unusual system number 001 {1} in biblio #{0}.".format(record['999']['c'], sys_number))
 
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
     ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
