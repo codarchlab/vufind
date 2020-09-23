@@ -136,7 +136,8 @@ def preprocess_record(record):
     holdings = record.get_fields('952')
     internal_subfields = ['d', 'e', 'f', 'g', 'w', 'x', 'A', 'C', 'P', 'T', 'U']
     for holding in holdings:
-	    holding.delete_subfield(internal_subfields)
+        for subfield in internal_subfields:
+	        holding.delete_subfield(subfield)
 
     if ancestor_holding_branches:
         for branch in ancestor_holding_branches:
