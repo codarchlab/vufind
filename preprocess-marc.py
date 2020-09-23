@@ -6,7 +6,7 @@ import urllib
 import re
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def is_writable_directory(path: str):
@@ -47,7 +47,8 @@ def extract_parent_ids(sys_number, parents):
         parent_sys_number = parent['w']
         matcher = re.fullmatch(valid_zenon_id, parent_sys_number)
         if not matcher:
-            invalid_zenon_ids += [(sys_number, parent_sys_number)]
+
+            fixed_value = None
 
             number_match = re.fullmatch(contains_only_numbers, parent_sys_number)
             if number_match:
@@ -57,6 +58,11 @@ def extract_parent_ids(sys_number, parents):
                     pad = '0' * (9 - len(parent_sys_number))
                     parent['w'] = pad + parent_sys_number
                 parent_ids += [parent['w']]
+
+                fixed_value = parent['w']
+
+            invalid_zenon_ids += [(sys_number, parent_sys_number, fixed_value)]
+
         else:
             parent_ids += [parent['w']]
 
@@ -100,51 +106,72 @@ def accumulate_ancestor_holdings(ids, current_depths = 0):
         return list(set(holding_branches + accumulate_ancestor_holdings(parent_ids, current_depths=current_depths+1)))
     return parent_ids
 
-def run(options):
+
+def add_to_holding_mapping(record):
+    sys_number = record['001'].data
+            
+    holdings = record.get_fields('952')
+    holding_branches = extract_holding_branch_codes(holdings)
+
+    parent_ids = []
+    parents = record.get_fields('773')
+    parent_ids = extract_parent_ids(sys_number, parents)
+    
+    holdings_mapping[sys_number] = (parent_ids, holding_branches)
+
+def preprocess_record(record):
+    sys_number = record['001'].data
+    (parent_ids, holding_branches) = holdings_mapping[sys_number]
+    ancestor_holding_branches = accumulate_ancestor_holdings(parent_ids)
+    ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
+    
+    if ancestor_holding_branches:
+        for branch in ancestor_holding_branches:
+            record.add_field(
+                pymarc.Field(
+                    '953',
+                    indicators=[' ', ' '],
+                    subfields=[ 'b', branch, 'z', "Automatically added holding branch key." ]
+                )
+            )
+    
+    return record
+
+def run(file_paths, output_directory):
     global invalid_zenon_ids
-    with open(options['input_file'], 'rb') as input_file, open("{0}/{1}".format(options['output_directory'], os.path.basename(options['input_file'])), 'wb') as output_file:
-        reader = pymarc.parse_xml_to_array(input_file)
-        
-        output_file.write(MARCXML_OPENING_ELEMENTS)
 
-        for record in reader:
-            sys_number = record['001'].data
+    for file_path in file_paths:
+        with open(file_path, 'rb') as input_file:
+            reader = pymarc.parse_xml_to_array(input_file)
+
+            for record in reader:
+                add_to_holding_mapping(record)
+    
+    for file_path in file_paths:
+        with open(file_path, 'rb') as input_file, open("{0}/{1}".format(output_directory, os.path.basename(file_path)), 'wb') as output_file:
+            reader = pymarc.parse_xml_to_array(input_file)
             
-            holdings = record.get_fields('952')
-            holding_branches = extract_holding_branch_codes(holdings)
+            output_file.write(MARCXML_OPENING_ELEMENTS)
 
-            parent_ids = []
-            parents = record.get_fields('773')
-            parent_ids = extract_parent_ids(sys_number, parents)
-            
-            holdings_mapping[sys_number] = (parent_ids, holding_branches)
+            for record in reader:
+                record = preprocess_record(record)
+                output_file.write(pymarc.record_to_xml(record))
 
-            ancestor_holding_branches = accumulate_ancestor_holdings(parent_ids)
-            ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
-            
-            if ancestor_holding_branches:
-                logger.info("sysnumber: {0}".format(sys_number))
-                logger.info("holding branches: {0}".format(holding_branches))
-                logger.info("ancestor holding branches: {0}".format(ancestor_holding_branches))
+            output_file.write(MARCXML_CLOSING_ELEMENTS)
 
-                for branch in ancestor_holding_branches:
-                    record.add_field(
-                        pymarc.Field(
-                            '953',
-                            indicators=[' ', ' '],
-                            subfields=[ 'b', branch, 'z', "Automatically added holding branch key." ]
-                        )
-                    )
-            output_file.write(pymarc.record_to_xml(record))
-
-        output_file.write(MARCXML_CLOSING_ELEMENTS)
-
-        logger.warning("Encountered {0} invalid zenon IDs:".format(len(invalid_zenon_ids)))
-        invalid_zenon_ids = list(set(invalid_zenon_ids))
-        for entry in invalid_zenon_ids:
-            logger.warning("{0} contained {1} as parent.".format(entry[0], entry[1]))
+    logger.warning("Encountered {0} invalid zenon IDs:".format(len(invalid_zenon_ids)))
+    invalid_zenon_ids = list(set(invalid_zenon_ids))
+    for entry in invalid_zenon_ids:
+        logger.warning("{0} contained {1} as parent, fixed: {2}.".format(entry[0], entry[1], entry[2]))
 
 if __name__ == '__main__':
     options = vars(parser.parse_args())
 
-    run(options)
+    try:
+        files = [ os.path.join(options['input_file'], file) for file in os.listdir(options['input_file']) if os.path.splitext(file)[1] == '.xml' ]
+    except NotADirectoryError:
+        files = [options['input_file']]
+    if not files:
+        logger.error("Found no xml files at {0}".format(options['input_file']))
+    if files:
+        run(files, options['output_directory'])
