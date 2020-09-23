@@ -32,7 +32,7 @@ fi
 echo "Loading updated bibliographic data from $KOHA_BIBLIO_URL:"
 wget "$KOHA_BIBLIO_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" --no-verbose
 
-if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml" ]]
+if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" ]]
 then
     echo "Running VuFind's batch import scripts."
     python3 "$VUFIND_HOME"/preprocess-marc.py "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" "$VUFIND_HOME/local/harvest/dai-katalog/"
