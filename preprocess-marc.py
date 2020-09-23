@@ -121,6 +121,12 @@ def add_to_holding_mapping(record):
 
 def preprocess_record(record):
     sys_number = record['001'].data
+
+    matcher = re.fullmatch(valid_zenon_id, sys_number)
+    if not matcher:
+        logger.error("Unusual zenon ID in biblio #{0}. Returning None record.".format(record['999']['c']))
+        return None
+
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
     ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
     ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
@@ -160,7 +166,10 @@ def run(file_paths, output_directory):
 
             for record in reader:
                 record = preprocess_record(record)
-                output_file.write(pymarc.record_to_xml(record))
+                if record is None:
+                    logger.error("Received None record after processing, skipping.")
+                else:
+                    output_file.write(pymarc.record_to_xml(record))
 
             output_file.write(MARCXML_CLOSING_ELEMENTS)
 
