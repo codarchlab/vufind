@@ -98,7 +98,7 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
     </div>
 <? endforeach; ?>
 <br/>
-<? $hostItem = $this->driver->tryMethod('getLinkToSerialParentRecord'); ?>
+<? $hostItem = $this->driver->tryMethod('getHostItemInformation'); ?>
 <? if($hostItem && $hostItem['id']): ?>
     <div class="alert">
         <h4 style="padding:15px" role="alert">
@@ -111,7 +111,6 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
             </b><br/>
             <small><?=$this->translate("holdings::See parent explanation")?></small>
         </h4>
-        
     </div>
     <? $ancestorHoldings = $this->recordLink()->aggregateHostItemHoldings($hostItem['id']) ?>
     <? foreach ($ancestorHoldings['holdings'] as $holding): ?>

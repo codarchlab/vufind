@@ -234,41 +234,6 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
-     * Get the host item information (MARC 21 field 773), also retrieves custom.
-     * # TODO: Why do we return an array?
-     * @return array
-     */
-    public function getLinkToSerialParentRecord(){
-
-        $fields =  $this->getMarcRecord()->getFields('590');
-        $validKeys = array(
-            'arom', 'argk', 'aath', 'aist', 'amad', 'aschw', 'alubl', 'aeur', 'acai', 'adam', 'abays', 'absa', 
-            'brom', 'brgk', 'bath', 'bist', 'bmad', 'bschw', 'blubl', 'bcai', 'beur', 'bbays', 'zbath', 'zbbays', 
-            'zbbsa', 'zbcai', 'zbdam', 'zbeur', 'zbist', 'zblubl', 'zbmad', 'zbori', 'zbrgk', 'zbrom', 'zbschw',
-            'zbz'
-        );
-
-        $found = false;
-        foreach($fields as $currentField) {
-            $key = $currentField->getSubfield('a');
-            if(!$key){
-                continue;
-            }
-            foreach($validKeys as $currentKey) {
-                $len = strlen($currentKey);
-                if(substr($key->getData(), 0, $len) === $currentKey){
-                    $found = true;
-                    break;
-                }
-            }
-            if($found) break;
-        }
-        if($found) {
-            return $this->getHostItemInformation();
-        }
-    }
-
-    /**
      * Get the host item information (MARC 21 field 773).
      *
      * @return array
