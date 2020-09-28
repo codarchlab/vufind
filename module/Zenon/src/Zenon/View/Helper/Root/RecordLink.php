@@ -120,22 +120,23 @@ class RecordLink extends ParentRecordLink
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
 
         $result = $this->searchService->retrieve('Solr', $zenonId)->first();
-        try {
+        if($result) {
             $holdings = $result->getRealTimeHoldings();
-        } catch (\VuFind\Exception\ILS $e) {
+
+            // for parent in 773
+            $hostItem = $result->getHostItemInformation();
+
+            if($hostItem && $hostItem['id']) {
+                $holdings = ['holdings' =>  
+                    array_merge(
+                        $holdings['holdings'], 
+                        $this->aggregateHostItemHoldings($hostItem['id'], $currentDepth + 1)['holdings'])
+                    ];
+            }
+        } else {
             $holdings = ['holdings' => []];
         }
 
-        // for parent in 773
-        $hostItem = $result->getHostItemInformation();
-
-        if($hostItem && $hostItem['id']) {
-            $holdings = ['holdings' =>  
-                array_merge(
-                    $holdings['holdings'], 
-                    $this->aggregateHostItemHoldings($hostItem['id'], $currentDepth + 1)['holdings'])
-                ];
-        }
         return $holdings;
     }
 }
