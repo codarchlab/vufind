@@ -90,7 +90,7 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
         if id in holdings_mapping:
             (parent_ids, holding_branches) = holdings_mapping[id]
         else:
-            url = "https://{1}/Record/{0}/Export?style=MARCXML".format(id, server_url)
+            url = "{1}/Record/{0}/Export?style=MARCXML".format(id, server_url)
             req = urllib.request.Request(url)
             try:
                 with urllib.request.urlopen(req) as response:
