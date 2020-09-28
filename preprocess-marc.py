@@ -32,6 +32,7 @@ MARCXML_CLOSING_ELEMENTS = bytes(
 parser = argparse.ArgumentParser(description='Preprocess MARCXML data to be imported into Vufind.')
 parser.add_argument('input_file', type=str, help="The MARCXML file to be processed.")
 parser.add_argument('output_directory', type=is_writable_directory, help="Output directory for the updated MARC file.")
+parser.add_argument('--url', dest='server_url', type=str, default="https://zenon.dainst.org", help="Optional server URL for creating additional holding information.")
 
 holdings_mapping = {}
 invalid_zenon_ids = []
@@ -77,6 +78,7 @@ def extract_holding_branch_codes(holding_fields):
     return holding_branches
 
 def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
+    global server_url
 
     if current_depths > 10:
         logger.error("Unusually deeply nested hierarchy for {0}. Aborting recursion.".format(ids))
@@ -88,7 +90,7 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
         if id in holdings_mapping:
             (parent_ids, holding_branches) = holdings_mapping[id]
         else:
-            url = "https://zenon.dainst.org/Record/{0}/Export?style=MARCXML".format(id)
+            url = "https://{1}/Record/{0}/Export?style=MARCXML".format(id, server_url)
             req = urllib.request.Request(url)
             try:
                 with urllib.request.urlopen(req) as response:
@@ -100,9 +102,9 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
                     holdings_mapping[id] = (parent_ids, holding_branches)
             except urllib.error.HTTPError as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
+                logger.error("{1}, {3}/Record/{0}, initial record: {3}/Record/{2}.".format(id, e, sys_number_first, server_url))
             except Exception as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
+                logger.error("{1}, {3}/Record/{0}, initial record: {3}/Record/{2}.".format(id, e, sys_number_first, server_url))
 
     if parent_ids:
         return list(set(holding_branches + accumulate_ancestor_holdings(sys_number_first, parent_ids, current_depths=current_depths+1)))
@@ -192,7 +194,10 @@ def run(file_paths, output_directory):
         logger.warning("{0} contained {1} as parent, fixed: {2}.".format(entry[0], entry[1], entry[2]))
 
 if __name__ == '__main__':
+    global server_url
     options = vars(parser.parse_args())
+
+    server_url = options['server_url']
 
     try:
         files = [ os.path.join(options['input_file'], file) for file in os.listdir(options['input_file']) if os.path.splitext(file)[1] == '.xml' ]
