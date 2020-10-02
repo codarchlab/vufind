@@ -1,6 +1,5 @@
 <?
 $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLink()->getUrl($this->driver));
-
 $thumbnail = false;
 $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
 if ($coverDetails['cover']):
@@ -31,11 +30,11 @@ if ($coverDetails['cover']):
                         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
                     <? else: ?>
                         <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
-                        <? $journalTitle = $this->driver->getContainerTitle(); ?>
+                        <? $journalTitle = $this->driver->getHostItemInformation()['label']
+                        # $this->driver->getContainerTitle() funktioniert nicht, deshalb geändert?>
                         <? $pubDetails = $this->driver->getPublicationDetails(); ?>
                         <? $series = $this->driver->getSeries(); ?>
                         <? $summInCollection = $this->driver->getContainingCollections(); ?>
-
                         <? if (!empty($summAuthors)): ?>
                             <?=$this->transEsc('by')?>
                             <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
@@ -69,6 +68,7 @@ if ($coverDetails['cover']):
                         <? endif; ?>
 
                         <? if (!empty($journalTitle)): ?>
+
                             <? $containerSource = $this->driver->getSourceIdentifier(); ?>
                             <? $containerID = $this->driver->getContainerRecordID(); ?>
                             <?= $this->transEsc('Published in') ?>
