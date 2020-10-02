@@ -24,27 +24,30 @@ today=$(date +"%Y-%m-%d")
 
 if [[ -z "$KOHA_BASE_URL" ]]
 then
-  KOHA_BIBLIO_URL="https://kohadev.dainst.org/download/exports/$today/bibliographic_data.xml"
+  KOHA_BIBLIO_URL="https://koha.dainst.org/download/exports/$today/bibliographic_data.xml"
 else
   KOHA_BIBLIO_URL="$KOHA_BASE_URL/$today/bibliographic_data.xml"
 fi
 
 echo "Loading updated bibliographic data from $KOHA_BIBLIO_URL:"
-wget "$KOHA_BIBLIO_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/" --no-verbose
+wget "$KOHA_BIBLIO_URL" -P "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" --no-verbose
 
-if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml" ]]
+if [[ -s "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" ]]
 then
     echo "Running VuFind's batch import scripts."
+    python3 "$VUFIND_HOME"/preprocess-marc.py "$VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/" "$VUFIND_HOME/local/harvest/dai-katalog/" --url "http://$(hostname -i)"
     "$VUFIND_HOME"/harvest/batch-import-marc.sh dai-katalog | tee $VUFIND_HOME/local/harvest/dai-katalog/log/import_$today.log
     echo "Done."
 else
     echo "$VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml is an empty file, nothing is getting updated."
-    rm $VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml
 fi
+
+rm $VUFIND_HOME/local/harvest/dai-katalog/bibliographic_data.xml
+rm $VUFIND_HOME/local/harvest/dai-katalog/notpreprocessed/bibliographic_data.xml
 
 if [[ -z "$KOHA_BASE_URL" ]]
 then
-  KOHA_AUTH_URL="https://kohadev.dainst.org/download/exports/$today/authority_data.mrc"
+  KOHA_AUTH_URL="https://koha.dainst.org/download/exports/$today/authority_data.mrc"
 else
   KOHA_AUTH_URL="$KOHA_BASE_URL/$today/authority_data.mrc"
 fi

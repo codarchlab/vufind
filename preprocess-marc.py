@@ -7,6 +7,7 @@ import re
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def is_writable_directory(path: str):
@@ -31,6 +32,7 @@ MARCXML_CLOSING_ELEMENTS = bytes(
 parser = argparse.ArgumentParser(description='Preprocess MARCXML data to be imported into Vufind.')
 parser.add_argument('input_file', type=str, help="The MARCXML file to be processed.")
 parser.add_argument('output_directory', type=is_writable_directory, help="Output directory for the updated MARC file.")
+parser.add_argument('--url', dest='server_url', type=str, default="https://zenon.dainst.org", help="Optional server URL for creating additional holding information.")
 
 holdings_mapping = {}
 invalid_zenon_ids = []
@@ -76,17 +78,19 @@ def extract_holding_branch_codes(holding_fields):
     return holding_branches
 
 def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
+    global server_url
 
     if current_depths > 10:
         logger.error("Unusually deeply nested hierarchy for {0}. Aborting recursion.".format(ids))
         return []
 
     parent_ids = []
+    holding_branches = []
     for id in ids:
         if id in holdings_mapping:
             (parent_ids, holding_branches) = holdings_mapping[id]
         else:
-            url = "https://zenon.dainst.org/Record/{0}/Export?style=MARCXML".format(id)
+            url = "{1}/Record/{0}/Export?style=MARCXML".format(id, server_url)
             req = urllib.request.Request(url)
             try:
                 with urllib.request.urlopen(req) as response:
@@ -98,16 +102,18 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
                     holdings_mapping[id] = (parent_ids, holding_branches)
             except urllib.error.HTTPError as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
+                logger.error("{1}, {3}/Record/{0}, initial record: {3}/Record/{2}.".format(id, e, sys_number_first, server_url))
             except Exception as e:
-                logger.error("{1}, https://zenon.dainst.org/Record/{0}, initial record: https://zenon.dainst.org/Record/{2}.".format(id, e, sys_number_first))
+                logger.error("{1}, {3}/Record/{0}, initial record: {3}/Record/{2}.".format(id, e, sys_number_first, server_url))
 
     if parent_ids:
         return list(set(holding_branches + accumulate_ancestor_holdings(sys_number_first, parent_ids, current_depths=current_depths+1)))
-    return parent_ids
+    return holding_branches
 
 
 def add_to_holding_mapping(record):
+    if not '001' in record:
+	    return
     sys_number = record['001'].data
             
     holdings = record.get_fields('952')
@@ -120,7 +126,17 @@ def add_to_holding_mapping(record):
     holdings_mapping[sys_number] = (parent_ids, holding_branches)
 
 def preprocess_record(record):
+
+    if not '001' in record:
+        logger.error("No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
+        return None
+
     sys_number = record['001'].data
+
+    matcher = re.fullmatch(valid_zenon_id, sys_number)
+    if not matcher:
+        logger.error("Unusual system number 001 {1} in biblio #{0}.".format(record['999']['c'], sys_number))
+
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
     ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
     ancestor_holding_branches = [x for x in ancestor_holding_branches if x not in holding_branches]
@@ -128,7 +144,8 @@ def preprocess_record(record):
     holdings = record.get_fields('952')
     internal_subfields = ['d', 'e', 'f', 'g', 'w', 'x', 'A', 'C', 'P', 'T', 'U']
     for holding in holdings:
-	    holding.delete_subfield(internal_subfields)
+        for subfield in internal_subfields:
+	        holding.delete_subfield(subfield)
 
     if ancestor_holding_branches:
         for branch in ancestor_holding_branches:
@@ -144,23 +161,30 @@ def preprocess_record(record):
 
 def run(file_paths, output_directory):
     global invalid_zenon_ids
-
+    
+    logger.info("Creating holding mappings.")
     for file_path in file_paths:
         with open(file_path, 'rb') as input_file:
+            logger.info(file_path)
             reader = pymarc.parse_xml_to_array(input_file)
 
             for record in reader:
                 add_to_holding_mapping(record)
     
+    logger.info("Preprocessing files.")
     for file_path in file_paths:
         with open(file_path, 'rb') as input_file, open("{0}/{1}".format(output_directory, os.path.basename(file_path)), 'wb') as output_file:
+            logger.info(file_path)
             reader = pymarc.parse_xml_to_array(input_file)
             
             output_file.write(MARCXML_OPENING_ELEMENTS)
 
             for record in reader:
                 record = preprocess_record(record)
-                output_file.write(pymarc.record_to_xml(record))
+                if record is None:
+                    logger.error("Received None record after processing, skipping.")
+                else:
+                    output_file.write(pymarc.record_to_xml(record))
 
             output_file.write(MARCXML_CLOSING_ELEMENTS)
 
@@ -170,7 +194,10 @@ def run(file_paths, output_directory):
         logger.warning("{0} contained {1} as parent, fixed: {2}.".format(entry[0], entry[1], entry[2]))
 
 if __name__ == '__main__':
+    global server_url
     options = vars(parser.parse_args())
+
+    server_url = options['server_url']
 
     try:
         files = [ os.path.join(options['input_file'], file) for file in os.listdir(options['input_file']) if os.path.splitext(file)[1] == '.xml' ]

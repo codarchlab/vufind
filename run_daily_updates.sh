@@ -12,7 +12,7 @@ fi
 
 if [ -z "$KOHA_BASE_URL" ]
 then
-    KOHA_BASE_URL="https://kohadev.dainst.org/download/exports"
+    KOHA_BASE_URL="https://koha.dainst.org/download/exports"
 fi
 
 if [ -z "$VUFIND_LOCAL_DIR" ]

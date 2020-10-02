@@ -57,22 +57,6 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
         <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 
-<? $hostItem = $this->driver->tryMethod('getLinkToSerialParentRecord'); ?>
-<? if($hostItem && $hostItem['id']): ?>
-<div  class="alert alert-danger" style="padding:15px" role="alert">
-    <b>
-        <? if (empty($holdings['holdings'])): ?>
-            <?=$this->translate("holdings::See parent record")?>: &nbsp;
-        <? else: ?>
-            <?=$this->translate("holdings::See also parent record")?>: &nbsp;
-        <? endif; ?>
-    </b>
-    <a title="<?=$this->escapeHtml($hostItem['label'])?>" href="<?=$this->url('record', array('id' => $hostItem['id']))?>">
-        <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
-    </a>
-</div>
-<? endif; ?>
-
 <? foreach ($holdings['holdings'] as $holding): ?>
     <? $toggleTargetId = 'collapse' . str_replace([' ', '/'],'',$holding['location']); ?>
     <a  class="btn btn-zenon-default btn-block" role="button" data-toggle="collapse" href="#<?= $toggleTargetId; ?>" aria-expanded="false" aria-controls="collapse-group">
@@ -113,6 +97,65 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
         </table>
     </div>
 <? endforeach; ?>
+<br/>
+<? $hostItem = $this->driver->tryMethod('getHostItemInformation'); ?>
+<? if($hostItem && $hostItem['id']): ?>
+    <? $ancestorHoldings = $this->recordLink()->aggregateHostItemHoldings($hostItem['id']) ?>
+    <? if(!empty($ancestorHoldings['holdings'])): ?>
+        <div class="alert">
+            <h4 style="padding:15px" role="alert">
+                <b>
+                    <? if (empty($holdings['holdings'])): ?>
+                        <?=$this->translate("holdings::See parent record")?>:
+                    <? else: ?>
+                        <?=$this->translate("holdings::See also parent record")?>:
+                    <? endif; ?>
+                </b><br/>
+                <small><?=$this->translate("holdings::See parent explanation")?></small>
+            </h4>
+        </div>
+        <? foreach ($ancestorHoldings['holdings'] as $holding): ?>
+            <? $toggleTargetId = 'collapse' . str_replace([' ', '/'], '', $holding['location']); ?>
+            <a  class="btn btn-zenon-default btn-block" role="button" data-toggle="collapse" href="#<?= $toggleTargetId; ?>" aria-expanded="false" aria-controls="collapse-group">
+                <? $locationText = $this->transEsc($holding['location']); ?>
+                <? if (isset($holding['locationhref']) && $holding['locationhref']): ?>
+                    <a href="<?=$holding['locationhref']?>" target="_blank"><?=$locationText?></a>
+                <? else: ?>
+                    <?= $locationText ?>
+                <? endif; ?>
+            </a>
+
+            <? usort($holding['items'], function($a, $b) { return strcmp($a['summary'], $b['summary']); } ); ?>
+            <div class="collapse" id="<?= $toggleTargetId; ?>">
+                <table class="table table-striped" summary="<?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?>">
+                    <tr>
+                        <th><?=$this->transEsc("Call Number")?></th>
+                        <th><?= $this->transEsc("Located") ?></th>
+                        <th><?= $this->transEsc("holdings::Description") ?></th>
+                        <th><?= $this->transEsc("holdings::Item Status") ?></th>
+                        <th><?= $this->transEsc("holdings::Notes") ?></th>
+                    </tr>
+                    <? foreach ($holding['items'] as $row): ?>
+
+                        <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
+                            <tr>
+                                <td><?=$this->transEsc($row['callnumber'])?></td>
+                                <td><?=$this->transEsc('holdings::' . $row['location_detail'])?></td>
+                                <td><?=$this->transEsc($row['summary'])?></td>
+                                <? if ($row['lost_status'] == '1'): ?>
+                                    <td><?=$this->transEsc('holdings::item_status_missed') ?></td>
+                                <? else: ?>
+                                    <td><?=$this->transEsc('holdings::item_status_' . $row['status'])?></td>
+                                <? endif; ?>
+                                <td><?=$this->transEsc($row['notes'])?></td>
+                            </tr>
+                        <? endif; ?>
+                    <? endforeach; ?>
+                </table>
+            </div>
+        <? endforeach; ?>
+    <? endif; ?>
+<? endif; ?>
 
 <? $history = $this->driver->getRealTimeHistory(); ?>
 <? if (is_array($history) && !empty($history)): ?>
