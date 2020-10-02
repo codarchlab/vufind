@@ -422,9 +422,10 @@ class SolrMarc extends VufindSolrMarc
      */
     public function getParallelEditions()
     {
-        $linkType = 'PAR';
-
-        return $this->createCustomFieldLinkArray($linkType);
+        {
+            return $this->createLinkingEntries($this->getMarcRecord()->getFields('776')); # Helena: übernommen aus getOtherRelationships()
+            # das ist aber noch nicht ideal, da hier die Art der Aufnahme nicht angezeigt wird.
+        }
     }
 
 
