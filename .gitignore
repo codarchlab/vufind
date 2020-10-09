@@ -16,7 +16,7 @@ local/config/vufind/config.ini
 local/harvest/DAI_ALL/
 local/harvest/DAI_THS/
 local/harvest/dai-katalog/
-local/harvest/dai-ths/
+local/harvest/dai-katalog-auth/
 local/harvest/log/
 local/import/log/
 local/import/mrc/
