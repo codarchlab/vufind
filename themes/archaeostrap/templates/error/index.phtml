@@ -6,22 +6,20 @@
 <!-- Custom Zenon Code, shows special message if record not found. -->
 <? if(get_class($this->exception) == "VuFind\Exception\RecordMissing"): ?>
 
-    <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecordId($this->currentPath()); ?>
-    <? if($potentialZenonRecords): ?>
+    <? $movedZenonRecord = $this->recordLink()->getMovedReplacementRecordId($this->currentPath()); ?>
+    <? if($movedZenonRecord): ?>
         <div class="alert alert-success moved-record" role="alert">
             <p>
                 <?= $this->transEsc('Zenon record moved');?>:
-                <a class="alert-link" href="/Record/<?= $potentialZenonRecords ?>">
-                    <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $potentialZenonRecords ?>
+                <a class="alert-link" href="/Record/<?= $movedZenonRecord ?>">
+                    <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $movedZenonRecord ?>
                 </a>
 
             </p>
             <p><?= $this->transEsc('You will be redirected in 5 seconds'); ?>...</p>
         </div>
-        <? $this->headMeta()->appendHttpEquiv('Refresh', '5;URL=/Record/' . $potentialZenonRecords); ?>
-    <? endif; ?>
-
-
+        <? $this->headMeta()->appendHttpEquiv('Refresh', '5;URL=/Record/' . $movedZenonRecord); ?>
+    <? else: ?>
     <div id="error" class="alert alert-warning">
         <p><?=$this->transEsc('An error has occurred');?>: <?= $this->exception->getHttpStatus(); ?></p>
 
@@ -34,6 +32,7 @@
             <a href="mailto:<?=$supportEmail?>"><?=$supportEmail ?></a>
         </p>
     </div>
+    <? endif; ?>
 
 <!-- Standard VuFind Code -->
 <? else: ?>

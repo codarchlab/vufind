@@ -90,18 +90,18 @@ class RecordLink extends ParentRecordLink
         return $escaper($url);
     }
 
-    public function getMovedZenonRecordId($recordPath) {
+    public function getMovedReplacementRecordId($recordPath) {
         $match = null;
-        if(preg_match('/.*\/Record\/(\d{9}).*/', $recordPath, $matches)){
-            $id = $this->zenonConfig->Records->localRecordPrefix . $matches[1];
+        if(preg_match('/.*\/Record\/(.+).*/', $recordPath, $matches)){
             $query = new \VuFindSearch\Query\Query(
-                'id:"' . $id . '"'
+                'replacing:"' . addcslashes($matches[1], '"')  . '"'
             );
             // Disable highlighting for efficiency; not needed here:
             $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
 
-            if($this->searchService->search('Solr', $query, 0, 0, $params)->getTotal() == 1) {
-                return $id;
+            $result = $this->searchService->search('Solr', $query)->first();
+            if ($result) {
+                return $result->getControlNumber();
             }
         }
         return false;

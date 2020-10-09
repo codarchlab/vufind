@@ -13,19 +13,6 @@
   $preview = $this->record($this->driver)->getPreviews();
   ?>
 
-    <!--
-    <? $potentialZenonRecords = $this->recordLink()->getMovedZenonRecordId($this->currentPath()); ?>
-    <? if($potentialZenonRecords): ?>
-        <div class="alert alert-success moved-record" role="alert">
-            <p>
-                <?=$this->transEsc('Zenon record moved'); ?>
-                <a class="alert-link" href="/Record/<?= $potentialZenonRecords ?>">
-                    <i class="fa fa-angle-double-right" aria-hidden="true"></i> <?= $potentialZenonRecords ?>
-                </a>
-            </p>
-        </div>
-    <? endif; ?>
-    -->
   <? if ($QRCode || $coverDetails['cover'] || strlen($preview) > 0): ?>
   <div class="col-sm-3">
     <div class="text-center">

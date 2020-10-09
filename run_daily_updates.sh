@@ -21,7 +21,7 @@ then
 fi
 
 MARC_UPDATE_LOG="$VUFIND_HOME/local/harvest/log/`date +\%Y-\%m-\%d`.log"
-"$VUFIND_HOME/local/harvest/update-koha.sh" &> "$MARC_UPDATE_LOG"
+"$VUFIND_HOME/local/harvest/update.sh" &> "$MARC_UPDATE_LOG"
 
 RECIPIENT=zenondai@dainst.org
 
@@ -30,7 +30,7 @@ then
     MACHINE_NAME="Unnamed machine"
 fi
 
-if grep --ignore-case -q error "$MARC_UPDATE_LOG";
+if grep --ignore-case -q error|except "$MARC_UPDATE_LOG";
 then
     cat "$MARC_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) marc update -- ERROR" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
 else
