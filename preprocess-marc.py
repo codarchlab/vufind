@@ -79,6 +79,7 @@ def extract_holding_branch_codes(holding_fields):
 
 def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
     global server_url
+    global holdings_mapping
 
     if current_depths > 10:
         logger.error("Unusually deeply nested hierarchy for {0}. Aborting recursion.".format(ids))
@@ -112,21 +113,23 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
 
 def add_to_holding_mapping(record):
+    global holdings_mapping
     if not '001' in record:
 	    return
-    sys_number = record['001'].data
-            
+
+    sys_number = record['001'].data.strip()
+
     holdings = record.get_fields('952')
     holding_branches = extract_holding_branch_codes(holdings)
 
     parent_ids = []
     parents = record.get_fields('773')
     parent_ids = extract_parent_ids(sys_number, parents)
-    
+
     holdings_mapping[sys_number] = (parent_ids, holding_branches)
 
 def preprocess_record(record):
-
+    global holdings_mapping
     if not '001' in record:
         logger.error("No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
         return None
