@@ -54,6 +54,6 @@ if __name__ == '__main__':
     except NotADirectoryError as e:
         logger.error(e)
     if not files:
-        logger.error("Found no xml files at {0}".format(options['input_file']))
+        logger.error("Found no xml files at {0}".format(options['input_directory']))
     if files:
         run(files, "{0}/preprocess".format(input_directory))
