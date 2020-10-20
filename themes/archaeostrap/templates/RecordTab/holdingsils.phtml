@@ -79,12 +79,17 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                 <th><?= $this->transEsc("holdings::Notes") ?></th>
             </tr>
             <? foreach ($holding['items'] as $row): ?>
-
-                <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
+                <? if (!(empty($row['callnumber']) && empty($row['summary']) &&  $this->transEsc($row['alt_summary']) && empty($row['status']) && empty($row['notes']))): ?>
                     <tr>
                         <td><?=$this->transEsc($row['callnumber'])?></td>
                         <td><?=$this->transEsc('holdings::' . $row['location_detail'])?></td>
-                        <td><?=$this->transEsc($row['summary'])?></td>
+                        <td>
+                            <? if (!empty($row['summary'])): ?>
+                                <?= $this->transEsc($row['summary']) ?></td>
+                            <? else: ?>
+                                <?= $this->transEsc($row['alt_summary']) ?>
+                            <? endif; ?>
+                        </td>
                         <? if ($row['lost_status'] == '1'): ?>
                             <td><?=$this->transEsc('holdings::item_status_missed') ?></td>
                         <? else: ?>
@@ -136,12 +141,17 @@ $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcr
                         <th><?= $this->transEsc("holdings::Notes") ?></th>
                     </tr>
                     <? foreach ($holding['items'] as $row): ?>
-
-                        <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['status']) && empty($row['notes']))): ?>
+                        <? if (!(empty($row['callnumber']) && empty($row['summary']) && empty($row['alt_summary']) && empty($row['status']) && empty($row['notes']))): ?>
                             <tr>
                                 <td><?=$this->transEsc($row['callnumber'])?></td>
                                 <td><?=$this->transEsc('holdings::' . $row['location_detail'])?></td>
-                                <td><?=$this->transEsc($row['summary'])?></td>
+                                <td>
+                                <? if (!empty($row['summary'])): ?>
+                                    <?= $this->transEsc($row['summary']) ?></td>
+                                <? else: ?>
+                                    <?= $this->transEsc($row['alt_summary']) ?>
+                                <? endif; ?>
+                                </td>
                                 <? if ($row['lost_status'] == '1'): ?>
                                     <td><?=$this->transEsc('holdings::item_status_missed') ?></td>
                                 <? else: ?>
