@@ -138,7 +138,7 @@ def preprocess_record(record):
 
     matcher = re.fullmatch(valid_zenon_id, sys_number)
     if not matcher:
-        logger.error("Unusual system number 001 {1} in biblio #{0}. Skipping...".format(record['999']['c'], sys_number))
+        logger.error("Unusual system number 001 {1} in biblio #{0}.  Returning None record.".format(record['999']['c'], sys_number))
         return None
 
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
