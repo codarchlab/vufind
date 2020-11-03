@@ -225,6 +225,7 @@
    <field name="hierarchy_browse" type="string" indexed="true" stored="false" multiValued="true"/>
 
    <field name="system_no" type="systemNumber" indexed="true" stored="true" multiValued="true"/>
+   <field name="biblio_no" type="string" indexed="true" stored="true"/>
    <!-- Used for loading correct record driver -->
    <field name="recordtype" type="string" indexed="false" stored="true"/>
    <!-- Tracking fields to keep track of oldest and most recent index times -->

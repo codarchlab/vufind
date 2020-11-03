@@ -4,6 +4,7 @@ import logging
 import os
 import urllib
 import re
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -33,12 +34,43 @@ parser = argparse.ArgumentParser(description='Preprocess MARCXML data to be impo
 parser.add_argument('input_file', type=str, help="The MARCXML file to be processed.")
 parser.add_argument('output_directory', type=is_writable_directory, help="Output directory for the updated MARC file.")
 parser.add_argument('--url', dest='server_url', type=str, default="https://zenon.dainst.org", help="Optional server URL for creating additional holding information.")
-
+parser.add_argument('--check_biblio', dest='check_biblio', action='store_true', help="Check if datasets with given biblionumber already exist on server. If the system number differs, the new record is logged as an error." )
 holdings_mapping = {}
 invalid_zenon_ids = []
 
 valid_zenon_id = re.compile(r"\d{9}")
 contains_only_numbers = re.compile(r"\d+")
+
+def is_record_valid(record):
+    global server_url
+    global check_biblio_no
+
+    if not '001' in record:
+        return (False, "No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
+
+    sys_number = record['001'].data
+
+    matcher = re.fullmatch(valid_zenon_id, sys_number)
+    if not matcher:
+        return (False, "Unusual system number 001 {1} in biblio #{0}.".format(record['999']['c'], sys_number))
+
+    if check_biblio_no:
+        url =  "{0}/api/v1/search?lookfor=biblio_no:{1}&type=AllFields".format(server_url, record['999']['c'])
+        req = urllib.request.Request(url)
+
+        try:
+            with urllib.request.urlopen(req) as response:
+                records = json.loads(response.read())["records"]
+                if len(records) > 1:
+                    return (False, "There are multiple records with biblio number {0}, see {1}.".format(record['999']['c'], url))
+                if records[0]['id'] != sys_number:
+                    return (False, "There is already a record with biblio number {0}, but the system number differs: {1} (old) : {2} (new).".format(record['999']['c'], records[0]['id'], sys_number))
+                logger.info(url)
+                logger.info(records)
+        except Exception as e:
+            logger.error(e)
+            return (False, "Failed to load {0}.".format(url))
+    return (True, "")
 
 def extract_parent_ids(sys_number, parents):
     global invalid_zenon_ids
@@ -77,6 +109,7 @@ def extract_holding_branch_codes(holding_fields):
         holding_branches.append(holding['b'])
     return holding_branches
 
+
 def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
     global server_url
     global holdings_mapping
@@ -114,8 +147,10 @@ def accumulate_ancestor_holdings(sys_number_first, ids, current_depths = 0):
 
 def add_to_holding_mapping(record):
     global holdings_mapping
-    if not '001' in record:
-	    return
+
+    (valid, _message ) = is_record_valid(record)
+    if not valid:
+        return
 
     sys_number = record['001'].data.strip()
 
@@ -130,16 +165,13 @@ def add_to_holding_mapping(record):
 
 def preprocess_record(record):
     global holdings_mapping
-    if not '001' in record:
-        logger.error("No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
+
+    (valid, message) = is_record_valid(record)
+    if not valid:
+        logger.error(message)
         return None
 
     sys_number = record['001'].data
-
-    matcher = re.fullmatch(valid_zenon_id, sys_number)
-    if not matcher:
-        logger.error("Unusual system number 001 {1} in biblio #{0}.  Returning None record.".format(record['999']['c'], sys_number))
-        return None
 
     (parent_ids, holding_branches) = holdings_mapping[sys_number]
     ancestor_holding_branches = accumulate_ancestor_holdings(sys_number, parent_ids)
@@ -199,9 +231,12 @@ def run(file_paths, output_directory):
 
 if __name__ == '__main__':
     global server_url
+    global check_biblio_no
+
     options = vars(parser.parse_args())
 
     server_url = options['server_url']
+    check_biblio_no = options['check_biblio']
 
     try:
         files = [ os.path.join(options['input_file'], file) for file in os.listdir(options['input_file']) if os.path.splitext(file)[1] == '.xml' ]
