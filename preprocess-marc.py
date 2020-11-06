@@ -8,8 +8,10 @@ import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+sh = logging.StreamHandler()
+sh.setFormatter(formatter)
+logger.addHandler(sh)
 
 def is_writable_directory(path: str):
     if os.path.exists(path) and (not os.path.isdir(path) or not os.access(path, os.W_OK)):
@@ -60,13 +62,13 @@ def is_record_valid(record):
 
         try:
             with urllib.request.urlopen(req) as response:
-                records = json.loads(response.read())["records"]
-                if len(records) > 1:
-                    return (False, "There are multiple records with biblio number {0}, see {1}.".format(record['999']['c'], url))
-                if records[0]['id'] != sys_number:
-                    return (False, "There is already a record with biblio number {0}, but the system number differs: {1} (old) : {2} (new).".format(record['999']['c'], records[0]['id'], sys_number))
-                logger.info(url)
-                logger.info(records)
+                result = json.loads(response.read().decode("utf-8"))
+                if "records" in result:
+                    records = result["records"]
+                    if len(records) > 1:
+                        return (False, "There are multiple records with biblio number {0}, see {1}.".format(record['999']['c'], url))
+                    if records[0]['id'] != sys_number:
+                        return (False, "There is already a record with biblio number {0}, but the system number differs: {1} (old) : {2} (new).".format(record['999']['c'], records[0]['id'], sys_number))
         except Exception as e:
             logger.error(e)
             return (False, "Failed to load {0}.".format(url))
