@@ -28,7 +28,7 @@ if [ -z "$MAILTO" ]
 then
     RECIPIENT=zenondai@dainst.org
 else
-    RECIPIENT=$MAILTO
+    RECIPIENT="$MAILTO@dainst.org"
 fi
 
 if [[ -z ${MACHINE_NAME:+x} ]] ;
@@ -36,7 +36,7 @@ then
     MACHINE_NAME="Unnamed machine"
 fi
 
-if grep --ignore-case -q 'error|except' "$MARC_UPDATE_LOG";
+if egrep --ignore-case 'error|except' "$MARC_UPDATE_LOG" | egrep -v -q 'Completed without errors' ;
 then
     cat "$MARC_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) marc update -- ERROR" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
 else
