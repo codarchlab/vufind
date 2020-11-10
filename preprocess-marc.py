@@ -48,13 +48,13 @@ def is_record_valid(record):
     global check_biblio_no
 
     if not '001' in record:
-        return (False, "No system number 001 in biblio #{0}. Returning None record.".format(record['999']['c']))
+        return (False, "No system number 001 in https://koha.dainst.org:8443/cgi-bin/koha/catalogue/detail.pl?biblionumber={0}. Returning None record.".format(record['999']['c']))
 
     sys_number = record['001'].data
 
     matcher = re.fullmatch(valid_zenon_id, sys_number)
     if not matcher:
-        return (False, "Unusual system number 001 {1} in biblio #{0}.".format(record['999']['c'], sys_number))
+        return (False, "Unusual system number 001 {1} in https://koha.dainst.org:8443/cgi-bin/koha/catalogue/detail.pl?biblionumber={0}.".format(record['999']['c'], sys_number))
 
     if check_biblio_no:
         url =  "{0}/api/v1/search?lookfor=biblio_no:{1}&type=AllFields".format(server_url, record['999']['c'])
@@ -66,9 +66,9 @@ def is_record_valid(record):
                 if "records" in result:
                     records = result["records"]
                     if len(records) > 1:
-                        return (False, "There are multiple records with biblio number {0}, see {1}.".format(record['999']['c'], url))
+                        return (False, "There are multiple records with biblio number {0}, see {1}. https://koha.dainst.org:8443/cgi-bin/koha/catalogue/detail.pl?biblionumber={0}".format(record['999']['c'], url))
                     if records[0]['id'] != sys_number:
-                        return (False, "There is already a record with biblio number {0}, but the system number differs: {1} (old) : {2} (new).".format(record['999']['c'], records[0]['id'], sys_number))
+                        return (False, "There is already a record with biblio number {0}, but the system number differs: {1} (old) : {2} (new). https://koha.dainst.org:8443/cgi-bin/koha/catalogue/detail.pl?biblionumber={0}".format(record['999']['c'], records[0]['id'], sys_number))
         except Exception as e:
             logger.error(e)
             return (False, "Failed to load {0}.".format(url))
