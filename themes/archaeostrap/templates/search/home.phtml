@@ -67,7 +67,6 @@
           <? elseif ($handlerCount == 1): ?>
             <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
           <? endif; ?>
-          <input type="hidden" name="hiddenFilters[]" value='collection:"iDAI.bibliography"'>
           <div class="col-sm-2">
             <button type="submit" name="submit" class="btn btn-primary form-control" style="float:none; display:inline-block; margin-left:0;" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search"></i> <?=$this->transEsc("Find")?></button>
           </div>
@@ -99,38 +98,38 @@
   <div class="col-md-6 well">
     <h4><i class="fa fa-home small"></i> <?=$this->translate('Participating libraries')?></h4>
     <ul class="list-unstyled">
-      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIE&quot;&filter[]=~building_dai_str_mv:&quot;DAIO&quot;&filter[]=~building_dai_str_mv:&quot;DAIZ&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIE&quot;&filter[]=~building_dai_str_mv:&quot;DAIO&quot;&filter[]=~building_dai_str_mv:&quot;DAIZ&quot;">Berliner DAI-Bibliotheken (Eurasien, Orient, Zentrale)</a></li>
     </ul>
     <div class="row">
       <div class="col-md-6">
         <ul class="list-unstyled">
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIA&quot;"><?= $this->transEsc('DAIA') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIB&quot;"><?= $this->transEsc('DAIB') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAID&quot;"><?= $this->transEsc('DAID') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIE&quot;"><?= $this->transEsc('DAIE') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIF&quot;"><?= $this->transEsc('DAIF') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAII&quot;"><?= $this->transEsc('DAII') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIK&quot;"><?= $this->transEsc('DAIK') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIM&quot;"><?= $this->transEsc('DAIM') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIA&quot;"><?= $this->transEsc('DAIA') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIB&quot;"><?= $this->transEsc('DAIB') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAID&quot;"><?= $this->transEsc('DAID') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIE&quot;"><?= $this->transEsc('DAIE') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIF&quot;"><?= $this->transEsc('DAIF') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAII&quot;"><?= $this->transEsc('DAII') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIK&quot;"><?= $this->transEsc('DAIK') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIM&quot;"><?= $this->transEsc('DAIM') ?></a></li>
         </ul>
       </div>
       <div class="col-md-6">
         <ul class="list-unstyled">
 
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIO&quot;"><?= $this->transEsc('DAIO') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIP&quot;"><?= $this->transEsc('DAIP') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIR&quot;"><?= $this->transEsc('DAIR') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIS&quot;"><?= $this->transEsc('DAIS') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIT&quot;"><?= $this->transEsc('DAIT') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DAIZ&quot;"><?= $this->transEsc('DAIZ') ?></a></li>
-          <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;DEIA&quot;"><?= $this->transEsc('DEIA') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIO&quot;"><?= $this->transEsc('DAIO') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIP&quot;"><?= $this->transEsc('DAIP') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIR&quot;"><?= $this->transEsc('DAIR') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIS&quot;"><?= $this->transEsc('DAIS') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIT&quot;"><?= $this->transEsc('DAIT') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DAIZ&quot;"><?= $this->transEsc('DAIZ') ?></a></li>
+          <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;DEIA&quot;"><?= $this->transEsc('DEIA') ?></a></li>
         </ul>
       </div>
     </div>
     <ul class="list-unstyled">
-      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;BBSA&quot;"><?= $this->transEsc('BBSA') ?></a></li>
-      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;BWINCK&quot;"><?= $this->transEsc('BWINCK') ?></a></li>
-      <li><a href="<?=$this->url('search-results')?>?hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&filter[]=~building_dai_str_mv:&quot;BICUAZ&quot;"><?= $this->transEsc('BICUAZ') ?></a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;BBSA&quot;"><?= $this->transEsc('BBSA') ?></a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;BWINCK&quot;"><?= $this->transEsc('BWINCK') ?></a></li>
+      <li><a href="<?=$this->url('search-results')?>?filter[]=~building_dai_str_mv:&quot;BICUAZ&quot;"><?= $this->transEsc('BICUAZ') ?></a></li>
     </ul>
   </div>
 
@@ -138,8 +137,8 @@
     <div class="well">
       <h4><i class="fa fa-file small"></i> <?=$this->translate('Journals')?></h4>
       <ul class="list-unstyled">
-        <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('DAI journals')?></a></li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=a*gz04 OR argz06 OR argz04xx&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=JournalNote"><?=$this->translate('Zenon journal holdings')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=daizss8&amp;type=LocalNote"><?=$this->translate('DAI journals')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=a*gz04 OR argz06 OR argz04xx&amp;type=JournalNote"><?=$this->translate('Zenon journal holdings')?></a></li>
       </ul>
     </div>
     <div class="well">
@@ -150,8 +149,8 @@
                 <?=$this->translate('e-journals')?> <i class="fa fa-external-link"></i>
             </a>
         </li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=ebook*&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('e-books')?></a></li>
-        <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote"><?=$this->translate('Online resources')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=ebook*&amp;type=LocalNote"><?=$this->translate('e-books')?></a></li>
+        <li><a href="<?=$this->url('search-results')?>?lookfor=&quot;online+publication&quot;&amp;type=LocalNote"><?=$this->translate('Online resources')?></a></li>
         <li>
             <a target="_blank" href="http://rzblx10.uni-regensburg.de/dbinfo/fachliste.php?bib_id=dai">
                 <?=$this->translate('DBIS (Database Information System)')?> <i class="fa fa-external-link"></i>
@@ -178,7 +177,7 @@
           'Rom' => ['r', 'ebook'],
           'Zentrale Berlin' => ['za', 'zs', 'ebook']
       ];
-      $additionalParameters = '&hiddenFilters[]=~collection:&quot;iDAI.bibliography&quot;&type=LocalNote';
+      $additionalParameters = '&type=LocalNote';
 
       for ($i = 0; $i > -12; $i--){
           $dt = $this->dateTime()->monthShifter($start, $i);
