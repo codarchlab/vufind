@@ -23,14 +23,20 @@ fi
 MARC_UPDATE_LOG="$VUFIND_HOME/local/harvest/log/`date +\%Y-\%m-\%d`.log"
 "$VUFIND_HOME/local/harvest/update.sh" $(date +\%Y-\%m-\%d -d '1 days ago') &> "$MARC_UPDATE_LOG"
 
-RECIPIENT=zenondai@dainst.org
+
+if [ -z "$MAILTO" ]
+then
+    RECIPIENT=zenondai@dainst.org
+else
+    RECIPIENT="$MAILTO@dainst.org"
+fi
 
 if [[ -z ${MACHINE_NAME:+x} ]] ;
 then
     MACHINE_NAME="Unnamed machine"
 fi
 
-if grep --ignore-case -q 'error|except' "$MARC_UPDATE_LOG";
+if egrep --ignore-case 'error|except' "$MARC_UPDATE_LOG" | egrep -v -q 'Completed without errors' ;
 then
     cat "$MARC_UPDATE_LOG" | mail -s "VuFind ($MACHINE_NAME) marc update -- ERROR" -a "From: vufindmailer@dainst.de" "$RECIPIENT"
 else
