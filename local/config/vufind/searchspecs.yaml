@@ -214,6 +214,11 @@ Thesaurus:
       - [onephrase, ~]
       - [ths_fuzzy, ~]
 
+AllFieldsExact:
+  QueryFields:
+    allfields_unstemmed:
+      - [onephrase, ~]
+
 LocalNote:
   DismaxFields:
     - note_str_mv
