@@ -249,6 +249,16 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get the records (Koha) biblio number
+     * 
+     * @return string 
+     */
+    public function getBiblioNumber()
+    {
+        return $this->getFirstFieldValue('999', ['c']);
+    }
+
+    /**
      * Get the host item information (MARC 21 field 787).
      *
      * @return array

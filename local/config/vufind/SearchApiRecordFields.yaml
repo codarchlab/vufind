@@ -460,3 +460,8 @@ thesaurus:
   vufind.default: true
   description: DAI thesaurus fields
   type: string
+biblioNumber:
+  vufind.method: getBiblioNumber
+  vufind.default: false
+  description: Koha bibliographic number
+  type: string

@@ -72,6 +72,16 @@ def is_record_valid(record):
         except Exception as e:
             logger.error(e)
             return (False, "Failed to load {0}.".format(url))
+
+        url = "{0}/api/v1/record?id={1}&field[]=biblioNumber".format(server_url, sys_number)
+        try:
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode("utf-8"))
+                if "records" in result and result["records"].length != 0 and result["records"][0]['biblioNumber'] != record['999']['c']:
+                    return (False, "There is already a record with system number {0}, but the new biblio number differs: {1} (old) : {2} (new). https://koha.dainst.org:8443/cgi-bin/koha/catalogue/detail.pl?biblionumber={2}".format(sys_number, result["records"][0]['biblioNumber'], record['999']['c']))
+        except Exception as e:
+            logger.error(e)
+            return (False, "Failed to load {0}.".format(url))
     return (True, "")
 
 def extract_parent_ids(sys_number, parents):
