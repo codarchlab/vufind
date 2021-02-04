@@ -1,8 +1,8 @@
 <?php
 /**
- * Book Bag / Bulk Action Controller
+ * iDAIGazetter Query Controller
  *
- * PHP version 5
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -19,75 +19,96 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
- */
-namespace Zenon\Controller;
-use VuFind\Controller\AbstractBase as AbstractBase;
-
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFindSearch\Query\Query;
-use Zend\ServiceManager\ServiceLocatorInterface;
-/**
- * Thesauri Link Controller
- *
- * @category VuFind
+ * @category Zenon
  * @package  Controller
  * @author   Simon Hohl <simon.hohl@dainst.org>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ThesauriSearchController extends AbstractBase
-{
-    /**
-     * Home action
-     *
-     * @throws \Exception
-     * @return mixed
-     */
+namespace Zenon\Controller;
 
-    protected $authoritySearch = null;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Controller\SearchController as VuFindSearchController;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+
+use Zenon\Controller\AuthoritySearchHelper;
+
+class ThesauriSearchController extends VuFindSearchController
+{
+    protected $searchService = null;
 
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->authoritySearch = $sm->get('VuFindSearch\Service');
+        $this->searchService = $sm->get('VuFindSearch\Service');
         parent::__construct($sm);
     }
 
-    public function homeAction()
+    /**
+     * Search action
+     * 
+     * Forwards to VuFind's search interface if bibliographic data associated with the given thesauri ID 
+     * exists.
+     *
+     * @return mixed
+     */
+    public function searchAction()
     {
-        $thsId = $this->params()->fromQuery('id');
-        if (is_null($thsId)) {
+        $thesauriId =  $this->params()->fromQuery('id');
+        if(is_null($thesauriId)) {
             throw new \VuFind\Exception\BadRequest(
-                'No iDAI.thesauri "id" provided.'
+                'No iDAI.thesauri id provided.'
             );
         }
-        $query = new Query('iDAI_thesauri_id:' . $this->escapeForSolr($thsId));
 
-        $authoritySearchResults = $this->authoritySearch->search('SolrAuth', $query)->first();
-        if (is_null($authoritySearchResults)) {
+        $authorityId = AuthoritySearchHelper::getAuthorityId($this->searchService, "iDAI_thesauri_id", $thesauriId);
+        if (is_null($authorityId)) {
             throw new RecordMissingException(
-                'Thesauri ID:' . $thsId . ' does not exist.'
+                'Thesauri ID:' . $thesauriId . ' not found.'
             );
         }
-        $authorityId = $authoritySearchResults->getRawData()['id'];
 
         $queryString = urlencode("authority_id_str_mv:" . $authorityId);
         return $this->redirect()->toUrl('/Search/Results?filter[]=~' . $queryString);
     }
 
     /**
-     * Escape a string for inclusion in a Solr query.
+     * Homw action
+     * 
+     * Returns the number of bibliographic records associated with the given thesauri id.
      *
-     * @param string $str String to escape
-     *
-     * @return string
+     * @return mixed
      */
-    protected function escapeForSolr($str)
+    public function homeAction()
     {
-        return '"' . addcslashes($str, '"') . '"';
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'application/json');
+
+        $json = null;
+
+        $thesauriId =  $this->params()->fromQuery('id');
+        if(is_null($thesauriId)) {
+            return $response->setContent(json_encode(array(
+                "status" => "error",
+                "message" => "No iDAI.thesauri id provided."
+            )));
+        }
+
+        $authorityId = AuthoritySearchHelper::getAuthorityId($this->searchService, "iDAI_thesauri_id", $thesauriId);
+
+        if (is_null($authorityId)) {
+            return $response->setContent(json_encode(array(
+                "status" => "ok",
+                "found" => 0
+            )));
+        }
+
+        $biblioSearchResults = AuthoritySearchHelper::getBibliosForAuthorityId($this->searchService, $authorityId);
+        $response->setContent(json_encode(array(
+            "status" => "ok",
+            "found" => $biblioSearchResults->getTotal(),
+            "authority_id_str_mv" => $authorityId
+        )));
+        return $response;
     }
 }
