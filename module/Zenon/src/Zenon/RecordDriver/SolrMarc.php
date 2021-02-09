@@ -433,7 +433,7 @@ class SolrMarc extends VufindSolrMarc
 
             $result[] = array(
                 'label' => $label,
-                'uri' => 'https://gazetteer.dainst.org/app/#!/show/' . $gazId
+                'uri' => 'https://gazetteer.dainst.org/place/' . $gazId
             );
 
             $encounteredGazIds[] = $gazId;
