@@ -477,6 +477,14 @@ class SolrMarc extends VufindSolrMarc
         return $result;
     }
 
+    public function getDAILinks()
+    {
+        $gazetteer = $this->getGazetteerLinks();
+        $thesauri = $this->getThesauriLinks();
+
+        return array("gazetteer" => $gazetteer, "thesauri" => $thesauri);
+    }
+
     /**
      * Get Marc control number.
      */
