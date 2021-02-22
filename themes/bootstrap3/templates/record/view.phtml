@@ -101,6 +101,10 @@
           <?php endif; ?>
         </div>
       </div>
+
+      <?php if ($this->driver->isNationalLicenced()):  ?>
+        <img src="/themes/archaeostrap/images/logo_dfg_nl.jpg" />
+      <?php endif; ?>
     <?php endif; ?>
 
     <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>

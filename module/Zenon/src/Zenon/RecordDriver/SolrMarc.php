@@ -722,6 +722,23 @@ class SolrMarc extends VufindSolrMarc
         return $this->getFieldArray('542',['d']);
     }
 
+    /**
+     * Checks wether this record is a dfg national licenced book or not
+     * 
+     * @return bool
+     */
+    public function isNationalLicenced()
+    {
+        $fields = $this->getFieldArray('590',['a']);
+        if (!empty($fields)) {
+            $filtered = array_filter($fields, function($val) {
+                return preg_match('#^(dbnl|ejournalnl|nlpaket|ebooknl)#', $val) === 1;
+            });
+            return !empty($filtered);
+        }
+        return false;
+    }
+
     public function getPartOrSectionInfo()
     {
         return $this->getFirstFieldValue('245', ['n']);
