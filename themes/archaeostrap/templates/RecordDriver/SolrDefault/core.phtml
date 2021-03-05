@@ -450,13 +450,7 @@
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
-            <?
-              $url = $this->proxyUrl($current['url']);
-              if(strcmp(substr($url, 0, 4 ), "www.") == 0) {
-                  $url = "http://" . $url;
-              }
-            ?>
-            <a href="<?= $url ?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <a href=" <?=$this->escapeHtmlAttr($this->proxyUrl($current['url'])) ?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
           <? if ($openUrlActive): ?>
             <?=$openUrl->renderTemplate()?><br/>
