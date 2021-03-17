@@ -33,6 +33,7 @@ php $VUFIND_HOME/harvest/harvest_oai.php dai-katalog --from $1 2>&1 | tee $VUFIN
 python3 $VUFIND_HOME/combine-marc.py $VUFIND_HOME/local/harvest/dai-katalog 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/combine_$today.log
 python3 "$VUFIND_HOME"/preprocess-marc.py $VUFIND_HOME/local/harvest/dai-katalog/preprocess $VUFIND_HOME/local/harvest/dai-katalog --url "http://$(hostname -i)" --check_biblio 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/preprocess_$today.log # "http://$(hostname -i)"
 $VUFIND_HOME/harvest/batch-import-marc.sh dai-katalog 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/import_$today.log
+
 $VUFIND_HOME/harvest/batch-delete.sh dai-katalog 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
 
 if [[ -z "$KOHA_BASE_URL" ]]
@@ -56,3 +57,6 @@ else
     echo "$VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc is an empty file, nothing is getting updated."
     rm $VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc
 fi
+
+python3 $VUFIND_HOME/preprocess-delete-files.py $VUFIND_HOME/local/harvest/dai-katalog | tee $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
+$VUFIND_HOME/harvest/batch-delete.sh dai-katalog 2>&1 | tee -a $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
