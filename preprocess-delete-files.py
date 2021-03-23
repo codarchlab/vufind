@@ -66,6 +66,6 @@ if __name__ == '__main__':
     files = [ os.path.join(options['input_directory'], file) for file in os.listdir(options['input_directory']) if os.path.splitext(file)[1] == '.delete' ]
 
     if not files:
-        logger.error("Found no delete files at {0}".format(options['input_directory']))
+        logger.info("Found no delete files at {0}".format(options['input_directory']))
     if files:
         run(files)
