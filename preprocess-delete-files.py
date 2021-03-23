@@ -17,6 +17,8 @@ parser = argparse.ArgumentParser(description='Preprocess MARCXML data to be impo
 parser.add_argument('input_directory', type=str, help="Input directory with harvested delete files.")
 parser.add_argument('--url', dest='server_url', type=str, default="https://zenon.dainst.org", help="Optional server URL where to check for Zenon IDs.")
 
+# Koha uses its internal biblionumber (999$c) as the ID in OAI, but in VuFind we use the systemnumber (001) as the primary id. This script rewrites the 
+# harvested delete files to their systemnumber equivalents.
 
 def run(input_files):
     global invalid_zenon_ids
