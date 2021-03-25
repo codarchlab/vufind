@@ -412,7 +412,11 @@
           <th><?=$this->transEsc('Other Editions')?>: </th>
           <td>
             <? foreach ($parallelEditions as $parallelEdition): ?>
-              <a title="<?=$this->escapeHtml($parallelEdition['label'])?>" href="<?=$this->url('record', array('id' => $parallelEdition['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?></a><br/>
+              <? if($parallelEdition['id']): ?>
+                <a title="<?=$this->escapeHtml($parallelEdition['label'])?>" href="<?=$this->url('record', array('id' => $parallelEdition['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?></a><br/>
+              <? else: ?> 
+                <i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?>
+              <? endif; ?>
             <? endforeach; ?>
           </td>
         </tr>
@@ -424,7 +428,11 @@
           <th><?=$this->transEsc('See also')?>: </th>
           <td>
             <? foreach ($seeAlsos as $seeAlso): ?>
-              <a title="<?=$this->escapeHtml($seeAlso['label'])?>" href="<?=$this->url('record', array('id' => $seeAlso['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?></a><br/>
+              <? if($seeAlso['id']): ?>
+                <a title="<?=$this->escapeHtml($seeAlso['label'])?>" href="<?=$this->url('record', array('id' => $seeAlso['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?></a><br/>
+              <? else: ?>
+                <i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?>
+              <? endif; ?>
             <? endforeach; ?>
           </td>
         </tr>
