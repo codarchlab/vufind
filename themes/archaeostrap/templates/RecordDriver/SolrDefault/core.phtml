@@ -369,7 +369,7 @@
                       <i class="fa fa-book"></i> <?=$this->escapeHtml($hostItem['label'])?>
                   </a>
               <? else: ?>
-                  <?=$this->escapeHtml($hostItem['label'])?>
+                  <?=$this->escapeHtml($hostItem['label'])?><br/>
               <? endif; ?>
           </td>
         </tr>
@@ -388,7 +388,7 @@
                             <i class="fa fa-book"></i> <?=$this->escapeHtml($relationShip['label'])?>
                           </a>
                         <? else: ?>
-                          <?=$this->escapeHtml($relationShip['label'])?>
+                          <?=$this->escapeHtml($relationShip['label'])?><br/>
                         <? endif; ?>
                     </div>
                   <? endforeach; ?>
@@ -415,7 +415,7 @@
               <? if($parallelEdition['id']): ?>
                 <a title="<?=$this->escapeHtml($parallelEdition['label'])?>" href="<?=$this->url('record', array('id' => $parallelEdition['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?></a><br/>
               <? else: ?> 
-                <i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?>
+                <i class="fa fa-book"></i> <?=$this->escapeHtml($parallelEdition['label'])?><br/>
               <? endif; ?>
             <? endforeach; ?>
           </td>
@@ -431,7 +431,7 @@
               <? if($seeAlso['id']): ?>
                 <a title="<?=$this->escapeHtml($seeAlso['label'])?>" href="<?=$this->url('record', array('id' => $seeAlso['id']))?>"><i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?></a><br/>
               <? else: ?>
-                <i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?>
+                <i class="fa fa-book"></i> <?=$this->escapeHtml($seeAlso['label'])?><br/>
               <? endif; ?>
             <? endforeach; ?>
           </td>
