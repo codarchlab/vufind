@@ -271,25 +271,17 @@ class SolrMarc extends VufindSolrMarc
     {
         $result = [];
         foreach($fields as $currentField) {
-            $recordControlNumber = $currentField->getSubfield('w');
-            if($recordControlNumber) {
-                $data = $this->getHostItemLinkData($currentField);
-                if($data)
-                    $result[] = $data;
-            }
-            else {
-                $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n'], false);
-                if(sizeOf($textEntry) > 0)
-                    $result[] = array('id' => null, 'label' => join(', ', $textEntry));
-            }
+            $result[] = array(
+                'id' => $this->getLinkedEntryID($currentField), 
+                'label' => $this->getLinkedEntryLabel($currentField)
+            );
         }
         return $result;
     }
 
-    private function getHostItemLinkData($currentField)
-    {
-        $subfield = $currentField->getSubfield('w');
-        $recordControlNumber = false;
+    private function getLinkedEntryID($field) {
+        $subfield = $field->getSubfield('w');
+        $recordControlNumber = null;
         if($subfield) {
             $subfieldData = $subfield->getData();
 
@@ -304,14 +296,23 @@ class SolrMarc extends VufindSolrMarc
                 $recordControlNumber = $matches[1];
             }
         }
+        return $recordControlNumber;
+    }
+    
+    private function getLinkedEntryLabel($field) {
+        $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x'], true, ', ');
+        $relationshipInformation = $field->getSubfield('i');
 
-        $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n', 'x'], false);
-        if(sizeOf($textEntry) > 0) {
-            return array('id' => $recordControlNumber, 'label' => join(', ', $textEntry));
+        $label = null;
+
+        if(sizeOf($combinedGeneralSubfields) == 1) {
+            $label = $combinedGeneralSubfields[0];
+            if($relationshipInformation) {
+                $label = $label . " (" . $relationshipInformation->getData() . ")";
+            }
         }
-        else {
-            return null;
-        }
+
+        return $label;
     }
 
     /**
