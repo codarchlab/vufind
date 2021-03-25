@@ -279,7 +279,6 @@ class SolrMarc extends VufindSolrMarc
             }
             else {
                 $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n'], false);
-
                 if(sizeOf($textEntry) > 0)
                     $result[] = array('id' => null, 'label' => join(', ', $textEntry));
             }
@@ -289,20 +288,22 @@ class SolrMarc extends VufindSolrMarc
 
     private function getHostItemLinkData($currentField)
     {
-        $recordControlNumber = $currentField->getSubfield('w');
+        $subfield = $currentField->getSubfield('w');
+        $recordControlNumber = false;
+        if($subfield) {
+            $subfieldData = $subfield->getData();
 
-        if($recordControlNumber) {
-            $recordControlNumber = $recordControlNumber->getData();
-        }
-        else{
-            $recordControlNumber = false;
-        }
+            preg_match("/^\d{9}$/", $subfieldData, $matches);
+            if (sizeof($matches) == 1){
+                $recordControlNumber = $subfieldData;
+            }
 
-        // Pattern matches GBV notation, example id: NLEJ102577161, field value 773w: "(DE-601)NLEJ000028940"
-//        preg_match('/^\(.*\)(.*)$/', $currentField->getSubfield('w')->getData(), $match);
-//        if(sizeof($match) == 2){
-//            $recordControlNumber = $match[1];
-//        }
+            # Handle link that contains our organization code
+            preg_match("/^\(DE-2553\)(\d{9})$/", $subfieldData, $matches);
+            if (sizeof($matches) == 2) {
+                $recordControlNumber = $matches[1];
+            }
+        }
 
         $textEntry = $this->getSubfieldArray($currentField, ['a', 'b', 't', 'g', 'n', 'x'], false);
         if(sizeOf($textEntry) > 0) {
