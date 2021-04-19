@@ -108,9 +108,9 @@ class RecordLink extends ParentRecordLink
     }
 
     public function aggregateHostItemHoldings($zenonId, $currentDepth = 0) {
-        
+
         if($currentDepth > 5) {
-            return [];
+            return ['holdings' => []];
         }
 
         $query = new \VufindSearch\Query\Query(
@@ -127,9 +127,9 @@ class RecordLink extends ParentRecordLink
             $hostItem = $result->getHostItemInformation();
 
             if($hostItem && $hostItem['id']) {
-                $holdings = ['holdings' =>  
+                $holdings = ['holdings' =>
                     array_merge(
-                        $holdings['holdings'], 
+                        $holdings['holdings'],
                         $this->aggregateHostItemHoldings($hostItem['id'], $currentDepth + 1)['holdings'])
                     ];
             }
