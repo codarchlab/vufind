@@ -613,7 +613,7 @@ class SolrMarc extends VufindSolrMarc
             if ((count($subfieldaarray) > 0) and (count($subfielduarray) > 0)) {
                 $result[] = array(
                     'label' => $subfieldaarray[0],
-                    'uri' => $subfielduarray[1]
+                    'uri' => $subfielduarray[0]
                 );
             }
         }
