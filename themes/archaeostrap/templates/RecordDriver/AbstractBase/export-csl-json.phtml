@@ -43,8 +43,8 @@
     if($pages){
         $result['pages'] = $pages;
     }
-    if(!empty($containers)){
-        $result['container-title'] = $containers[0]['label'];
+    if($containers){
+        $result['container-title'] = trimSpecialCharacters($containers['label']);
     }
 
     if(!empty($authors)){
