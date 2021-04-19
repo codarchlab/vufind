@@ -44,7 +44,7 @@ def run(input_files):
 
             try:
                 with urllib.request.urlopen(req) as response:
-                    result = json.loads(response.read())
+                    result = json.loads(response.read().decode('utf-8'))
                     if "records" in result:
                         zenon_id = result["records"][0]["id"]
                         output_path = "{0}/{1}_{2}.delete".format(directory, prefix, zenon_id)
