@@ -25,6 +25,11 @@ then
   VUFIND_LOCAL_DIR="$VUFIND_HOME/local"
 fi
 
+if [ -z "$HOST_URL" ]
+then
+  HOST_URL="https://zenon.dainst.org"
+fi
+
 today=$(date +"%Y-%m-%d")
 
 mkdir -p $VUFIND_HOME/local/harvest/dai-katalog/log
@@ -32,7 +37,7 @@ mkdir -p $VUFIND_HOME/local/harvest/dai-katalog/log
 php $VUFIND_HOME/harvest/harvest_oai.php dai-katalog --from $1 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/harvest_$today.log
 
 python3 $VUFIND_HOME/combine-marc.py $VUFIND_HOME/local/harvest/dai-katalog 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/combine_$today.log
-python3 "$VUFIND_HOME"/preprocess-marc.py $VUFIND_HOME/local/harvest/dai-katalog/preprocess $VUFIND_HOME/local/harvest/dai-katalog --url "http://$(hostname -i)" --check_biblio 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/preprocess_$today.log # "http://$(hostname -i)"
+python3 "$VUFIND_HOME"/preprocess-marc.py $VUFIND_HOME/local/harvest/dai-katalog/preprocess $VUFIND_HOME/local/harvest/dai-katalog --url $HOST_URL --check_biblio 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/preprocess_$today.log
 $VUFIND_HOME/harvest/batch-import-marc.sh dai-katalog 2>&1 | tee $VUFIND_HOME/local/harvest/dai-katalog/log/import_$today.log
 
 if [[ -z "$KOHA_BASE_URL" ]]
@@ -57,5 +62,5 @@ else
     rm $VUFIND_HOME/local/harvest/dai-katalog-auth/authority_data.mrc
 fi
 
-python3 $VUFIND_HOME/preprocess-delete-files.py $VUFIND_HOME/local/harvest/dai-katalog | tee $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
+python3 $VUFIND_HOME/preprocess-delete-files.py $VUFIND_HOME/local/harvest/dai-katalog --url $HOST_URL | tee $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
 $VUFIND_HOME/harvest/batch-delete.sh dai-katalog 2>&1 | tee -a $VUFIND_HOME/local/harvest/dai-katalog/log/delete_$today.log
