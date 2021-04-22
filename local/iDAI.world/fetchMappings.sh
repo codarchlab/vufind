@@ -16,7 +16,7 @@ fi
 
 exec &> "$PUBLICATIONS_LOG_DIRECTORY/publications_`date +\%Y-\%m-\%d`.log"
 
-curl -H "Accept: application/json" "https://publications.dainst.org/journals/plugins/pubIds/zenon/api/mapping" > $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
-curl -H "Accept: application/json" "https://publications.dainst.org/books/plugins/pubIds/zenon/api/mapping" > $VUFIND_HOME/local/iDAI.world/publications_books_mapping.json
+curl -H "Accept: application/json" "https://publications.dainst.org/journals/plugins/pubIds/zenon/api/index.php?task=mapping" > $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
+curl -H "Accept: application/json" "https://publications.dainst.org/books/plugins/pubIds/zenon/api/index.php?task=mapping" > $VUFIND_HOME/local/iDAI.world/publications_books_mapping.json
 
 exit
