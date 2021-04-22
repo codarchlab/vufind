@@ -8,15 +8,22 @@ then
   VUFIND_HOME="/usr/local/vufind"
 fi
 
-PUBLICATIONS_LOG_DIRECTORY="$VUFIND_HOME/local/iDAI.world/log"
+curl -H "Accept: application/json" -s --show-error -o $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json --fail "https://publications.dainst.org/journals/plugins/pubIds/zenon/api/index.php?task=mapping"
+if [ 0 -eq $? ]; 
+then
+  echo "Updating iDAI.publication's journals mapping successful."
+  mv $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
+else
+  echo "Error updating  iDAI.publication's journals mapping, keeping existing mapping."
+  rm $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json
+fi;
 
-if [[ ! -d "$PUBLICATIONS_LOG_DIRECTORY" ]]; then
-  mkdir "$PUBLICATIONS_LOG_DIRECTORY"
-fi
-
-exec &> "$PUBLICATIONS_LOG_DIRECTORY/publications_`date +\%Y-\%m-\%d`.log"
-
-curl -H "Accept: application/json" "https://publications.dainst.org/journals/plugins/pubIds/zenon/api/index.php?task=mapping" > $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
-curl -H "Accept: application/json" "https://publications.dainst.org/books/plugins/pubIds/zenon/api/index.php?task=mapping" > $VUFIND_HOME/local/iDAI.world/publications_books_mapping.json
-
-exit
+curl -H "Accept: application/json" -s -o $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json --fail "https://publications.dainst.org/books/plugins/pubIds/zenon/api/index.php?task=mapping"
+if [ 0 -eq $? ]; 
+then
+  echo "Updating iDAI.publication's books mapping successful."
+  mv $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
+else
+  echo "Error updating iDAI.publication's books mapping, keeping existing mapping."
+  rm $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json
+fi;
