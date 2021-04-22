@@ -22,8 +22,8 @@ curl -H "Accept: application/json" -s -o $VUFIND_HOME/local/iDAI.world/publicati
 if [ 0 -eq $? ]; 
 then
   echo "Updating iDAI.publication's books mapping successful."
-  mv $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
+  mv $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_books_mapping.json
 else
   echo "Error updating iDAI.publication's books mapping, keeping existing mapping."
-  rm $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json
+  rm $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json
 fi;
