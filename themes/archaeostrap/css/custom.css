@@ -162,6 +162,17 @@ mark {
 	padding: 15px !important;
 }
 
+.modal-dialog {
+	width: 90%
+}
+
+.screenshot {
+	margin-top: 2em;
+	margin-bottom: 2em;
+	box-shadow: 0 0 1em black;
+    border:1px solid black;
+}
+
 #holdings-tab h3 {
 	text-transform: uppercase;
 	color: #777777;
