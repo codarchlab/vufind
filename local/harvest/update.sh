@@ -42,9 +42,9 @@ $VUFIND_HOME/harvest/batch-import-marc.sh dai-katalog 2>&1 | tee $VUFIND_HOME/lo
 
 if [[ -z "$KOHA_BASE_URL" ]]
 then
-  KOHA_AUTH_URL="https://koha.dainst.org/download/exports/$today/authority_data.mrc"
+  KOHA_AUTH_URL="https://koha.dainst.org/download/exports/authority_data.mrc"
 else
-  KOHA_AUTH_URL="$KOHA_BASE_URL/$today/authority_data.mrc"
+  KOHA_AUTH_URL="$KOHA_BASE_URL/authority_data.mrc"
 fi
 
 echo "Loading updated authority data from KOHA_AUTH_URL:"
