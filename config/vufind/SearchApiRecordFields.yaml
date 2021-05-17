@@ -334,15 +334,6 @@ subjectsExtended:
   type: array
   items:
     $ref: '#/definitions/Subject'
-DAILinks:
-  vufind.method: getDAILinks
-  vufind.default: false
-  description: Get iDAI.world links to gazetteer or thesauri for the record
-  type: array
-  items:
-    type: array
-    items:
-      type: string
 subTitle:
   vufind.method: getSubTitle
   description: Subtitle
