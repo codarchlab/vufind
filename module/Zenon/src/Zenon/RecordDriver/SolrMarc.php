@@ -419,7 +419,7 @@ class SolrMarc extends VufindSolrMarc
         $encounteredGazIds = [];
 
         foreach($locationFields as $locationField) {
-            if(!$locationField->getSubfield('9')) continue;
+            if(!$locationField->getSubfield('9') || !$locationField->getSubfield('a')) continue;
 
             $authorityID = $locationField->getSubfield('9')->getData();
             $label = $locationField->getSubfield('a')->getData();
@@ -455,13 +455,12 @@ class SolrMarc extends VufindSolrMarc
 
         $encounteredThesauriIds = [];
         foreach($topicFields as $topicField) {
-            if(!$topicField->getSubfield('9')) continue;
+            if(!$topicField->getSubfield('9') || !$topicField->getSubfield('a')) continue;
 
             $authorityID = $topicField->getSubfield('9')->getData();
             $label = $topicField->getSubfield('a')->getData();
 
             $authoritySearchResults = $this->searchService->retrieve('SolrAuth', $authorityID);
-
             if($authoritySearchResults->count() == 0) continue;
             $authorityRecord = $authoritySearchResults->first()->getRawData();
             $thesauriId = $authorityRecord['iDAI_thesauri_id'];
