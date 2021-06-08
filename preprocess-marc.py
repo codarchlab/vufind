@@ -73,7 +73,7 @@ def is_record_valid(record):
             logger.error(e)
             return (False, "Failed to load {0}.".format(url))
 
-        url = "{0}/api/v1/search?lookfor=biblio_no:id={1}&type=AllFields&field[]=biblioNumber".format(server_url, sys_number)
+        url = "{0}/api/v1/search?lookfor=id:{1}&type=AllFields&field[]=biblioNumber".format(server_url, sys_number)
         req = urllib.request.Request(url)
 
         try:
