@@ -450,7 +450,7 @@ additionalInformation:
   description: Get additional Information (MARC fields 540, 546 & 561)
   items:
     type: string
-parentId: #(hierarchyParentId)
+parentId:
   vufind.method: getHierarchyParentId
   vufind.default: true
   description: Parent record ID for hierarchical records
