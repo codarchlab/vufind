@@ -15,7 +15,7 @@ then
   mv $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_serials_mapping.json
 else
   echo "Error updating  iDAI.publication's journals mapping, keeping existing mapping."
-  rm $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json
+  rm -f $VUFIND_HOME/local/iDAI.world/publications_serials_mapping_tmp.json
 fi;
 
 curl -H "Accept: application/json" -s -o $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json --fail "https://publications.dainst.org/books/plugins/pubIds/zenon/api/index.php?task=mapping"
@@ -25,5 +25,5 @@ then
   mv $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json $VUFIND_HOME/local/iDAI.world/publications_books_mapping.json
 else
   echo "Error updating iDAI.publication's books mapping, keeping existing mapping."
-  rm $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json
+  rm -f $VUFIND_HOME/local/iDAI.world/publications_books_mapping_tmp.json
 fi;
