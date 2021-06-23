@@ -5,6 +5,11 @@ use VuFindSearch\Query\Query;
 
 class AuthoritySearchHelper
 {
+    public static function searchAuthorities($searchService, string $q, $limit = 100, $offset = 0) {
+        $query = new Query(self::escapeForSolr($q));
+        return $searchService->search('SolrAuth', $query, $offset, $limit);
+    }
+
     public static function getAuthorityId($searchService, string $system, string $id){
         $query = new Query($system . ":" . self::escapeForSolr($id));
         $authoritySearchResults = $searchService->search('SolrAuth', $query)->first();
