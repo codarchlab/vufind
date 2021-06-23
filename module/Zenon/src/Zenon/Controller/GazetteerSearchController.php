@@ -72,7 +72,7 @@ class GazetteerSearchController extends VuFindSearchController
     }
 
     /**
-     * Homw action
+     * Home action
      * 
      * Returns the number of bibliographic records associated with the given gazetteer id.
      *
