@@ -142,20 +142,20 @@
       </ul>
     </div>
     <div class="well">
+    <? if ($this->plugin('translate')->getTranslator()->getLocale() == "de"): ?>
+        <div class="text-center">
+          <small>
+            <a  href="<?=$this->url('help-home')?>?topic=e_resources" data-lightbox target="_blank" class="help-link">
+              <i class="fa fa-info-circle"></i> <?=$this->translate('information')?>
+            </a>
+          </small>
+        </div>
+      <? endif; ?>
       <h4>
         <i class="fa fa-globe small"></i> <?=$this->translate('e-publications')?> 
-
       </h4>
 
-      <? if ($this->plugin('translate')->getTranslator()->getLocale() == "de"): ?>
-            <div class="text-right">
-              <small>
-                <a  href="<?=$this->url('help-home')?>?topic=e_resources" data-lightbox target="_blank" class="help-link">
-                  <i class="fa fa-info-circle"></i> <?=$this->translate('information')?>
-                </a>
-              </small>
-            </div>
-          <? endif; ?>
+
       <ul class="list-unstyled">
         <li>
             <a target="_blank" href="http://ezb.uni-regensburg.de/">
