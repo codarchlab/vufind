@@ -193,7 +193,10 @@ class Citation extends VufindCitation
                 if($i != 0){
                     $seriesStr = $seriesStr . ' = ';
                 }
-                $seriesStr = $seriesStr . $this->stripPunctuation($series['name']) . ' ' . $series['number'];
+                $seriesStr = $seriesStr . $this->stripPunctuation($series['name']);
+                if(isset($series['number'])){
+                    $seriesStr = $seriesStr . ' ' . $series['number'];
+                }
                 $i++;
             }
         }
