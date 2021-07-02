@@ -310,6 +310,7 @@ class SolrMarc extends VufindSolrMarc
     private function getLinkedEntryLabel($field) {
         $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x', 't'], true, ', ');
         $relationshipInformation = $field->getSubfield('i');
+        $issn = $field->getSubfield('z');
 
         $label = null;
 
@@ -320,6 +321,10 @@ class SolrMarc extends VufindSolrMarc
             }
         } else {
             $label = $relationshipInformation->getData();
+        }
+
+        if($issn){
+            $label += ", ISSN: " . $issn; 
         }
 
         return $label;
