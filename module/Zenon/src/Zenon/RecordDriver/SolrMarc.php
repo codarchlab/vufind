@@ -259,6 +259,14 @@ class SolrMarc extends VufindSolrMarc
     }
 
     /**
+     * Get supplement entries.
+     * @return array
+     */
+    public function getSupplementEntries(){
+        return $this->createLinkingEntries($this->getMarcRecord()->getFields('770'));
+    }
+
+    /**
      * Get the host item information (MARC 21 field 787).
      *
      * @return array
@@ -300,7 +308,7 @@ class SolrMarc extends VufindSolrMarc
     }
     
     private function getLinkedEntryLabel($field) {
-        $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x'], true, ', ');
+        $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x', 't'], true, ', ');
         $relationshipInformation = $field->getSubfield('i');
 
         $label = null;

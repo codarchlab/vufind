@@ -361,7 +361,7 @@
       <? $hostItem = $this->driver->getHostItemInformation(); ?>
       <? if($hostItem): ?>
         <tr>
-          <th><?=$this->transEsc('Included in')?>: </th>
+          <th><?=$this->transEsc('note_773')?>: </th>
           <td>
               <? if($hostItem['id']): ?>
                   <a title="<?=$this->escapeHtml($hostItem['label'])?>"
@@ -375,26 +375,47 @@
         </tr>
       <? endif; ?>
 
-        <? $otherRelationShips = $this->driver->getOtherRelationships(); ?>
-        <? if(!empty($otherRelationShips)): ?>
-            <tr>
-                <th><?=$this->transEsc('Other relationships')?>: </th>
-                <td>
-                  <? foreach ($otherRelationShips as $relationShip): ?>
-                    <div>
-                        <? if($relationShip['id']): ?>
-                          <a title="<?=$this->escapeHtml($relationShip['label'])?>"
-                            href="<?=$this->url('record', array('id' => $relationShip['id']))?>">
-                            <i class="fa fa-book"></i> <?=$this->escapeHtml($relationShip['label'])?>
-                          </a>
-                        <? else: ?>
-                          <?=$this->escapeHtml($relationShip['label'])?><br/>
-                        <? endif; ?>
-                    </div>
-                  <? endforeach; ?>
-                </td>
-            </tr>
-        <? endif; ?>
+      <? $otherRelationShips = $this->driver->getOtherRelationships(); ?>
+      <? if(!empty($otherRelationShips)): ?>
+          <tr>
+              <th><?=$this->transEsc('note_787')?>: </th>
+              <td>
+                <? foreach ($otherRelationShips as $relationShip): ?>
+                  <div>
+                      <? if($relationShip['id']): ?>
+                        <a title="<?=$this->escapeHtml($relationShip['label'])?>"
+                          href="<?=$this->url('record', array('id' => $relationShip['id']))?>">
+                          <i class="fa fa-book"></i> <?=$this->escapeHtml($relationShip['label'])?>
+                        </a>
+                      <? else: ?>
+                        <?=$this->escapeHtml($relationShip['label'])?><br/>
+                      <? endif; ?>
+                  </div>
+                <? endforeach; ?>
+              </td>
+          </tr>
+      <? endif; ?>
+
+      <? $supplements = $this->driver->getSupplementEntries(); ?>
+      <? if(!empty($supplements)): ?>
+          <tr>
+              <th><?=$this->transEsc('note_770')?>: </th>
+              <td>
+                <? foreach ($supplements as $relationShip): ?>
+                  <div>
+                      <? if($relationShip['id']): ?>
+                        <a title="<?=$this->escapeHtml($relationShip['label'])?>"
+                          href="<?=$this->url('record', array('id' => $relationShip['id']))?>">
+                          <i class="fa fa-book"></i> <?=$this->escapeHtml($relationShip['label'])?>
+                        </a>
+                      <? else: ?>
+                        <?=$this->escapeHtml($relationShip['label'])?><br/>
+                      <? endif; ?>
+                  </div>
+                <? endforeach; ?>
+              </td>
+          </tr>
+      <? endif; ?>
 
       <? $chreLink = $this->driver->getCHRELink(); ?>
       <? if(!empty($chreLink)): ?>
@@ -409,7 +430,7 @@
       <? $parallelEditions = $this->driver->getParallelEditions(); ?>
       <? if($parallelEditions): ?>
         <tr>
-          <th><?=$this->transEsc('Other Editions')?>: </th>
+          <th><?=$this->transEsc('note_776')?>: </th>
           <td>
             <? foreach ($parallelEditions as $parallelEdition): ?>
               <? if($parallelEdition['id']): ?>
