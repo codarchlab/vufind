@@ -86,9 +86,9 @@ class Citation extends VufindCitation
             $dai['pubPlace'] = $this->stripPunctuation($this->details['pubPlace']) . ' ' .  $this->details['pubDate'];
         }
 
-        $dai['hostItemInformation'] = $this->driver->tryMethod('getHostItemInformation');
-        if (!empty($dai['hostItemInformation'])){
-            $dai['hostItemInformation'] = $dai['hostItemInformation'][0]['label'];
+        $hostItem = $this->driver->tryMethod('getHostItemInformation');
+        if (!empty($hostItem)){
+            $dai['hostItemInformation'] = $hostItem['label'];
         }
 
         $titleSection = $this->driver->tryMethod('getTitleSection');
