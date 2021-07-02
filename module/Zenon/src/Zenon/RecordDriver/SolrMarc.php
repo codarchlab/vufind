@@ -308,7 +308,7 @@ class SolrMarc extends VufindSolrMarc
     }
     
     private function getLinkedEntryLabel($field) {
-        $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x', 't', 'i'], true, ', ');
+        $combinedGeneralSubfields = $this->getSubfieldArray($field, ['a', 'b', 't', 'g', 'n', 'x', 't'], true, ', ');
         $relationshipInformation = $field->getSubfield('i');
 
         $label = null;
@@ -408,7 +408,8 @@ class SolrMarc extends VufindSolrMarc
     public function getParallelEditions()
     {
         {
-            return $this->createLinkingEntries($this->getMarcRecord()->getFields('776'));
+            return $this->createLinkingEntries($this->getMarcRecord()->getFields('776')); # Helena: übernommen aus getOtherRelationships()
+            # das ist aber noch nicht ideal, da hier die Art der Aufnahme nicht angezeigt wird.
         }
     }
 
