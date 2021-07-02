@@ -324,7 +324,7 @@ class SolrMarc extends VufindSolrMarc
         }
 
         if($issn){
-            $label = $label . ", ISSN: " . $issn; 
+            $label = $label . " | ISSN: " . $issn; 
         }
 
         return $label;
