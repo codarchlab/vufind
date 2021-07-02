@@ -318,6 +318,8 @@ class SolrMarc extends VufindSolrMarc
             if($relationshipInformation) {
                 $label = $label . " (" . $relationshipInformation->getData() . ")";
             }
+        } else {
+            $label = $relationshipInformation->getData();
         }
 
         return $label;
