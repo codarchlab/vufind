@@ -7,13 +7,13 @@ if (is_object($marc)) {
 } else {
     $marcPhdField = $marcProceedingsField = false;
 }
-$journalTitle = $this->driver->tryMethod('getContainerTitle');
+$hostItem = $this->driver->tryMethod('getHostItemInformation');
 $formats = $this->driver->tryMethod('getFormats');
 if ($marcProceedingsField) {
     $format = 'Inproceedings';
 } else if ($marcPhdField) {
     $format = 'phdthesis';
-} else if (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
+} else if (!empty($hostItem) || (is_array($formats) && in_array('Article', $formats))) {
     $format = 'article';
 } else if (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'misc';
@@ -42,8 +42,12 @@ if(!empty($this->driver->getSubtitle())){
 }
 
 
-if (!empty($journalTitle)) {
-    echo "journal = {{$journalTitle}},\n";
+if (!empty($hostItem)) {
+    if($format == "article") {
+        echo "journal = {{$hostItem['label']}},\n";
+    } else {
+        echo "booktitle = {{$hostItem['label']}},\n";
+    }
     $volume = $this->driver->tryMethod('getContainerVolume');
     if (!empty($volume)) {
         echo "volume = {{$volume}},\n";
