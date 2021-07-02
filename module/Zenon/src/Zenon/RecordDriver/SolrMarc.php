@@ -319,12 +319,15 @@ class SolrMarc extends VufindSolrMarc
             if($relationshipInformation) {
                 $label = $label . " (" . $relationshipInformation->getData() . ")";
             }
-        } else {
+        } else if($relationshipInformation) {
             $label = $relationshipInformation->getData();
         }
 
         if($issn){
-            $label = $label . " | ISSN: " . $issn->getData(); 
+            if($label){
+                $label = $label . " | "
+            }
+            $label = $label . "ISSN: " . $issn->getData(); 
         }
 
         return $label;
